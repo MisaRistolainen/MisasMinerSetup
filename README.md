@@ -1,5 +1,5 @@
 # MisasMinerSetup
-
+FOR AMD OR NVIDIA GPUs!
 This is a simple setup program to start mining.
 It currently has advanced settings and it might/will be buggy
 
