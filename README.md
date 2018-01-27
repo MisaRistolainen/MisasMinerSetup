@@ -1,5 +1,5 @@
 # MisasMinerSetup
-ONLY FOR AMD GPU'S AND GARLICOIN AT THE MOMENT!!!
+FOR AMD OR NVIDIA GPUs!
 
 This is a simple setup program to start mining.
 It currently has advanced settings and it might/will be buggy
@@ -13,11 +13,11 @@ Downloadable exe will always be the newest version that is listed here.
 
 Instructions:
 
-If you already have sgminer, just drop this exe into the same folder as sgminer and start.
+If you already have sgminer/ccminer, just drop this exe into the same folder as sgminer and start.
 
 
-If you don't have sgminer yet, just run it in a folder where you want the miner folder to be created.
-After starting you will see "Miner not found" and you can go ahead and press "Install miner".
+If you don't have sgminer/ccminer yet, just run it in a folder where you want the miner folder to be created.
+After starting and choosing your gpu you will see "Miner not found" and you can go ahead and press "Install miner".
 It will download sgminer and unzip it into a folder called MisasMinerSetup, move the exe there and restart.
 After it restarted from the folder, it should be ready to use.
 
