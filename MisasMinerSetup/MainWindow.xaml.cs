@@ -132,7 +132,7 @@ namespace MisasMinerSetup
             }
             else if (gpuChoice == 0)
             {
-                strArg = "ccminer-x64 --algo=scrypt:10 -l auto -o " + strPool + " -u " + strWallet + " --lookup-gap=2 --max-temp=70 "; //Constructing final string to run
+                strArg = "ccminer-x64 --algo=scrypt:10 -l auto -o " + strPool + " -u " + strWallet + " --lookup-gap=2 --max-temp=85 "; //Constructing final string to run
             }
             Process cmd = new Process();
             //Opening cmd with given arguments
