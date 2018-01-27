@@ -24,3 +24,5 @@ After it restarted from the folder, it should be ready to use.
 After selecting/writing in you settings, press "RIP GPU" and it will launch a cmd window and it will start to mine.
 
 Settings are saved after shutdown so there is no need to copy paste your wallet everytime you restart.
+
+Miisu#5852 on Discord
