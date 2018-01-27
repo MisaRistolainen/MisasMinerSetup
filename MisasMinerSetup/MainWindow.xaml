@@ -51,10 +51,12 @@
         <Button x:Name="btnDonate"  Content="Thank you" Click="btnDonate_Click" HorizontalAlignment="Left" Margin="428,335,0,0" VerticalAlignment="Top" Width="80" Height="15" Background="#FFC5C5C5" FontWeight="Bold" FontSize="9"/>
         <TextBox x:Name="txtDonatos" HorizontalAlignment="Left" Height="195" Margin="63,118,0,0" TextWrapping="Wrap"  Text="BTC:  3DipZ4uwG4ZXEeYfik6JDMv6zgzw4vTwuJ&#xD;&#xA;Dash: XpqXZWWPqSj5WfuVJE3aiVSnAbcZLYd6CP&#xD;&#xA;GRLC: Gd7zf4ZsAZtcYNWmALJVMCpsj9MS5MJi2x&#xD;&#xA;XMR: 45XumvbTqLfVhhG63AAFHBYgbcSrPak3zAfJjFVnFrbeakkJmtSKTUF2fqnu7ia9tp5PGRUw4hKVwaEwpczvXu6H1CDw52H&#xD;&#xA;ETH: 0xa7c4cAC051e5c50DA870AE6385C0b5A94414B9e4           &#xD;&#xA;&#xD;&#xA;" VerticalAlignment="Top" Width="406" FontSize="14" Background="LightGray" FontWeight="Bold" Visibility="Hidden" />
         <Button x:Name="btnCloseDonate"  Content="Close" Click="btnCloseDonate_Click"  HorizontalAlignment="Left" Margin="215,266,0,0" VerticalAlignment="Top" Width="80" Height="39" Background="#FFC5C5C5" FontWeight="Bold" FontSize="16" Visibility="Hidden"/>
+        <TextBlock x:Name="txtl" HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="20" Width="70" Text="-L:"/>
+        <TextBox x:Name="txtlbox" HorizontalAlignment="Left" Height="23" Margin="108,186,0,0" TextWrapping="Wrap" Text="{Binding l}" VerticalAlignment="Top" Width="55" FontSize="16" PreviewTextInput="NumberValidationTextBox"/>
         <TextBlock x:Name="txtwait" HorizontalAlignment="Left" Margin="139,294,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" Visibility="Hidden"><Run Text="Downloading..."/></TextBlock>
         <TextBlock x:Name="txtChoose" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FFD1D1D1" Foreground="Black" Height="350" Width="525" TextAlignment="Center" FontSize="36"><Run/><LineBreak/><Run Text="Which GPU do you have?"/></TextBlock>
         <Button x:Name="btnNvidia"  Content="NVIDIA" Click="btnNvidia_Click" Margin="86,223,270,0" VerticalAlignment="Top" Height="82" Background="#FFC5C5C5" FontSize="36" Visibility="Visible" FontWeight="Bold"/>
         <Button x:Name="btnAMD"  Content="AMD" Click="btnAMD_Click"  HorizontalAlignment="Left" Margin="270,223,0,0" VerticalAlignment="Top" Width="169" Height="82" Background="#FFC5C5C5" FontWeight="Bold" FontSize="36" Visibility="Visible"/>
-
+        
     </Grid>
 </Window>

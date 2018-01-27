@@ -36,6 +36,7 @@ namespace MisasMinerSetup
         private int _i;
         public int i { get { return _i; } set { _i = value; inCalc.Text = value.ToString(); } } //Intensity
         public int n { get; set; }          //nFactor
+        public string l { get; set; }          //-l for nvidia
         public bool fileCheck { get; set; } //Boolean for checking if sgminer.exe/ccminer.exe exists
         public string appPath;              // Current application path
         private string _selectedPool;
@@ -50,12 +51,16 @@ namespace MisasMinerSetup
             DataContext = this;
             i = 15; //Default intensity
             n = 11; //Default nFactor
+            l = "Auto";
             txtDonatos.IsReadOnly = true;                //Donation box
             pool = Properties.Settings.Default.Pool;     //Loading saved custom pool address
             wallet = Properties.Settings.Default.Wallet; //Loading saved wallet address
             i = Properties.Settings.Default.Inten;       //Loading saved intensity
             n = Properties.Settings.Default.nFac;        //Loading saved nFactor
-                                         //Calling checkingfiles to check if I am in the right folder with sgminer
+            if (l != "Auto")
+            {
+                l = Properties.Settings.Default.l;
+            }
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -86,6 +91,8 @@ namespace MisasMinerSetup
             btnAMD.Visibility = System.Windows.Visibility.Hidden;
             btnNvidia.Visibility = System.Windows.Visibility.Hidden;
             txtChoose.Visibility = System.Windows.Visibility.Hidden;
+            txtl.Visibility = System.Windows.Visibility.Hidden;
+            txtlbox.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
         }
 
@@ -94,7 +101,8 @@ namespace MisasMinerSetup
             Properties.Settings.Default.Pool = pool;
             Properties.Settings.Default.Wallet = wallet;
             Properties.Settings.Default.Inten = i;
-            Properties.Settings.Default.nFac =n;
+            Properties.Settings.Default.nFac = n;
+            Properties.Settings.Default.l = l;
             Properties.Settings.Default.Save();  
             Close();
         }
@@ -128,11 +136,11 @@ namespace MisasMinerSetup
             string strFac = n.ToString();                   //Storing nFactor
             if (gpuChoice == 1)
             {
-                strArg = "sgminer --algorithm scrypt-n --nfactor " + n + " -o " + strPool + " -u " + strWallet + " -p x -I " + strInt; //Constructing final string to run
+                strArg = "sgminer --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " -p x -I " + strInt; //Constructing final string to run
             }
             else if (gpuChoice == 0)
             {
-                strArg = "ccminer-x64 --algo=scrypt:10 -l auto -o " + strPool + " -u " + strWallet + " --lookup-gap=2 --max-temp=85 "; //Constructing final string to run
+                strArg = "ccminer-x64 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " --lookup-gap=2 --max-temp=85 "; //Constructing final string to run
             }
             Process cmd = new Process();
             //Opening cmd with given arguments
