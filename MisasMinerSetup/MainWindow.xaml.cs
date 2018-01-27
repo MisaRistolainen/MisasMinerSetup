@@ -29,16 +29,18 @@ namespace MisasMinerSetup
     public partial class MainWindow : Window
     {
         private WebClient webClient = null;
+        private int gpuChoice = 2;
         public string visi { get; set; }    //Visibility on "Miner not found"
         public string pool { get; set; }    //Custom pool
         public string wallet { get; set; }  //Wallet address
         private int _i;
         public int i { get { return _i; } set { _i = value; inCalc.Text = value.ToString(); } } //Intensity
         public int n { get; set; }          //nFactor
-        public bool fileCheck { get; set; } //Boolean for checking if sgminer.exe exists
+        public bool fileCheck { get; set; } //Boolean for checking if sgminer.exe/ccminer.exe exists
         public string appPath;              // Current application path
         private string _selectedPool;
         public string selectedPool { get { return _selectedPool; } set   { _selectedPool = value; checkCustomPool();}  } //Selected pool from the list
+        public string strArg; //Storing arguments
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         public MainWindow()
@@ -53,7 +55,7 @@ namespace MisasMinerSetup
             wallet = Properties.Settings.Default.Wallet; //Loading saved wallet address
             i = Properties.Settings.Default.Inten;       //Loading saved intensity
             n = Properties.Settings.Default.nFac;        //Loading saved nFactor
-            checkingFiles();                             //Calling checkingfiles to check if I am in the right folder with sgminer
+                                         //Calling checkingfiles to check if I am in the right folder with sgminer
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -61,6 +63,30 @@ namespace MisasMinerSetup
         {
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
+        }
+
+        private void btnNvidia_Click(object sender, RoutedEventArgs e) //
+        {
+            gpuChoice = 0;
+            btnAMD.Visibility = System.Windows.Visibility.Hidden;
+            btnNvidia.Visibility = System.Windows.Visibility.Hidden;
+            txtChoose.Visibility = System.Windows.Visibility.Hidden;
+            checkingFiles();
+            sldrIntensity.Visibility = System.Windows.Visibility.Hidden;
+            txtn.Visibility = System.Windows.Visibility.Hidden;
+            txtIntensity.Visibility = System.Windows.Visibility.Hidden;
+            txtnFactor.Visibility = System.Windows.Visibility.Hidden;
+            txtTouch.Visibility = System.Windows.Visibility.Hidden;
+            inCalc.Visibility = System.Windows.Visibility.Hidden;
+        }
+
+        private void btnAMD_Click(object sender, RoutedEventArgs e) //
+        {
+            gpuChoice = 1;
+            btnAMD.Visibility = System.Windows.Visibility.Hidden;
+            btnNvidia.Visibility = System.Windows.Visibility.Hidden;
+            txtChoose.Visibility = System.Windows.Visibility.Hidden;
+            checkingFiles();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) //X-button
@@ -100,11 +126,19 @@ namespace MisasMinerSetup
             string strWallet = wallet;                      //Storing wallet
             string strInt = i.ToString();                   //Storing intensity
             string strFac = n.ToString();                   //Storing nFactor
-            string strArg = "sgminer --algorithm scrypt-n --nfactor " + n +" -o " + strPool + " -u " + strWallet + " -p x -I " + strInt; //Constructing final string to run
+            if (gpuChoice == 1)
+            {
+                strArg = "sgminer --algorithm scrypt-n --nfactor " + n + " -o " + strPool + " -u " + strWallet + " -p x -I " + strInt; //Constructing final string to run
+            }
+            else if (gpuChoice == 0)
+            {
+                strArg = "ccminer-x64 --algo=scrypt:10 -l auto -o " + strPool + " -u " + strWallet + " --lookup-gap=2 --max-temp=70 "; //Constructing final string to run
+            }
             Process cmd = new Process();
             //Opening cmd with given arguments
             cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.Arguments = "/K cd " + appPath + " && color 02 && setx GPU_MAX_HEAP_SIZE 100 && setx GPU_MAX_SINGLE_ALLOC_PERCENT 100 && setx GPU_MAX_ALLOC_PERCENT 100 && setx GPU_USE_SYNC_OBJECTS 1 && " + strArg;
+            MessageBox.Show(strArg);
+            cmd.StartInfo.Arguments = "/K cd " + appPath + " && color 02 && setx GPU_MAX_HEAP_SIZE 100 && setx GPU_MAX_SINGLE_ALLOC_PERCENT 100 && setx GPU_MAX_ALLOC_PERCENT 100 && setx GPU_USE_SYNC_OBJECTS 1 && " + strArg + "&& pause";
             cmd.Start();
         }
 
@@ -118,7 +152,14 @@ namespace MisasMinerSetup
 
             webClient = new WebClient();
             webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
-            webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/sgminer-5.5.5.zip"), appPath + "\\sg.zip"); //Downloading sgminer
+            if(gpuChoice == 1)
+            { 
+                webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/sgminer-5.5.5.zip"), appPath + "\\sg.zip"); //Downloading sgminer
+            }
+            else if (gpuChoice == 0)
+            {
+                webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/ccminer.zip"), appPath + "\\cc.zip"); //Downloading ccminer
+            }
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -140,20 +181,33 @@ namespace MisasMinerSetup
 
         private void checkingFiles() //Checking if I am in the right folder with sgminer
         {
-
-            appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString(); //Storing current path
-            fileCheck = File.Exists(appPath + "\\sgminer.exe");                                                               //Checking if sgminer exists
-            if (fileCheck == true)
+            if (gpuChoice != 2)
             {
-                txtFileCheck.Text = "Miner found✔";
-                visi = "Hidden";
-                btnStart.IsEnabled = true;
-            }
-            else
-            {
-                txtFileCheck.Text = "";
-                visi = "Visible";
-                btnStart.IsEnabled = false;
+                
+                appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString(); //Storing current path
+                if (gpuChoice == 1)
+                {
+                    fileCheck = File.Exists(appPath + "\\sgminer.exe");                                                               //Checking if sgminer exists
+                }
+                else if (gpuChoice == 0)
+                {
+                    fileCheck = File.Exists(appPath + "\\ccminer-x64.exe");                                                               //Checking if sgminer exists
+                }
+                if (fileCheck == true)
+                {
+                    txtFileCheck.Text = "Miner found✔";
+                    visi = "Hidden";
+                    txtninstall.Visibility = System.Windows.Visibility.Hidden;
+                    txtninstall2.Visibility = System.Windows.Visibility.Hidden;
+                    btnInstall.Visibility = System.Windows.Visibility.Hidden;
+                    btnStart.IsEnabled = true;
+                }
+                else
+                {
+                    txtFileCheck.Text = "";
+                    visi = "Visible";
+                    btnStart.IsEnabled = false;
+                }
             }
         }
 
@@ -163,12 +217,22 @@ namespace MisasMinerSetup
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private void unZip() //Unzipping sgminer and moving MisasMinerSetup.exe to the new folder
+        private void unZip() //Unzipping sgminer or ccminer and moving MisasMinerSetup.exe to the new folder
         {
-            string zipPath = appPath + "\\sg.zip";
-            string extractPath = appPath + "\\MisasMinerSetup";
-            ZipFile.ExtractToDirectory(zipPath, extractPath);                                                   //Extracting sg.zip into new folder called MisasMinerSetup
-            File.Delete(appPath + "\\sg.zip");                                                                  //Delete old zipfile
+            if (gpuChoice == 1)
+            {
+                string zipPath = appPath + "\\sg.zip";
+                string extractPath = appPath + "\\MisasMinerSetup";
+                ZipFile.ExtractToDirectory(zipPath, extractPath);                                                   //Extracting sg.zip into new folder called MisasMinerSetup
+                File.Delete(appPath + "\\sg.zip");                                                                  //Delete old zipfile
+            }
+            else if (gpuChoice == 0)
+            {
+                string zipPath = appPath + "\\cc.zip";
+                string extractPath = appPath + "\\MisasMinerSetup";
+                ZipFile.ExtractToDirectory(zipPath, extractPath);                                                   //Extracting cc.zip into new folder called MisasMinerSetup
+                File.Delete(appPath + "\\cc.zip");                                                                  //Delete old zipfile
+            }
             File.Move(appPath + "\\MisasMinerSetup.exe", appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");   //Move MisasMinerSetup.exe to the new folder
             MessageBox.Show("Download completed! You will now find me inside the folder \"MisasMinerSetup\"."); //Hooray!
             Close();                                                                                            //Close application for restart from the new location
