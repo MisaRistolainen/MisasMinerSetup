@@ -40,12 +40,12 @@
             <ComboBoxItem>garlicbois.com:3333</ComboBoxItem>
             <ComboBoxItem>Custom</ComboBoxItem>
         </ComboBox>
-        <ComboBox x:Name="comboGap" HorizontalAlignment="Left" Margin="469,162,0,0" VerticalAlignment="Top" Width="39" SelectedValue="{Binding selectedgap}" RenderTransformOrigin="0.462,0.727" SelectedValuePath="Content">
+        <ComboBox x:Name="comboGap" HorizontalAlignment="Left" Margin="469,162,0,0" VerticalAlignment="Top" Width="39" SelectedValue="{Binding selectedgap}" RenderTransformOrigin="0.462,0.727" SelectedValuePath="Content" ToolTip="1-Good for older gpu (700 series and lower) 2-Good for newer gpu (900 and 1000 up to 1070Ti) 3-Good for 1080 and 1080Ti">
             <ComboBoxItem>1</ComboBoxItem>
             <ComboBoxItem>2</ComboBoxItem>
             <ComboBoxItem>3</ComboBoxItem>
         </ComboBox>
-        <TextBlock x:Name="txtLook" HorizontalAlignment="Left" Margin="354,161,0,0" TextWrapping="Wrap" Text="--lookup-gap=" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
+        <TextBlock x:Name="txtLook" HorizontalAlignment="Left" Margin="354,161,0,0" TextWrapping="Wrap" Text="--lookup-gap=" VerticalAlignment="Top" Foreground="White" FontSize="16" ToolTip="1-Good for older gpu (700 series and lower) 2-Good for newer gpu (900 and 1000 up to 1070Ti) 3-Good for 1080 and 1080Ti"/>
         <TextBlock x:Name="txtnFactor" HorizontalAlignment="Left" Margin="10,155,0,0" TextWrapping="Wrap" Text="nFactor:" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
         <TextBox x:Name="txtn" HorizontalAlignment="Left" Height="23" Margin="108,159,0,0" TextWrapping="Wrap" Text="{Binding n}" VerticalAlignment="Top" Width="55" FontSize="16" PreviewTextInput="NumberValidationTextBox"/>
         <TextBlock x:Name="txtTouch" HorizontalAlignment="Left" Margin="168,161,0,0" TextWrapping="Wrap" Text="Don't touch if unsure." VerticalAlignment="Top" Foreground="White" FontSize="16"/>

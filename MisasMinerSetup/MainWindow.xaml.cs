@@ -117,6 +117,8 @@ namespace MisasMinerSetup
             txtlbox.Visibility = System.Windows.Visibility.Hidden;
             txbxtemp.Visibility = System.Windows.Visibility.Hidden;
             txttemp.Visibility = System.Windows.Visibility.Hidden;
+            comboGap.Visibility = System.Windows.Visibility.Hidden;
+            txtLook.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
         }
 
