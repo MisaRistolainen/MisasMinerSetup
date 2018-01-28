@@ -4,7 +4,7 @@ FOR AMD OR NVIDIA GPUs!
 This is a simple setup program to start mining.
 It currently has advanced settings and it might/will be buggy
 
-Donwload .EXE file from here: http://139.59.147.231/some/MisasMinerSetup.exe
+Download .EXE file from releases.
 
 I have heard that it gives false positive trojan virus alerts probably due to the fact that it downloads sgminer if needed.
 Currently trying to fix that but if you don't trust me, build the file yourself from the source files.
