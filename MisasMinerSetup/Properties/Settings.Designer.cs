@@ -142,5 +142,29 @@ namespace MisasMinerSetup.Properties {
                 this["temp"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public string selectedgap {
+            get {
+                return ((string)(this["selectedgap"]));
+            }
+            set {
+                this["selectedgap"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string selectedPool {
+            get {
+                return ((string)(this["selectedPool"]));
+            }
+            set {
+                this["selectedPool"] = value;
+            }
+        }
     }
 }

@@ -32,5 +32,11 @@
     <Setting Name="temp" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">85</Value>
     </Setting>
+    <Setting Name="selectedgap" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="selectedPool" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

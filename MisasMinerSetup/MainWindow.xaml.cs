@@ -49,6 +49,7 @@ namespace MisasMinerSetup
         public string strlookup;
         private string _selectedPool;
         public string selectedPool { get { return _selectedPool; } set   { _selectedPool = value; checkCustomPool();}  } //Selected pool from the list
+        public string selectedgap { get; set; }
         public string strArg; //Storing arguments
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,6 +77,8 @@ namespace MisasMinerSetup
             setx4 = Properties.Settings.Default.setx4;
             setx5 = Properties.Settings.Default.setx5;
             temp = Properties.Settings.Default.temp;
+            selectedgap = Properties.Settings.Default.selectedgap;
+            selectedPool = Properties.Settings.Default.selectedPool;
             if (l != "Auto")
             {
                 l = Properties.Settings.Default.l;
@@ -179,13 +182,17 @@ namespace MisasMinerSetup
             string strWallet = wallet;                      //Storing wallet
             string strInt = i.ToString();                   //Storing intensity
             string strFac = n.ToString();                   //Storing nFactor
-            if (intcheckLook == 1)
+            if (selectedgap == "1")
+            {
+                strlookup = "--lookup-gap=1";
+            }
+            else if (selectedgap == "2")
             {
                 strlookup = "--lookup-gap=2";
             }
-            if (intcheckLook == 0)
+            else if (selectedgap == "3")
             {
-                strlookup = "";
+                strlookup = "--lookup-gap=3";
             }
             if (gpuChoice == 1)
             {
@@ -244,6 +251,8 @@ namespace MisasMinerSetup
             Properties.Settings.Default.setx4 = setx4;
             Properties.Settings.Default.setx5 = setx5;
             Properties.Settings.Default.temp = temp;
+            Properties.Settings.Default.selectedgap = selectedgap;
+            Properties.Settings.Default.selectedPool = selectedPool;
             Properties.Settings.Default.Save();  
         }
 
