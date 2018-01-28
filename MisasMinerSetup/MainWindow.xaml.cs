@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -18,6 +19,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace MisasMinerSetup
 {
@@ -43,6 +47,8 @@ namespace MisasMinerSetup
         public int setx4 { get; set; }
         public int setx5 { get; set; }
         public int temp { get; set; }
+        private double _balance;
+        public double balance { get { return _balance; } set { _balance = value; txtBal2.Text = balance.ToString(); } }
         public bool fileCheck { get; set; } //Boolean for checking if sgminer.exe/ccminer.exe exists
         public string appPath;              // Current application path
         public int intcheckLook;
@@ -51,8 +57,11 @@ namespace MisasMinerSetup
         public string selectedPool { get { return _selectedPool; } set   { _selectedPool = value; checkCustomPool();}  } //Selected pool from the list
         public string selectedgap { get; set; }
         public string strArg; //Storing arguments
+        public string hoverText { get; set; }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -83,6 +92,25 @@ namespace MisasMinerSetup
             {
                 l = Properties.Settings.Default.l;
             }
+            checkBalance();
+            System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
+            ni.Icon = MisasMinerSetup.Properties.Resources.Myicon;
+            ni.Visible = true;
+            hoverText = "Balance: " + balance + "GRLC";
+            ni.Text = hoverText;
+            ni.DoubleClick +=
+                delegate(object sender, EventArgs args)
+                {
+                    this.Show();
+                    this.WindowState = WindowState.Normal;
+                };
+        }
+        protected override void OnStateChanged(EventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
+                this.Hide();
+
+            base.OnStateChanged(e);
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -128,6 +156,12 @@ namespace MisasMinerSetup
             saveConf();
             Close();
         }
+        private void MiniButton_Click(object sender, RoutedEventArgs e) //X-button
+        {
+
+            saveConf();
+            this.Hide();
+        }
 
         private void btnDonate_Click(object sender, RoutedEventArgs e) //Show wallet addresses for donations
         {
@@ -159,13 +193,9 @@ namespace MisasMinerSetup
             btnsetxSave.Visibility = System.Windows.Visibility.Hidden;
         }
         
-            private void checkLook_Checked(object sender, RoutedEventArgs e)
-        {
-            intcheckLook = 1;
-        }
-            private void checkLook_Unchecked(object sender, RoutedEventArgs e)
+            private void Refresh_Click(object sender, RoutedEventArgs e)
             {
-                intcheckLook = 0;
+                checkBalance();
             }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void StartButton_Click(object sender, RoutedEventArgs e) //"RIP GPU" button which starts cmd
@@ -204,13 +234,17 @@ namespace MisasMinerSetup
             {
                 strArg = "ccminer-x64 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " --max-temp=" + temp + " "; //Constructing final string to run
             }
+
+
             Process cmd = new Process();
             //Opening cmd with given arguments
             cmd.StartInfo.FileName = "cmd.exe";
-            MessageBox.Show(strArg);
             cmd.StartInfo.Arguments = "/K cd " + appPath + " && color 02 && setx GPU_MAX_HEAP_SIZE " + setx2 + " && setx GPU_MAX_SINGLE_ALLOC_PERCENT " + setx3 + " && setx GPU_MAX_ALLOC_PERCENT " + setx4 + " && setx GPU_USE_SYNC_OBJECTS " + setx5 + " && " + strArg + "&& pause";
             cmd.Start();
+
         }
+
+       
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void btnDownload_Click(object sender, EventArgs e) //Install button
         {
@@ -258,6 +292,15 @@ namespace MisasMinerSetup
             Properties.Settings.Default.Save();  
         }
 
+        private void checkBalance()
+        {
+            if (wallet != "")
+            {
+                WebClient client = new WebClient();
+                string downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
+                balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
+            }
+        }
 
         private void checkCustomPool() //Checking if Custom is selected on pool and opening/closing textbox for custom pool
         {
@@ -321,7 +364,7 @@ namespace MisasMinerSetup
                 File.Delete(appPath + "\\cc.zip");                                                                  //Delete old zipfile
             }
             File.Move(appPath + "\\MisasMinerSetup.exe", appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");   //Move MisasMinerSetup.exe to the new folder
-            MessageBox.Show("Download completed! You will now find me inside the folder \"MisasMinerSetup\"."); //Hooray!
+            System.Windows.MessageBox.Show("Download completed! You will now find me inside the folder \"MisasMinerSetup\"."); //Hooray!
             Close();                                                                                            //Close application for restart from the new location
             Process.Start(appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");                                  //Restart
         }
