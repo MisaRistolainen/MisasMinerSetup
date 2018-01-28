@@ -26,6 +26,7 @@ After selecting/writing in you settings, press "RIP GPU" and it will launch a cm
 Settings are saved after shutdown so there is no need to copy paste your wallet everytime you restart.
 
 Miisu#5852 on Discord
+Armpitzz on Reddit
 
 PS. Someone asked so I'm gonna write this here. I get nothing when you use this. There are no hidden things that give me some % of what you mine. 
 
