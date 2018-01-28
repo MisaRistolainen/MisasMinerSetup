@@ -49,7 +49,7 @@ namespace MisasMinerSetup.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
         public int Inten {
             get {
                 return ((int)(this["Inten"]));
@@ -61,7 +61,7 @@ namespace MisasMinerSetup.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("11")]
         public int nFac {
             get {
                 return ((int)(this["nFac"]));
@@ -80,6 +80,66 @@ namespace MisasMinerSetup.Properties {
             }
             set {
                 this["l"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int setx2 {
+            get {
+                return ((int)(this["setx2"]));
+            }
+            set {
+                this["setx2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int setx3 {
+            get {
+                return ((int)(this["setx3"]));
+            }
+            set {
+                this["setx3"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int setx4 {
+            get {
+                return ((int)(this["setx4"]));
+            }
+            set {
+                this["setx4"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int setx5 {
+            get {
+                return ((int)(this["setx5"]));
+            }
+            set {
+                this["setx5"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("85")]
+        public int temp {
+            get {
+                return ((int)(this["temp"]));
+            }
+            set {
+                this["temp"] = value;
             }
         }
     }

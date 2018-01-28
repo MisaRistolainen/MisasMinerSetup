@@ -9,13 +9,28 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Inten" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">15</Value>
     </Setting>
     <Setting Name="nFac" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">11</Value>
     </Setting>
     <Setting Name="l" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="setx2" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="setx3" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="setx4" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="setx5" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="temp" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">85</Value>
     </Setting>
   </Settings>
 </SettingsFile>

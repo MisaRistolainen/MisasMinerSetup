@@ -37,8 +37,16 @@ namespace MisasMinerSetup
         public int i { get { return _i; } set { _i = value; inCalc.Text = value.ToString(); } } //Intensity
         public int n { get; set; }          //nFactor
         public string l { get; set; }          //-l for nvidia
+        public int setx1 { get; set; }
+        public int setx2 { get; set; }
+        public int setx3 { get; set; }
+        public int setx4 { get; set; }
+        public int setx5 { get; set; }
+        public int temp { get; set; }
         public bool fileCheck { get; set; } //Boolean for checking if sgminer.exe/ccminer.exe exists
         public string appPath;              // Current application path
+        public int intcheckLook;
+        public string strlookup;
         private string _selectedPool;
         public string selectedPool { get { return _selectedPool; } set   { _selectedPool = value; checkCustomPool();}  } //Selected pool from the list
         public string strArg; //Storing arguments
@@ -51,12 +59,23 @@ namespace MisasMinerSetup
             DataContext = this;
             i = 15; //Default intensity
             n = 11; //Default nFactor
+            temp = 85; //Default maxtemp
+            setx1 = 0;
+            setx2 = 100;
+            setx3 = 100;
+            setx4 = 100;
+            setx5 = 1;
             l = "Auto";
             txtDonatos.IsReadOnly = true;                //Donation box
             pool = Properties.Settings.Default.Pool;     //Loading saved custom pool address
             wallet = Properties.Settings.Default.Wallet; //Loading saved wallet address
             i = Properties.Settings.Default.Inten;       //Loading saved intensity
             n = Properties.Settings.Default.nFac;        //Loading saved nFactor
+            setx2 = Properties.Settings.Default.setx2;
+            setx3 = Properties.Settings.Default.setx3;
+            setx4 = Properties.Settings.Default.setx4;
+            setx5 = Properties.Settings.Default.setx5;
+            temp = Properties.Settings.Default.temp;
             if (l != "Auto")
             {
                 l = Properties.Settings.Default.l;
@@ -93,17 +112,15 @@ namespace MisasMinerSetup
             txtChoose.Visibility = System.Windows.Visibility.Hidden;
             txtl.Visibility = System.Windows.Visibility.Hidden;
             txtlbox.Visibility = System.Windows.Visibility.Hidden;
+            txbxtemp.Visibility = System.Windows.Visibility.Hidden;
+            txttemp.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) //X-button
         {
-            Properties.Settings.Default.Pool = pool;
-            Properties.Settings.Default.Wallet = wallet;
-            Properties.Settings.Default.Inten = i;
-            Properties.Settings.Default.nFac = n;
-            Properties.Settings.Default.l = l;
-            Properties.Settings.Default.Save();  
+
+            saveConf();
             Close();
         }
 
@@ -118,9 +135,37 @@ namespace MisasMinerSetup
             txtDonatos.Visibility = System.Windows.Visibility.Hidden;
             btnCloseDonate.Visibility = System.Windows.Visibility.Hidden;
         }
-
+        private void btnsetx_Click(object sender, RoutedEventArgs e)
+        {
+            txtsetx.Visibility = System.Windows.Visibility.Visible;
+            txtsetx2.Visibility = System.Windows.Visibility.Visible;
+            txtsetx3.Visibility = System.Windows.Visibility.Visible;
+            txtsetx4.Visibility = System.Windows.Visibility.Visible;
+            txtsetx5.Visibility = System.Windows.Visibility.Visible;
+            btnsetxSave.Visibility = System.Windows.Visibility.Visible;
+        }
+        private void btnsetxSave_Click(object sender, RoutedEventArgs e)
+        {
+            txtsetx.Visibility = System.Windows.Visibility.Hidden;
+            txtsetx2.Visibility = System.Windows.Visibility.Hidden;
+            txtsetx3.Visibility = System.Windows.Visibility.Hidden;
+            txtsetx4.Visibility = System.Windows.Visibility.Hidden;
+            txtsetx5.Visibility = System.Windows.Visibility.Hidden;
+            btnsetxSave.Visibility = System.Windows.Visibility.Hidden;
+        }
+        
+            private void checkLook_Checked(object sender, RoutedEventArgs e)
+        {
+            intcheckLook = 1;
+        }
+            private void checkLook_Unchecked(object sender, RoutedEventArgs e)
+            {
+                intcheckLook = 0;
+            }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void StartButton_Click(object sender, RoutedEventArgs e) //"RIP GPU" button which starts cmd
         {
+            saveConf();
             string strPool;
             if (selectedPool == "Custom")
             {
@@ -134,22 +179,30 @@ namespace MisasMinerSetup
             string strWallet = wallet;                      //Storing wallet
             string strInt = i.ToString();                   //Storing intensity
             string strFac = n.ToString();                   //Storing nFactor
+            if (intcheckLook == 1)
+            {
+                strlookup = "--lookup-gap=2";
+            }
+            if (intcheckLook == 0)
+            {
+                strlookup = "";
+            }
             if (gpuChoice == 1)
             {
                 strArg = "sgminer --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " -p x -I " + strInt; //Constructing final string to run
             }
             else if (gpuChoice == 0)
             {
-                strArg = "ccminer-x64 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " --lookup-gap=2 --max-temp=85 "; //Constructing final string to run
+                strArg = "ccminer-x64 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " --max-temp=" + temp + " "; //Constructing final string to run
             }
             Process cmd = new Process();
             //Opening cmd with given arguments
             cmd.StartInfo.FileName = "cmd.exe";
             MessageBox.Show(strArg);
-            cmd.StartInfo.Arguments = "/K cd " + appPath + " && color 02 && setx GPU_MAX_HEAP_SIZE 100 && setx GPU_MAX_SINGLE_ALLOC_PERCENT 100 && setx GPU_MAX_ALLOC_PERCENT 100 && setx GPU_USE_SYNC_OBJECTS 1 && " + strArg + "&& pause";
+            cmd.StartInfo.Arguments = "/K cd " + appPath + " && color 02 && setx GPU_MAX_HEAP_SIZE " + setx2 + " && setx GPU_MAX_SINGLE_ALLOC_PERCENT " + setx3 + " && setx GPU_MAX_ALLOC_PERCENT " + setx4 + " && setx GPU_USE_SYNC_OBJECTS " + setx5 + " && " + strArg + "&& pause";
             cmd.Start();
         }
-
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void btnDownload_Click(object sender, EventArgs e) //Install button
         {
             txtwait.Visibility = System.Windows.Visibility.Visible; //Show "Downloading..." text
@@ -179,6 +232,21 @@ namespace MisasMinerSetup
             txtwait.Visibility = System.Windows.Visibility.Hidden; //Hide "Downloading..." text
             
         }
+        private void saveConf()
+        {
+            Properties.Settings.Default.Pool = pool;
+            Properties.Settings.Default.Wallet = wallet;
+            Properties.Settings.Default.Inten = i;
+            Properties.Settings.Default.nFac = n;
+            Properties.Settings.Default.l = l;
+            Properties.Settings.Default.setx2 = setx2;
+            Properties.Settings.Default.setx3 = setx3;
+            Properties.Settings.Default.setx4 = setx4;
+            Properties.Settings.Default.setx5 = setx5;
+            Properties.Settings.Default.temp = temp;
+            Properties.Settings.Default.Save();  
+        }
+
 
         private void checkCustomPool() //Checking if Custom is selected on pool and opening/closing textbox for custom pool
         {
@@ -246,6 +314,12 @@ namespace MisasMinerSetup
             Close();                                                                                            //Close application for restart from the new location
             Process.Start(appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");                                  //Restart
         }
+
+
+
+
+
+
 
 
 
