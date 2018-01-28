@@ -10,7 +10,7 @@
         <Grid.ColumnDefinitions>
 
         </Grid.ColumnDefinitions>
-                <Button Content="_" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="489,0,0,0" VerticalAlignment="Top" BorderThickness="0" RenderTransformOrigin="0.5,0.5" Background="#FF898989" Click="MiniButton_Click" FontWeight="Bold" Width="18" Height="21" >
+        <Button Content="_" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="489,0,0,0" VerticalAlignment="Top" BorderThickness="0" RenderTransformOrigin="0.5,0.5" Background="#FF898989" Click="MiniButton_Click" FontWeight="Bold" Width="18" Height="21" >
             <Button.Effect>
                 <DropShadowEffect Opacity="0.5"/>
             </Button.Effect>
@@ -74,9 +74,9 @@
         <Button x:Name="btnsetx" Content="SETX" Click="btnsetx_Click" HorizontalAlignment="Left" Margin="424,94,0,0" VerticalAlignment="Top" Width="81" Height="24" Background="#FFB2B2B2" Visibility="{Binding visi}" FontWeight="Bold" FontSize="16"/>
         <Button x:Name="btnCloseDonate"  Content="Close" Click="btnCloseDonate_Click"  HorizontalAlignment="Left" Margin="215,266,0,0" VerticalAlignment="Top" Width="80" Height="39" Background="#FFC5C5C5" FontWeight="Bold" FontSize="16" Visibility="Hidden"/>
         <TextBlock x:Name="txtwait" HorizontalAlignment="Left" Margin="139,294,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" Visibility="Hidden"><Run Text="Downloading..."/></TextBlock>
-        <TextBlock x:Name="txtChoose" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FFD1D1D1" Foreground="Black" Height="350" Width="525" TextAlignment="Center" FontSize="36" Margin="608,0,-608,0"><Run/><LineBreak/><Run Text="Which GPU do you have?"/></TextBlock>
-        <Button x:Name="btnNvidia"  Content="NVIDIA" Click="btnNvidia_Click" Margin="694,223,-338,0" VerticalAlignment="Top" Height="82" Background="#FFC5C5C5" FontSize="36" FontWeight="Bold"/>
-        <Button x:Name="btnAMD"  Content="AMD" Click="btnAMD_Click"  HorizontalAlignment="Left" Margin="878,223,-522,0" VerticalAlignment="Top" Width="169" Height="82" Background="#FFC5C5C5" FontWeight="Bold" FontSize="36"/>
+        <TextBlock x:Name="txtChoose" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FFD1D1D1" Foreground="Black" Height="350" Width="525" TextAlignment="Center" FontSize="36"><Run/><LineBreak/><Run Text="Which GPU do you have?"/></TextBlock>
+        <Button x:Name="btnNvidia"  Content="NVIDIA" Click="btnNvidia_Click" Margin="86,223,270,0" VerticalAlignment="Top" Height="82" Background="#FFC5C5C5" FontSize="36" FontWeight="Bold"/>
+        <Button x:Name="btnAMD"  Content="AMD" Click="btnAMD_Click"  HorizontalAlignment="Left" Margin="270,223,0,0" VerticalAlignment="Top" Width="169" Height="82" Background="#FFC5C5C5" FontWeight="Bold" FontSize="36"/>
         <TextBlock x:Name="txtsetx" HorizontalAlignment="Left" Margin="126,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FFEAEAEA" Height="189" Width="313" LineHeight="22" Visibility="Hidden"><Run FontWeight="Bold" FontSize="14"/><LineBreak/><Run FontWeight="Bold" FontSize="14" Text="GPU_MAX_HEAP_SIZE"/><LineBreak/><Run FontWeight="Bold" FontSize="14" Text="GPU_MAX_SINGLE_ALLOC_PERCENT"/><LineBreak/><Run FontWeight="Bold" FontSize="14" Text="GPU_MAX_ALLOC_PERCENT"/><LineBreak/><Run FontWeight="Bold" FontSize="14" Text="GPU_USE_SYNC_OBJECTS"/></TextBlock>
         <TextBox x:Name="txtsetx2" HorizontalAlignment="Left" Height="22" Margin="369,94,0,0" TextWrapping="Wrap" Text="{Binding setx2}" VerticalAlignment="Top" Width="55" FontSize="16" PreviewTextInput="NumberValidationTextBox" Visibility="Hidden"/>
         <TextBox x:Name="txtsetx3" HorizontalAlignment="Left" Height="22" Margin="369,114,0,0" TextWrapping="Wrap" Text="{Binding setx3}" VerticalAlignment="Top" Width="55" FontSize="16" PreviewTextInput="NumberValidationTextBox" Visibility="Hidden"/>
