@@ -481,8 +481,8 @@ namespace MisasMinerSetup
             cmd2.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat";
             cmd2.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
             cmd2.Start();
-            Thread.Sleep(1000);
             string appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            System.Windows.MessageBox.Show("Press \"ok\"");
             string appdataPathGarli = appdataPath +"\\Garlicoin\\garlicoin.conf";
             File.Move(appPath + "\\MisasMinerSetup\\garlicoin.conf", appdataPathGarli);
             Thread.Sleep(500);
