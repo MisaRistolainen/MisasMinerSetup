@@ -5,7 +5,7 @@
 
     <Grid>
         <Grid.Background>
-            <ImageBrush ImageSource="BG.png"/>
+            <ImageBrush ImageSource="BG3.png"/>
         </Grid.Background>
         <Grid.ColumnDefinitions>
 
@@ -15,38 +15,38 @@
                 <DropShadowEffect Opacity="0.5"/>
             </Button.Effect>
         </Button>
-        <TextBlock x:Name="txtBal" HorizontalAlignment="Left" Margin="337,0,0,0" TextWrapping="Wrap" Text="Balance:" VerticalAlignment="Top" Height="18" Width="132" Background="#FF494949" Foreground="White"/>
+        <TextBlock x:Name="txtBal" HorizontalAlignment="Left" Margin="337,0,0,0" TextWrapping="Wrap" Text="Balance:" VerticalAlignment="Top" Height="18" Width="132" Background="#FF494949" Foreground="White" ToolTip="I'm a dumb program and I crash if you're wallet is not recognised on the network. Wait and try again later if that happens"/>
         <Button Content="x" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" Margin="507,0,0,0" VerticalAlignment="Top" BorderThickness="0" RenderTransformOrigin="0.5,0.5" Background="#FF898989" Click="CloseButton_Click" FontWeight="Bold" Width="18" Height="21" >
             <Button.Effect>
                 <DropShadowEffect Opacity="0.5"/>
             </Button.Effect>
         </Button>
-        <Button x:Name="btnRefresh" Content="" Click="Refresh_Click" HorizontalAlignment="Left" Margin="449,-1,0,0" VerticalAlignment="Top" Width="20" Height="20" BorderBrush="{x:Null}" Foreground="{x:Null}">
+        <Button x:Name="btnRefresh" Content="" Click="Refresh_Click" HorizontalAlignment="Left" Margin="449,-1,0,0" VerticalAlignment="Top" Width="20" Height="20" BorderBrush="{x:Null}" Foreground="{x:Null}" ToolTip="I'm a dumb program and I crash if you're wallet is not recognised on the network. Wait and try again later if that happens">
             <Button.Background>
                 <ImageBrush ImageSource="Refresh.png"/>
             </Button.Background>
         </Button>
-        <TextBox x:Name="txbxPool" HorizontalAlignment="Left" Height="22" Margin="315,63,0,0" TextWrapping="Wrap" Text="{Binding pool}" VerticalAlignment="Top" Width="200" FontSize="14" IsEnabled="False"/>
-        <TextBox x:Name="txbxWallet" HorizontalAlignment="Left" Height="24" Margin="108,94,0,0" TextWrapping="Wrap" Text="{Binding wallet}" VerticalAlignment="Top" Width="300" FontSize="14"/>
+        <TextBox x:Name="txbxPool" HorizontalAlignment="Left" Height="22" Margin="315,63,0,0" TextWrapping="Wrap" Text="{Binding pool}" VerticalAlignment="Top" Width="200" FontSize="14"/>
+        <TextBox x:Name="txbxWallet" HorizontalAlignment="Left" Height="24" Margin="108,94,0,0" TextWrapping="Wrap" Text="{Binding wallet}" VerticalAlignment="Top" Width="300" FontSize="14" ToolTip="Wallet address here."/>
         <TextBlock x:Name="txtPool" HorizontalAlignment="Left" Margin="10,58,0,0" TextWrapping="Wrap" Text="Pool:" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
         <TextBlock x:Name="txtWallet" HorizontalAlignment="Left" Margin="10,91,0,0" TextWrapping="Wrap" Text="Wallet:" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
-        <TextBlock x:Name="txtIntensity" HorizontalAlignment="Left" Margin="10,123,0,0" TextWrapping="Wrap" Text="Intensity:" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
-        <Slider x:Name="sldrIntensity" HorizontalAlignment="Left" Margin="108,132,0,0" VerticalAlignment="Top" Width="300" Maximum="30" Value="{Binding i}" SmallChange="1" AutoToolTipPlacement="TopLeft"/>
-        <TextBlock x:Name="txttemp" HorizontalAlignment="Left" Margin="354,191,0,0" TextWrapping="Wrap" Text="MaxTemp" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
-        <TextBox x:Name="txbxtemp" HorizontalAlignment="Left" Height="23" Margin="428,191,0,0" TextWrapping="Wrap" Text="{Binding temp}" VerticalAlignment="Top" Width="67" FontSize="16" PreviewTextInput="NumberValidationTextBox"/>
-        <Button x:Name="btnStart" Content="RIP GPU" Margin="379,247,30,30" Click="StartButton_Click" Background="#FFB2B2B2" BorderBrush="#FFA0A0A0" Foreground="Black" FontSize="24" FontWeight="Bold" IsEnabled="True"/>
+        <TextBlock x:Name="txtIntensity" HorizontalAlignment="Left" Margin="10,123,0,0" TextWrapping="Wrap" Text="Intensity:" VerticalAlignment="Top" Foreground="White" FontSize="20" ToolTip="Leave at default 15 if unsure."/>
+        <Slider x:Name="sldrIntensity" HorizontalAlignment="Left" Margin="108,132,0,0" VerticalAlignment="Top" Width="300" Maximum="30" Value="{Binding i}" SmallChange="1" AutoToolTipPlacement="TopLeft" ToolTip="Leave at default 15 if unsure."/>
+        <TextBlock x:Name="txttemp" HorizontalAlignment="Left" Margin="354,191,0,0" TextWrapping="Wrap" Text="MaxTemp" VerticalAlignment="Top" Foreground="White" FontSize="16" ToolTip="Maximum temperature"/>
+        <TextBox x:Name="txbxtemp" HorizontalAlignment="Left" Height="23" Margin="428,191,0,0" TextWrapping="Wrap" Text="{Binding temp}" VerticalAlignment="Top" Width="67" FontSize="16" PreviewTextInput="NumberValidationTextBox" ToolTip="Maximum temperature."/>
+        <Button x:Name="btnStart" Content="RIP GPU" Margin="379,247,30,30" Click="StartButton_Click" Background="#FFB2B2B2" BorderBrush="#FFA0A0A0" Foreground="Black" FontSize="24" FontWeight="Bold"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Misa's Miner Setup" VerticalAlignment="Top" FontSize="36" FontWeight="Bold" Foreground="#FFCBCBCB" Margin="10,0,0,0">
             <TextBlock.Effect>
                 <DropShadowEffect/>
             </TextBlock.Effect>
         </TextBlock>
 
-        <TextBlock x:Name="txtBal2" HorizontalAlignment="Left" Margin="381,0,0,0" TextWrapping="Wrap" Text="{Binding balance}" VerticalAlignment="Top" Height="18" Width="43" Foreground="White"/>
+        <TextBlock x:Name="txtBal2" HorizontalAlignment="Left" Margin="381,0,0,0" TextWrapping="Wrap" Text="{Binding balance}" VerticalAlignment="Top" Height="18" Width="43" Foreground="White" ToolTip="I'm a dumb program and I crash if you're wallet is not recognised on the network. Wait and try again later if that happens"/>
         <ComboBox x:Name="ComboBox1" HorizontalAlignment="Left" Margin="108,63,0,0" VerticalAlignment="Top" Width="170" SelectedValue="{Binding selectedPool}" SelectedValuePath="Content">
-            <ComboBoxItem>pool.grlc-bakery.fun:3333</ComboBoxItem>
+            <ComboBoxItem>happy.garlicoin.fun:3210</ComboBoxItem>
             <ComboBoxItem>us.pool.garlicsoup.xyz:3333</ComboBoxItem>
             <ComboBoxItem>stratum.garlicpool.org:3333</ComboBoxItem>
-            <ComboBoxItem>happy.garlicoin.fun:3210</ComboBoxItem>
+            <ComboBoxItem>pool.grlc-bakery.fun:3333</ComboBoxItem>
             <ComboBoxItem>garlicbois.com:3333</ComboBoxItem>
             <ComboBoxItem>Custom</ComboBoxItem>
         </ComboBox>
@@ -57,8 +57,8 @@
         </ComboBox>
 
         <TextBlock x:Name="txtLook" HorizontalAlignment="Left" Margin="354,161,0,0" TextWrapping="Wrap" Text="--lookup-gap=" VerticalAlignment="Top" Foreground="White" FontSize="16" ToolTip="1-Good for older gpu (700 series and lower) 2-Good for newer gpu (900 and 1000 up to 1070Ti) 3-Good for 1080 and 1080Ti"/>
-        <TextBlock x:Name="txtnFactor" HorizontalAlignment="Left" Margin="10,155,0,0" TextWrapping="Wrap" Text="nFactor:" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
-        <TextBox x:Name="txtn" HorizontalAlignment="Left" Height="23" Margin="108,159,0,0" TextWrapping="Wrap" Text="{Binding n}" VerticalAlignment="Top" Width="55" FontSize="16" PreviewTextInput="NumberValidationTextBox"/>
+        <TextBlock x:Name="txtnFactor" HorizontalAlignment="Left" Margin="10,155,0,0" TextWrapping="Wrap" Text="nFactor:" VerticalAlignment="Top" Foreground="White" FontSize="20" ToolTip="Leave at 11 if unsure."/>
+        <TextBox x:Name="txtn" HorizontalAlignment="Left" Height="23" Margin="108,159,0,0" TextWrapping="Wrap" Text="{Binding n}" VerticalAlignment="Top" Width="55" FontSize="16" PreviewTextInput="NumberValidationTextBox" ToolTip="Leave at 11 if unsure."/>
         <TextBlock x:Name="txtTouch" HorizontalAlignment="Left" Margin="168,161,0,0" TextWrapping="Wrap" Text="Don't touch if unsure." VerticalAlignment="Top" Foreground="White" FontSize="16"/>
         <TextBlock x:Name="inCalc" HorizontalAlignment="Left" Margin="424,128,0,0" TextWrapping="Wrap" Text="{Binding i}" VerticalAlignment="Top" Foreground="White" FontSize="20" Width="45"/>
         <TextBlock HorizontalAlignment="Left" Margin="0,331,0,0" TextWrapping="Wrap" Text="Currently only for Garlicoin" VerticalAlignment="Top" FontSize="14" Foreground="White"/>
@@ -67,8 +67,8 @@
         <TextBlock x:Name="txtninstall" HorizontalAlignment="Left" Margin="10,247,0,0" TextWrapping="Wrap" Text="Miner not found. Am I in the right folder?" VerticalAlignment="Top" Foreground="White" FontSize="14" Visibility="{Binding visi}"/>
         <TextBlock x:Name="txtninstall2" HorizontalAlignment="Left" Margin="10,266,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" Visibility="{Binding visi}"><Run Text="You can also let me install the miner."/></TextBlock>
         <TextBlock x:Name="txtBuy" HorizontalAlignment="Left" Margin="300,318,0,-6" TextWrapping="Wrap" Text="If you want to buy me some garlicbread, here are my addresses:" VerticalAlignment="Top" Foreground="White" Width="215" Height="38" LineHeight="1" TextDecorations="{x:Null}"/>
-        <TextBlock x:Name="txtl" HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="20" Width="70" Text="-L:"/>
-        <TextBox x:Name="txtlbox" HorizontalAlignment="Left" Height="23" Margin="45,186,0,0" TextWrapping="Wrap" Text="{Binding l}" VerticalAlignment="Top" Width="55" FontSize="16"/>
+        <TextBlock x:Name="txtl" HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="20" Width="70" Text="-L:" ToolTip="No touchi if no understandi"/>
+        <TextBox x:Name="txtlbox" HorizontalAlignment="Left" Height="23" Margin="45,186,0,0" TextWrapping="Wrap" Text="{Binding l}" VerticalAlignment="Top" Width="55" FontSize="16" ToolTip="No touchi if no understandi"/>
         <Button x:Name="btnDonate"  Content="Thank you" Click="btnDonate_Click" HorizontalAlignment="Left" Margin="428,335,0,0" VerticalAlignment="Top" Width="80" Height="15" Background="#FFC5C5C5" FontWeight="Bold" FontSize="9"/>
         <TextBox x:Name="txtDonatos" HorizontalAlignment="Left" Height="195" Margin="63,118,0,0" TextWrapping="Wrap"  Text="BTC:  3DipZ4uwG4ZXEeYfik6JDMv6zgzw4vTwuJ&#xD;&#xA;Dash: XpqXZWWPqSj5WfuVJE3aiVSnAbcZLYd6CP&#xD;&#xA;GRLC: Gd7zf4ZsAZtcYNWmALJVMCpsj9MS5MJi2x&#xD;&#xA;XMR: 45XumvbTqLfVhhG63AAFHBYgbcSrPak3zAfJjFVnFrbeakkJmtSKTUF2fqnu7ia9tp5PGRUw4hKVwaEwpczvXu6H1CDw52H&#xD;&#xA;ETH: 0xa7c4cAC051e5c50DA870AE6385C0b5A94414B9e4           &#xD;&#xA;&#xD;&#xA;" VerticalAlignment="Top" Width="406" FontSize="14" Background="LightGray" FontWeight="Bold" Visibility="Hidden" />
         <Button x:Name="btnsetx" Content="SETX" Click="btnsetx_Click" HorizontalAlignment="Left" Margin="424,94,0,0" VerticalAlignment="Top" Width="81" Height="24" Background="#FFB2B2B2" Visibility="{Binding visi}" FontWeight="Bold" FontSize="16"/>
@@ -83,11 +83,9 @@
         <TextBox x:Name="txtsetx4" HorizontalAlignment="Left" Height="22" Margin="369,134,0,0" TextWrapping="Wrap" Text="{Binding setx4}" VerticalAlignment="Top" Width="55" FontSize="16" PreviewTextInput="NumberValidationTextBox" Visibility="Hidden"/>
         <TextBox x:Name="txtsetx5" HorizontalAlignment="Left" Height="22" Margin="369,155,0,0" TextWrapping="Wrap" Text="{Binding setx5}" VerticalAlignment="Top" Width="55" FontSize="16" PreviewTextInput="NumberValidationTextBox" Visibility="Hidden"/>
         <Button x:Name="btnsetxSave" Content="Save" Click="btnsetxSave_Click" HorizontalAlignment="Left" Margin="239,223,0,0" VerticalAlignment="Top" Width="81" Height="24" Background="#FFB2B2B2" Visibility="Hidden" FontWeight="Bold" FontSize="16"/>
-
-
-
-
-
+        <Button x:Name="btnNvidiaSolo"  Content="SOLO" Click="btnNvidiaSolo_Click" Margin="86,141,270,0" VerticalAlignment="Top" Height="82" Background="#FFC5C5C5" FontSize="36" FontWeight="Bold"/>
 
     </Grid>
+    
 </Window>
+    

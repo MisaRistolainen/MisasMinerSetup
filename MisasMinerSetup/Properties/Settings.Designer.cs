@@ -37,18 +37,6 @@ namespace MisasMinerSetup.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Wallet {
-            get {
-                return ((string)(this["Wallet"]));
-            }
-            set {
-                this["Wallet"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("15")]
         public int Inten {
             get {
@@ -164,6 +152,18 @@ namespace MisasMinerSetup.Properties {
             }
             set {
                 this["selectedPool"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Wallet {
+            get {
+                return ((string)(this["Wallet"]));
+            }
+            set {
+                this["Wallet"] = value;
             }
         }
     }
