@@ -27,6 +27,8 @@ Settings are saved after shutdown so there is no need to copy paste your wallet 
 
 Miisu#5852 on Discord
 
+Armpitzz on Reddit
+
 PS. Someone asked so I'm gonna write this here. I get nothing when you use this. There are no hidden things that give me some % of what you mine. 
 
 https://www.virustotal.com/#/file/d356e8a90c8aabcbd0b07cb18ddba67d0b3fa6f32f57722537c1548353ed4e82
