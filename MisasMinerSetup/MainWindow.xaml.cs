@@ -22,6 +22,7 @@ using System.Windows.Shapes;
 using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Management;
 
 namespace MisasMinerSetup
 {
@@ -107,6 +108,18 @@ namespace MisasMinerSetup
             mn.MenuItems.Add("Exit",  ExitApplication);
             updateHover();
         }
+
+
+        private static void GetComponent(string hwclass, string syntax)
+        {
+            ManagementObjectSearcher mos = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM " + hwclass);
+            foreach (ManagementObject mj in mos.Get())
+            {
+                Console.WriteLine(Convert.ToString(mj[syntax]));
+            }
+        }
+
+
         private void updateHover()
         {
 
@@ -193,8 +206,6 @@ namespace MisasMinerSetup
             txtlbox.Visibility = System.Windows.Visibility.Hidden;
             txbxtemp.Visibility = System.Windows.Visibility.Hidden;
             txttemp.Visibility = System.Windows.Visibility.Hidden;
-            comboGap.Visibility = System.Windows.Visibility.Hidden;
-            txtLook.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
         }
 
@@ -215,6 +226,20 @@ namespace MisasMinerSetup
 
             saveConf();
             this.Hide();
+        }
+        private void btnTesti_Click(object sender, RoutedEventArgs e) //X-button
+        {
+
+            txtTestimonials.Visibility = System.Windows.Visibility.Visible;
+            btnCloseTest.Visibility = System.Windows.Visibility.Visible;
+
+        }
+
+        private void btnCloseTest_Click(object sender, RoutedEventArgs e) //X-button
+        {
+
+            txtTestimonials.Visibility = System.Windows.Visibility.Hidden;
+            btnCloseTest.Visibility = System.Windows.Visibility.Hidden;
         }
 
         private void btnDonate_Click(object sender, RoutedEventArgs e) //Show wallet addresses for donations
@@ -284,7 +309,7 @@ namespace MisasMinerSetup
             }
             if (gpuChoice == 1)
             {
-                strArg = "sgminer --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " -p x -I " + strInt; //Constructing final string to run
+                strArg = "sgminer --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -p x -I " + strInt; //Constructing final string to run
             }
             else if (gpuChoice == 0)
             {
