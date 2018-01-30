@@ -27,6 +27,12 @@ using OpenHardwareMonitor;
 using OpenHardwareMonitor.Hardware;
 using System.Timers;
 using System.Net.Sockets;
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Position;
+using ToastNotifications.Messages;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace MisasMinerSetup
 {
@@ -75,8 +81,12 @@ namespace MisasMinerSetup
         public Process cmd3 = new Process();
         public Process cmd4 = new Process();
         public Process cmd5 = new Process();
-       // public System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
-
+        public bool isMining = false;
+        public string strBlocks;
+        public string strHash;
+        public string OldBlockcount;
+        public bool firstCon;
+        public bool tempCheck;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -96,8 +106,12 @@ namespace MisasMinerSetup
             setx4 = 100;
             setx5 = 1;
             balance = 0;
+            tempCheck = false;
             worth = "0,0";
             l = "Auto";
+            strBlocks = "0";
+            strHash = "0";
+            firstCon = true;
             txtDonatos.IsReadOnly = true;                //Donation box
             pool = Properties.Settings.Default.Pool;     //Loading saved custom pool address
             wallet = Properties.Settings.Default.Wallet; //Loading saved wallet address
@@ -121,6 +135,7 @@ namespace MisasMinerSetup
             mn.MenuItems.Add("Copy active wallet", WalletTray);
             mn.MenuItems.Add("Exit",  ExitApplication);
             updateHover();
+            minerInfo();
             
         }
 
@@ -143,7 +158,8 @@ namespace MisasMinerSetup
         {
             Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
             strWorth = doubleWorth.ToString();
-            hoverText = "Balance: " + balance + "GRLC \nWorth: " + strWorth + "$\nGPU Load:" + cleanLoad + "\nGPU temp:" + cleanTemp;
+            strWorth = strWorth.Split(',')[0];
+            hoverText = "Balance: " + balance + "\nWorth: " + strWorth + "$\nGPU temp:" + cleanTemp + "\n" + strHash + "Kh/s";
             ni.Text = hoverText;
         }
         protected override void OnStateChanged(EventArgs e)
@@ -215,16 +231,15 @@ namespace MisasMinerSetup
             txtChoose.Visibility = System.Windows.Visibility.Hidden;
             txtl.Visibility = System.Windows.Visibility.Hidden;
             txtlbox.Visibility = System.Windows.Visibility.Hidden;
-            txbxtemp.Visibility = System.Windows.Visibility.Hidden;
-            txttemp.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
         }
 
         private void shutClose()
         {
             saveConf();
-            Close();
+            System.Windows.Application.Current.Shutdown();
             ni.Visible = false;
+            
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) //X-button
@@ -232,22 +247,21 @@ namespace MisasMinerSetup
 
             shutClose();
         }
-        private void MiniButton_Click(object sender, RoutedEventArgs e) //X-button
+        private void MiniButton_Click(object sender, RoutedEventArgs e) 
         {
 
             saveConf();
             this.Hide();
         }
-        private void btnTesti_Click(object sender, RoutedEventArgs e) //X-button
+        private void btnTesti_Click(object sender, RoutedEventArgs e) 
         {
 
             txtTestimonials.Visibility = System.Windows.Visibility.Visible;
             btnCloseTest.Visibility = System.Windows.Visibility.Visible;
-            //minerInfo();
 
         }
 
-        private void btnCloseTest_Click(object sender, RoutedEventArgs e) //X-button
+        private void btnCloseTest_Click(object sender, RoutedEventArgs e) 
         {
 
             txtTestimonials.Visibility = System.Windows.Visibility.Hidden;
@@ -287,13 +301,26 @@ namespace MisasMinerSetup
         
             private void Refresh_Click(object sender, RoutedEventArgs e)
             {
+                isMining = true;
                 checkBalance();
-                updateHover();
+                updateHover();;
+
+
                 
-            }
+            }        
+        private void TempCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            tempCheck = true;
+        }
+        private void TempCheck_Unchecked(object sender, RoutedEventArgs e)
+        {
+            tempCheck = false;
+        }
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void StartButton_Click(object sender, RoutedEventArgs e) //"RIP GPU" button which starts cmd
         {
+            isMining = true;
             saveConf();
             string strPool;
             if (selectedPool == "Custom")
@@ -322,11 +349,11 @@ namespace MisasMinerSetup
             }
             if (gpuChoice == 1)
             {
-                strArg = "sgminer --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -p x -I " + strInt; //Constructing final string to run
+                strArg = "sgminer --api-listen --temp-cutoff " + temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -p x -I " + strInt; //Constructing final string to run
             }
             else if (gpuChoice == 0)
             {
-                strArg = "ccminer-x64 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " --max-temp=" + temp + " "; //Constructing final string to run
+                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " --max-temp=" + temp + " "; //Constructing final string to run
 
             }
             else if (gpuChoice == 3)
@@ -392,34 +419,86 @@ namespace MisasMinerSetup
             unZipSolo();                                             
 
         }
-        /*private void minerInfo()
+        private void minerInfo()
         {
-            while (true)
+            if (isMining == true)
             {
-                try
+                if (gpuChoice == 1) //amd
                 {
-                    clientSocket.Connect("127.0.0.1", 4028);
-                    break;
+
+                    System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
+
+                    while (true)
+                    {
+
+                        try
+                        {
+                            clientSocket.Connect("127.0.0.1", 4028);
+                            break;
+                        }
+                        catch
+                        {
+                        }
+
+                    }
+                    string get_menu_request = "summary";
+                    NetworkStream serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    serverStream.Flush();
+                    byte[] inStream = new byte[65556];
+                    serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
+                    string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
+                    serverStream.Close();
+                    int hashStart = _returndata.IndexOf("KHS av=") + "KHS av=".Length;
+                    int hashEnd = _returndata.LastIndexOf(",KHS");
+                    strHash = _returndata.Substring(hashStart, hashEnd - hashStart);
                 }
-                catch
+                if (gpuChoice == 0) //nvidia
                 {
-                    // Log, I suspect...
+
+                    System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
+
+                    while (true)
+                    {
+
+                        try
+                        {
+                            clientSocket.Connect("127.0.0.1", 4028);
+                            break;
+                        }
+                        catch
+                        {
+                        }
+
+                    }
+                    string get_menu_request = "summary";
+                    NetworkStream serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    serverStream.Flush();
+                    byte[] inStream = new byte[65556];
+                    serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
+                    string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
+                    serverStream.Close();
+                    int hashStart = _returndata.IndexOf("KHS=") + "KHS=".Length;
+                    int hashEnd = _returndata.LastIndexOf(";SOLV=");
+                    strHash = _returndata.Substring(hashStart, hashEnd - hashStart);
                 }
             }
-            string get_menu_request = "summary";
-            NetworkStream serverStream = clientSocket.GetStream();
-            byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
-            serverStream.Write(outStream, 0, outStream.Length);
-            serverStream.Flush();
-            byte[] inStream = new byte[65556];
-            serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
-            string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
-            System.Windows.MessageBox.Show(_returndata);
-            int hashStart = _returndata.IndexOf("KHS av=") + "KHS av=".Length;
-            int hashEnd = _returndata.LastIndexOf(",KHS");
-            string strhash = _returndata.Substring(hashStart, hashEnd - hashStart);
-            System.Windows.MessageBox.Show(strhash);
-        }*/
+        }
+            
+        
+        private void blockChange()
+        {
+            if(OldBlockcount != strBlocks)
+            {
+                OldBlockcount = strBlocks;
+                
+
+            }
+
+        }
         private void saveConf()
         {
             Properties.Settings.Default.Pool = pool;
@@ -442,10 +521,18 @@ namespace MisasMinerSetup
             WebClient client = new WebClient();
             if (wallet != "")
             {
-                
-                string downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
-                balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
-
+                while (true)
+                {
+                    try
+                    {
+                        string downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
+                        balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
+                        break;
+                    }
+                    catch
+                    {
+                    }
+                }
             }                
                 string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/");
                 string toBeSearched = "\"price_usd\": \"";
@@ -621,6 +708,7 @@ namespace MisasMinerSetup
             System.Timers.Timer timer = new System.Timers.Timer() { Enabled = true, Interval = 1000 };
             timer.Elapsed += delegate(object sender, ElapsedEventArgs e)
             {
+                minerInfo();
                 updateHover();
                 foreach (IHardware hardware in computer.Hardware)
                 {
@@ -632,11 +720,19 @@ namespace MisasMinerSetup
                         {
                          string gpuTemp =  (sensor.Value + "°C");
                          cleanTemp = gpuTemp;
+                         int intTemp = Int32.Parse(cleanTemp.Substring(0,2));
                             this.Dispatcher.Invoke(() =>
                                 { 
                                 txtTemp.Text = cleanTemp;
                                });
-                            
+
+                            if (tempCheck == true)
+                            {
+                                if (intTemp >= temp - 5)
+                                {
+                                    notifier.ShowWarning("GPU TEMPERATURE NEARING MAX! CURRENT TEMPERATURE " + cleanTemp);
+                                }
+                            }
                         }
                         if(sensor.SensorType == SensorType.Load)
                         {
@@ -647,24 +743,97 @@ namespace MisasMinerSetup
                                 txtLoad.Text = cleanLoad;
                             });
                         }
-                        if (sensor.SensorType == SensorType.Power)
-                        {
-                           string gpuwat = (sensor.Name + sensor.Value);
-                           cleanWat = gpuwat;
-                            this.Dispatcher.Invoke(() =>
-                            {
-                                txtWat.Text = cleanWat;
-                                
-                            });
-                        }
+
                     }
                 }
 
             };
     }
 
+        Notifier notifier = new Notifier(cfg =>
+        {
+            cfg.PositionProvider = new PrimaryScreenPositionProvider(Corner.BottomRight, 0, 40);
+
+            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                notificationLifetime: TimeSpan.FromSeconds(3),
+                maximumNotificationCount: MaximumNotificationCount.FromCount(5));
+
+            cfg.Dispatcher = System.Windows.Application.Current.Dispatcher;
+        });
 
 
+
+        [DllImport("User32.dll")]
+        private static extern bool RegisterHotKey(
+            [In] IntPtr hWnd,
+            [In] int id,
+            [In] uint fsModifiers,
+            [In] uint vk);
+
+        [DllImport("User32.dll")]
+        private static extern bool UnregisterHotKey(
+            [In] IntPtr hWnd,
+            [In] int id);
+
+        private HwndSource _source;
+        private const int HOTKEY_ID = 9000;
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            var helper = new WindowInteropHelper(this);
+            _source = HwndSource.FromHwnd(helper.Handle);
+            _source.AddHook(HwndHook);
+            RegisterHotKey();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _source.RemoveHook(HwndHook);
+            _source = null;
+            UnregisterHotKey();
+            base.OnClosed(e);
+        }
+
+        private void RegisterHotKey()
+        {
+            var helper = new WindowInteropHelper(this);
+            const uint VK_F10 = 0x79;
+            const uint MOD_CTRL = 0x0002;
+            if (!RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_CTRL, VK_F10))
+            {
+                // handle error
+            }
+        }
+
+        private void UnregisterHotKey()
+        {
+            var helper = new WindowInteropHelper(this);
+            UnregisterHotKey(helper.Handle, HOTKEY_ID);
+        }
+
+        private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_HOTKEY = 0x0312;
+            switch (msg)
+            {
+                case WM_HOTKEY:
+                    switch (wParam.ToInt32())
+                    {
+                        case HOTKEY_ID:
+                            OnHotKeyPressed();
+                            handled = true;
+                            break;
+                    }
+                    break;
+            }
+            return IntPtr.Zero;
+        }
+
+        private void OnHotKeyPressed()
+        {
+            notifier.ShowInformation(strHash + "Kh/s");
+        }
 
     }
    
