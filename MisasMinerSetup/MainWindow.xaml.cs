@@ -23,6 +23,10 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Management;
+using OpenHardwareMonitor;
+using OpenHardwareMonitor.Hardware;
+using System.Timers;
+using System.Net.Sockets;
 
 namespace MisasMinerSetup
 {
@@ -33,6 +37,8 @@ namespace MisasMinerSetup
 
     public partial class MainWindow : Window
     {
+
+
         private WebClient webClient = null;
         private int gpuChoice = 2;
         public string visi { get; set; }    //Visibility on "Miner not found"
@@ -60,16 +66,24 @@ namespace MisasMinerSetup
         public string selectedgap { get; set; }
         public string strArg; //Storing arguments
         public string hoverText { get; set; }
+        public string cleanTemp { get; set; }
+        public string cleanLoad { get; set; }
+        public string cleanWat { get; set; }
+        public string strWorth;
         public System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
         public Process cmd2 = new Process();
         public Process cmd3 = new Process();
+        public Process cmd4 = new Process();
         public Process cmd5 = new Process();
+       // public System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         public MainWindow()
         {
+
+            checkTemp();
             InitializeComponent();
             MouseDown += Window_MouseDown;
             DataContext = this;
@@ -107,33 +121,30 @@ namespace MisasMinerSetup
             mn.MenuItems.Add("Copy active wallet", WalletTray);
             mn.MenuItems.Add("Exit",  ExitApplication);
             updateHover();
+            
         }
 
 
-        private static void GetComponent(string hwclass, string syntax)
-        {
-            ManagementObjectSearcher mos = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM " + hwclass);
-            foreach (ManagementObject mj in mos.Get())
-            {
-                Console.WriteLine(Convert.ToString(mj[syntax]));
-            }
-        }
+
 
 
         private void updateHover()
         {
-
             Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
-            string strWorth = doubleWorth.ToString();
-            hoverText = "Balance: " + balance + "GRLC \nWorth: " + strWorth + "$";
-            ni.Text = hoverText;
+            updateHover2();
             ni.DoubleClick +=
                 delegate(object sender, EventArgs args)
                 {
                     this.Show();
                     this.WindowState = WindowState.Normal;
                 };
-            
+        }
+        private void updateHover2()
+        {
+            Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
+            strWorth = doubleWorth.ToString();
+            hoverText = "Balance: " + balance + "GRLC \nWorth: " + strWorth + "$\nGPU Load:" + cleanLoad + "\nGPU temp:" + cleanTemp;
+            ni.Text = hoverText;
         }
         protected override void OnStateChanged(EventArgs e)
         {
@@ -232,6 +243,7 @@ namespace MisasMinerSetup
 
             txtTestimonials.Visibility = System.Windows.Visibility.Visible;
             btnCloseTest.Visibility = System.Windows.Visibility.Visible;
+            //minerInfo();
 
         }
 
@@ -277,6 +289,7 @@ namespace MisasMinerSetup
             {
                 checkBalance();
                 updateHover();
+                
             }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void StartButton_Click(object sender, RoutedEventArgs e) //"RIP GPU" button which starts cmd
@@ -379,6 +392,34 @@ namespace MisasMinerSetup
             unZipSolo();                                             
 
         }
+        /*private void minerInfo()
+        {
+            while (true)
+            {
+                try
+                {
+                    clientSocket.Connect("127.0.0.1", 4028);
+                    break;
+                }
+                catch
+                {
+                    // Log, I suspect...
+                }
+            }
+            string get_menu_request = "summary";
+            NetworkStream serverStream = clientSocket.GetStream();
+            byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
+            serverStream.Write(outStream, 0, outStream.Length);
+            serverStream.Flush();
+            byte[] inStream = new byte[65556];
+            serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
+            string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
+            System.Windows.MessageBox.Show(_returndata);
+            int hashStart = _returndata.IndexOf("KHS av=") + "KHS av=".Length;
+            int hashEnd = _returndata.LastIndexOf(",KHS");
+            string strhash = _returndata.Substring(hashStart, hashEnd - hashStart);
+            System.Windows.MessageBox.Show(strhash);
+        }*/
         private void saveConf()
         {
             Properties.Settings.Default.Pool = pool;
@@ -573,7 +614,54 @@ namespace MisasMinerSetup
         }
 
 
+        private void checkTemp()
+    {
+            Computer computer = new Computer() { GPUEnabled = true };
+            computer.Open();
+            System.Timers.Timer timer = new System.Timers.Timer() { Enabled = true, Interval = 1000 };
+            timer.Elapsed += delegate(object sender, ElapsedEventArgs e)
+            {
+                updateHover();
+                foreach (IHardware hardware in computer.Hardware)
+                {
+                    hardware.Update();
 
+                    foreach (ISensor sensor in hardware.Sensors)
+                    { 
+                        if (sensor.SensorType == SensorType.Temperature)
+                        {
+                         string gpuTemp =  (sensor.Value + "°C");
+                         cleanTemp = gpuTemp;
+                            this.Dispatcher.Invoke(() =>
+                                { 
+                                txtTemp.Text = cleanTemp;
+                               });
+                            
+                        }
+                        if(sensor.SensorType == SensorType.Load)
+                        {
+                            string gpuLoad = (sensor.Value + "%");
+                            cleanLoad = gpuLoad;
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                txtLoad.Text = cleanLoad;
+                            });
+                        }
+                        if (sensor.SensorType == SensorType.Power)
+                        {
+                           string gpuwat = (sensor.Name + sensor.Value);
+                           cleanWat = gpuwat;
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                txtWat.Text = cleanWat;
+                                
+                            });
+                        }
+                    }
+                }
+
+            };
+    }
 
 
 
