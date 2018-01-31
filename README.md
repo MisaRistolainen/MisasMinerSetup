@@ -7,6 +7,7 @@ Can also be used as a nice GUI while mining to get on-demand hashrates and temps
 It currently is in development and might be buggy.
 
 https://streamable.com/6atv7 Short walkthrough of 1st launch on AMD cards.
+
 https://streamable.com/89x58 A little bit more indepth walkthrough with explanations. Also for AMD
 
 Download .EXE file from releases.
