@@ -1,7 +1,7 @@
 # MisasMinerSetup
 FOR AMD OR NVIDIA GPUs!
 
-This is a simple GUI setup program to start mining.
+This is a simple GUI setup program to start mining garlicoin.
 
 Can also be used as a nice GUI while mining to get on-demand hashrates and temps.
 
