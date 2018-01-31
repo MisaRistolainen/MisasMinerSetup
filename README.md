@@ -1,12 +1,19 @@
 # MisasMinerSetup
 FOR AMD OR NVIDIA GPUs!
 
-This is a simple setup program to start mining.
-It currently has advanced settings and it might/will be buggy
+This is a simple GUI setup program to start mining.
+
+Can also be used as a nice GUI while mining to get on-demand hashrates and temps.
+
+It currently is in development and might be buggy.
+
+https://streamable.com/6atv7 Short walkthrough of 1st launch on AMD cards.
+
+https://streamable.com/89x58 A little bit more indepth walkthrough with explanations. Also for AMD
 
 Download .EXE file from releases.
 
-I have heard that it gives false positive trojan virus alerts probably due to the fact that it downloads sgminer if needed.
+I have heard that it gives false positive trojan virus alerts probably due to the fact that it downloads some miner files if needed.
 Currently trying to fix that but if you don't trust me, build the file yourself from the source files.
 
 Downloadable exe will always be the newest version that is listed here.
@@ -31,4 +38,3 @@ Armpitzz on Reddit
 
 PS. Someone asked so I'm gonna write this here. I get nothing when you use this. There are no hidden things that give me some % of what you mine. 
 
-https://www.virustotal.com/#/file/d356e8a90c8aabcbd0b07cb18ddba67d0b3fa6f32f57722537c1548353ed4e82
