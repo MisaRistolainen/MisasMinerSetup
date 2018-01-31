@@ -85,6 +85,7 @@ namespace MisasMinerSetup
         public bool firstCon;
         public bool tempCheck;
         public string strFan;
+        public string strUsage;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -135,6 +136,7 @@ namespace MisasMinerSetup
             updateHover();
             minerInfo();
             minerInfo2();
+            minerInfo3();
             
         }
 
@@ -193,12 +195,9 @@ namespace MisasMinerSetup
             btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
             txtChoose.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
-            sldrIntensity.Visibility = System.Windows.Visibility.Hidden;
             txtn.Visibility = System.Windows.Visibility.Hidden;
-            txtIntensity.Visibility = System.Windows.Visibility.Hidden;
             txtnFactor.Visibility = System.Windows.Visibility.Hidden;
             txtTouch.Visibility = System.Windows.Visibility.Hidden;
-            inCalc.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
         }
 
@@ -352,7 +351,7 @@ namespace MisasMinerSetup
             }
             else if (gpuChoice == 0) //If Nvidia GPU was chosen
             {
-                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " --max-temp=" + temp + " "; //Constructing final string to run
+                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -i " + strInt + " --max-temp=" + temp + " "; //Constructing final string to run
 
             }
             else if (gpuChoice == 3) //If Nvidia solomining was chosen
@@ -490,6 +489,38 @@ namespace MisasMinerSetup
         {
             if (isMining == true) //Is the user mining
             {
+                if (gpuChoice == 1) //AMD
+                {
+
+                    System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
+
+                    while (true) //Try to connect to the API
+                    {
+
+                        try
+                        {
+                            clientSocket.Connect("127.0.0.1", 4028);
+                            break;
+                        }
+                        catch
+                        {
+                        }
+
+                    }
+                    string get_menu_request = "devs";
+                    NetworkStream serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    serverStream.Flush();
+                    byte[] inStream = new byte[65556];
+                    serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
+                    string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
+                    serverStream.Close();
+                    int hashStart = _returndata.IndexOf("GPU Activity=") + "GPU Activity=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
+                    int hashEnd = _returndata.LastIndexOf(",Powertune=");
+                    strUsage = _returndata.Substring(hashStart, hashEnd - hashStart);
+
+                }
                
                 if (gpuChoice == 0) //nvidia
                 {
@@ -509,7 +540,85 @@ namespace MisasMinerSetup
                         }
 
                     }
-                    string get_menu_request = "pool";
+                    string get_menu_request = "threads";
+                    NetworkStream serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    serverStream.Flush();
+                    byte[] inStream = new byte[65556];
+                    serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
+                    string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
+                    serverStream.Close();
+                    int basicStart = _returndata.IndexOf(";FREQ=") + ";FREQ=".Length; //Find power. NOT CURRENTLY WORKING!
+                    int basicEnd = _returndata.LastIndexOf(";MEMFREQ=");
+                    int usedStart = _returndata.IndexOf(";GPUF=") + ";GPUF=".Length; //Find power. NOT CURRENTLY WORKING!
+                    int usedEnd = _returndata.LastIndexOf(";MEMF=");
+                    string strUsageBasic = _returndata.Substring(basicStart, basicEnd - basicStart);
+                    string strUsageUsed = _returndata.Substring(usedStart, usedEnd - usedStart);
+                    var usageB = float.Parse(strUsageBasic);
+                    var usageU = float.Parse(strUsageUsed);
+                    var usagePerc = usageU / usageB * 100f;
+                    strUsage = usagePerc.ToString("00.00");
+
+                }
+            }
+        }
+        private void minerInfo3()
+        {
+            if (isMining == true) //Is the user mining
+            {
+                if (gpuChoice == 1) //AMD
+                {
+
+                    System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
+
+                    while (true) //Try to connect to the API
+                    {
+
+                        try
+                        {
+                            clientSocket.Connect("127.0.0.1", 4028);
+                            break;
+                        }
+                        catch
+                        {
+                        }
+
+                    }
+                    string get_menu_request = "devs";
+                    NetworkStream serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    serverStream.Flush();
+                    byte[] inStream = new byte[65556];
+                    serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
+                    string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
+                    serverStream.Close();
+                    int hashStart = _returndata.IndexOf("Fan Percent=") + "Fan Percent=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
+                    int hashEnd = _returndata.LastIndexOf(",GPU Clock=");
+                    strFan = _returndata.Substring(hashStart, hashEnd - hashStart);
+
+                }
+
+                if (gpuChoice == 0) //nvidia
+                {
+
+                    System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
+
+                    while (true) //Try to connect to the API
+                    {
+
+                        try
+                        {
+                            clientSocket.Connect("127.0.0.1", 4028);
+                            break;
+                        }
+                        catch
+                        {
+                        }
+
+                    }
+                    string get_menu_request = "threads";
                     NetworkStream serverStream = clientSocket.GetStream();
                     byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
                     serverStream.Write(outStream, 0, outStream.Length);
@@ -737,6 +846,7 @@ namespace MisasMinerSetup
             {
                 minerInfo();
                 minerInfo2();
+                minerInfo3();
                 updateHover();
                 foreach (IHardware hardware in computer.Hardware)
                 {
@@ -861,7 +971,8 @@ namespace MisasMinerSetup
         private void OnHotKeyPressed()
         {
             notifier.ShowInformation(strHash + "Kh/s");
-            notifier.ShowInformation(strFan + "%");
+            notifier.ShowInformation("GPU Fan Speed: " + strFan + "%");
+            notifier.ShowInformation("GPU Usage: " + strUsage + "%");
         }
 
     }
