@@ -36,10 +36,7 @@ using System.Windows.Interop;
 
 namespace MisasMinerSetup
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    /// 
+
 
     public partial class MainWindow : Window
     {
@@ -53,13 +50,13 @@ namespace MisasMinerSetup
         private int _i;
         public int i { get { return _i; } set { _i = value; inCalc.Text = value.ToString(); } } //Intensity
         public int n { get; set; }          //nFactor
-        public string l { get; set; }          //-l for nvidia
-        public int setx1 { get; set; }
-        public int setx2 { get; set; }
-        public int setx3 { get; set; }
-        public int setx4 { get; set; }
-        public int setx5 { get; set; }
-        public int temp { get; set; }
+        public string l { get; set; }       //-l for nvidia
+        public int setx1 { get; set; }      //setx setting
+        public int setx2 { get; set; }      //setx setting
+        public int setx3 { get; set; }      //setx setting
+        public int setx4 { get; set; }      //setx setting
+        public int setx5 { get; set; }      //setx setting
+        public int temp { get; set; }       //maxtemp setting
         private double _balance;
         private string worth;
         public double balance { get { return _balance; } set { _balance = value; txtBal2.Text = balance.ToString(); } }
@@ -87,6 +84,7 @@ namespace MisasMinerSetup
         public string OldBlockcount;
         public bool firstCon;
         public bool tempCheck;
+        public string strFan;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -117,25 +115,26 @@ namespace MisasMinerSetup
             wallet = Properties.Settings.Default.Wallet; //Loading saved wallet address
             i = Properties.Settings.Default.Inten;       //Loading saved intensity
             n = Properties.Settings.Default.nFac;        //Loading saved nFactor
-            setx2 = Properties.Settings.Default.setx2;
-            setx3 = Properties.Settings.Default.setx3;
-            setx4 = Properties.Settings.Default.setx4;
-            setx5 = Properties.Settings.Default.setx5;
-            temp = Properties.Settings.Default.temp;
-            selectedgap = Properties.Settings.Default.selectedgap;
-            selectedPool = Properties.Settings.Default.selectedPool;
+            setx2 = Properties.Settings.Default.setx2;   //Loading saved setx values
+            setx3 = Properties.Settings.Default.setx3;   //Loading saved setx values
+            setx4 = Properties.Settings.Default.setx4;   //Loading saved setx values
+            setx5 = Properties.Settings.Default.setx5;   //Loading saved setx values
+            temp = Properties.Settings.Default.temp;     //Loading saved maxtemp
+            selectedgap = Properties.Settings.Default.selectedgap;       //Loading saved lookup-gap
+            selectedPool = Properties.Settings.Default.selectedPool;     //Loading saved lookup-gap
             if (l != "Auto")
             {
                 l = Properties.Settings.Default.l;
             }            
             ni.Icon = MisasMinerSetup.Properties.Resources.Myicon;
             ni.Visible = true;
-            System.Windows.Forms.ContextMenu mn = new System.Windows.Forms.ContextMenu();
+            System.Windows.Forms.ContextMenu mn = new System.Windows.Forms.ContextMenu(); //Setting up icontray icon
             ni.ContextMenu = mn;
             mn.MenuItems.Add("Copy active wallet", WalletTray);
             mn.MenuItems.Add("Exit",  ExitApplication);
             updateHover();
             minerInfo();
+            minerInfo2();
             
         }
 
@@ -143,7 +142,7 @@ namespace MisasMinerSetup
 
 
 
-        private void updateHover()
+        private void updateHover() //Handling doubleclick and tooltip updates
         {
             Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
             updateHover2();
@@ -154,7 +153,7 @@ namespace MisasMinerSetup
                     this.WindowState = WindowState.Normal;
                 };
         }
-        private void updateHover2()
+        private void updateHover2() //Constructing new tooltip
         {
             Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
             strWorth = doubleWorth.ToString();
@@ -162,7 +161,7 @@ namespace MisasMinerSetup
             hoverText = "Balance: " + balance + "\nWorth: " + strWorth + "$\nGPU temp:" + cleanTemp + "\n" + strHash + "Kh/s";
             ni.Text = hoverText;
         }
-        protected override void OnStateChanged(EventArgs e)
+        protected override void OnStateChanged(EventArgs e) 
         {
             if (WindowState == WindowState.Minimized)
                 this.Hide();
@@ -176,7 +175,7 @@ namespace MisasMinerSetup
         }
         private void WalletTray(object sender, EventArgs e)
         {
-            System.Windows.Forms.Clipboard.SetText(wallet);
+            System.Windows.Forms.Clipboard.SetText(wallet); //Copy current wallet address to clipboard
         }
 
 
@@ -186,7 +185,7 @@ namespace MisasMinerSetup
                 this.DragMove();
         }
 
-        private void btnNvidia_Click(object sender, RoutedEventArgs e) //
+        private void btnNvidia_Click(object sender, RoutedEventArgs e) //Person selected Nvidia
         {
             gpuChoice = 0;
             btnAMD.Visibility = System.Windows.Visibility.Hidden;
@@ -203,7 +202,7 @@ namespace MisasMinerSetup
             checkingFiles();
         }
 
-        private void btnNvidiaSolo_Click(object sender, RoutedEventArgs e) //
+        private void btnNvidiaSolo_Click(object sender, RoutedEventArgs e) //Person selected Nvidia Solo mining
         {
             gpuChoice = 3;
             btnAMD.Visibility = System.Windows.Visibility.Hidden;
@@ -222,7 +221,7 @@ namespace MisasMinerSetup
             checkingFiles();
         }
 
-        private void btnAMD_Click(object sender, RoutedEventArgs e) //
+        private void btnAMD_Click(object sender, RoutedEventArgs e) //Person selected AMD
         {
             gpuChoice = 1;
             btnAMD.Visibility = System.Windows.Visibility.Hidden;
@@ -234,7 +233,7 @@ namespace MisasMinerSetup
             checkingFiles();
         }
 
-        private void shutClose()
+        private void shutClose() //Closing the app
         {
             saveConf();
             System.Windows.Application.Current.Shutdown();
@@ -242,18 +241,18 @@ namespace MisasMinerSetup
             
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e) //X-button
+        private void CloseButton_Click(object sender, RoutedEventArgs e) //X-button click
         {
 
             shutClose();
         }
-        private void MiniButton_Click(object sender, RoutedEventArgs e) 
+        private void MiniButton_Click(object sender, RoutedEventArgs e) //Minimalize click
         {
 
             saveConf();
             this.Hide();
         }
-        private void btnTesti_Click(object sender, RoutedEventArgs e) 
+        private void btnTesti_Click(object sender, RoutedEventArgs e) //Testimonials click
         {
 
             txtTestimonials.Visibility = System.Windows.Visibility.Visible;
@@ -261,7 +260,7 @@ namespace MisasMinerSetup
 
         }
 
-        private void btnCloseTest_Click(object sender, RoutedEventArgs e) 
+        private void btnCloseTest_Click(object sender, RoutedEventArgs e)  //Close testimonials click
         {
 
             txtTestimonials.Visibility = System.Windows.Visibility.Hidden;
@@ -280,7 +279,7 @@ namespace MisasMinerSetup
             btnCloseDonate.Visibility = System.Windows.Visibility.Hidden;
         }
 
-        private void btnsetx_Click(object sender, RoutedEventArgs e)
+        private void btnsetx_Click(object sender, RoutedEventArgs e) //Open setx window
         {
             txtsetx.Visibility = System.Windows.Visibility.Visible;
             txtsetx2.Visibility = System.Windows.Visibility.Visible;
@@ -289,7 +288,7 @@ namespace MisasMinerSetup
             txtsetx5.Visibility = System.Windows.Visibility.Visible;
             btnsetxSave.Visibility = System.Windows.Visibility.Visible;
         }
-        private void btnsetxSave_Click(object sender, RoutedEventArgs e)
+        private void btnsetxSave_Click(object sender, RoutedEventArgs e) //Close setx window
         {
             txtsetx.Visibility = System.Windows.Visibility.Hidden;
             txtsetx2.Visibility = System.Windows.Visibility.Hidden;
@@ -299,7 +298,7 @@ namespace MisasMinerSetup
             btnsetxSave.Visibility = System.Windows.Visibility.Hidden;
         }
         
-            private void Refresh_Click(object sender, RoutedEventArgs e)
+            private void Refresh_Click(object sender, RoutedEventArgs e) //Update icon click
             {
                 isMining = true;
                 checkBalance();
@@ -308,11 +307,11 @@ namespace MisasMinerSetup
 
                 
             }        
-        private void TempCheck_Checked(object sender, RoutedEventArgs e)
+        private void TempCheck_Checked(object sender, RoutedEventArgs e) //Temperature alert checkbox selected
         {
             tempCheck = true;
         }
-        private void TempCheck_Unchecked(object sender, RoutedEventArgs e)
+        private void TempCheck_Unchecked(object sender, RoutedEventArgs e) //Temperature alert checkbox selected
         {
             tempCheck = false;
         }
@@ -341,37 +340,36 @@ namespace MisasMinerSetup
             }
             else if (selectedgap == "2")
             {
-                strlookup = "--lookup-gap=2";
+                strlookup = "--lookup-gap=2";               //Checking what lookup-gap option was selected
             }
             else if (selectedgap == "3")
             {
                 strlookup = "--lookup-gap=3";
             }
-            if (gpuChoice == 1)
+            if (gpuChoice == 1) //If AMD GPU was chosen
             {
                 strArg = "sgminer --api-listen --temp-cutoff " + temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -p x -I " + strInt; //Constructing final string to run
             }
-            else if (gpuChoice == 0)
+            else if (gpuChoice == 0) //If Nvidia GPU was chosen
             {
                 strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " --max-temp=" + temp + " "; //Constructing final string to run
 
             }
-            else if (gpuChoice == 3)
+            else if (gpuChoice == 3) //If Nvidia solomining was chosen
             {
                 cmd5.StartInfo.FileName = "cmd.exe";
-                cmd5.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat";
+                cmd5.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat"; //Running network needed to solomine
                 cmd5.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
                 cmd5.Start();
 
-                strArg = " ccminer.exe --algo=scrypt:10 -l " + l + " -o 127.0.0.1:42068 -u test -p test --no-longpoll " + strlookup + " --no-getwork --no-stratum --coinbase-addr=" + strWallet + " --max-temp=" + temp + " ";
+                strArg = " ccminer.exe --algo=scrypt:10 -l " + l + " -o 127.0.0.1:42068 -u test -p test --no-longpoll " + strlookup + " --no-getwork --no-stratum --coinbase-addr=" + strWallet + " --max-temp=" + temp + " "; //Constructing final string to run. EXPERIMENTAL!
 
-                        }
+            }
             System.Windows.MessageBox.Show(strArg);
             Process cmd = new Process();
-            //Opening cmd with given arguments
             cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.Arguments = "/K cd " + appPath + " && color 02 && setx GPU_MAX_HEAP_SIZE " + setx2 + " && setx GPU_MAX_SINGLE_ALLOC_PERCENT " + setx3 + " && setx GPU_MAX_ALLOC_PERCENT " + setx4 + " && setx GPU_USE_SYNC_OBJECTS " + setx5 + " && " + strArg + "&& pause";
-            cmd.Start();
+            cmd.StartInfo.Arguments = "/K cd " + appPath + " && color 02 && setx GPU_MAX_HEAP_SIZE " + setx2 + " && setx GPU_MAX_SINGLE_ALLOC_PERCENT " + setx3 + " && setx GPU_MAX_ALLOC_PERCENT " + setx4 + " && setx GPU_USE_SYNC_OBJECTS " + setx5 + " && " + strArg + "&& pause"; //Final argument given to cmd
+            cmd.Start();            //Opening cmd with given arguments
 
         }
 
@@ -387,15 +385,15 @@ namespace MisasMinerSetup
 
             webClient = new WebClient();
             webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CompletedPool);
-            if (gpuChoice == 1)
+            if (gpuChoice == 1) //AMD
             {
                 webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/sgminer-5.5.5.zip"), appPath + "\\sg.zip"); //Downloading sgminer
             }
-            else if (gpuChoice == 0)
+            else if (gpuChoice == 0) //NVIDIA
             {
                 webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/ccminer.zip"), appPath + "\\cc.zip"); //Downloading ccminer
             }
-            if (gpuChoice == 3)
+            if (gpuChoice == 3) //NVIDIA SOLO
             {
                 webClient = new WebClient();
                 webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CompletedSolo);
@@ -408,27 +406,27 @@ namespace MisasMinerSetup
         private void CompletedPool(object sender, AsyncCompletedEventArgs e) //After download completion
         {
             webClient = null;
-            unZipPool();                                               //Unzipping sgminer and moving MisasMinerSetup.exe to the new folder
+            unZipPool();                                           //Unzipping sg/ccminer and moving MisasMinerSetup.exe to the new folder
             btnInstall.IsEnabled = true;                           //Enable button if something goes wrong
             txtwait.Visibility = System.Windows.Visibility.Hidden; //Hide "Downloading..." text
             
         }
-        private void CompletedSolo(object sender, AsyncCompletedEventArgs e) //After download completion
+        private void CompletedSolo(object sender, AsyncCompletedEventArgs e) //After solo download completion
         {
             webClient = null;
-            unZipSolo();                                             
+            unZipSolo();                                           //Unzipping solo files.
 
         }
-        private void minerInfo()
+        private void minerInfo() //Get minerinfo from miner API
         {
-            if (isMining == true)
+            if (isMining == true) //Is the user mining
             {
-                if (gpuChoice == 1) //amd
+                if (gpuChoice == 1) //AMD
                 {
 
                     System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
 
-                    while (true)
+                    while (true) //Try to connect to the API
                     {
 
                         try
@@ -441,7 +439,7 @@ namespace MisasMinerSetup
                         }
 
                     }
-                    string get_menu_request = "summary";
+                    string get_menu_request = "summary"; //Request summary
                     NetworkStream serverStream = clientSocket.GetStream();
                     byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
                     serverStream.Write(outStream, 0, outStream.Length);
@@ -450,7 +448,7 @@ namespace MisasMinerSetup
                     serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
                     string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
                     serverStream.Close();
-                    int hashStart = _returndata.IndexOf("KHS av=") + "KHS av=".Length;
+                    int hashStart = _returndata.IndexOf("KHS av=") + "KHS av=".Length; //Find hashrate
                     int hashEnd = _returndata.LastIndexOf(",KHS");
                     strHash = _returndata.Substring(hashStart, hashEnd - hashStart);
                 }
@@ -459,7 +457,7 @@ namespace MisasMinerSetup
 
                     System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
 
-                    while (true)
+                    while (true) //Try to connect to the API
                     {
 
                         try
@@ -472,7 +470,7 @@ namespace MisasMinerSetup
                         }
 
                     }
-                    string get_menu_request = "summary";
+                    string get_menu_request = "summary";  //Request summary
                     NetworkStream serverStream = clientSocket.GetStream();
                     byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
                     serverStream.Write(outStream, 0, outStream.Length);
@@ -481,25 +479,54 @@ namespace MisasMinerSetup
                     serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
                     string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
                     serverStream.Close();
-                    int hashStart = _returndata.IndexOf("KHS=") + "KHS=".Length;
+                    int hashStart = _returndata.IndexOf("KHS=") + "KHS=".Length; //Find hashrate
                     int hashEnd = _returndata.LastIndexOf(";SOLV=");
                     strHash = _returndata.Substring(hashStart, hashEnd - hashStart);
+
+                }
+            }
+        }
+        private void minerInfo2()
+        {
+            if (isMining == true) //Is the user mining
+            {
+               
+                if (gpuChoice == 0) //nvidia
+                {
+
+                    System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
+
+                    while (true) //Try to connect to the API
+                    {
+
+                        try
+                        {
+                            clientSocket.Connect("127.0.0.1", 4028);
+                            break;
+                        }
+                        catch
+                        {
+                        }
+
+                    }
+                    string get_menu_request = "pool";
+                    NetworkStream serverStream = clientSocket.GetStream();
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
+                    serverStream.Write(outStream, 0, outStream.Length);
+                    serverStream.Flush();
+                    byte[] inStream = new byte[65556];
+                    serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
+                    string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
+                    serverStream.Close();
+                    int hashStart = _returndata.IndexOf(";FAN=") + ";FAN=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
+                    int hashEnd = _returndata.LastIndexOf(";RPM=");
+                    strFan = _returndata.Substring(hashStart, hashEnd - hashStart);
+
                 }
             }
         }
             
-        
-        private void blockChange()
-        {
-            if(OldBlockcount != strBlocks)
-            {
-                OldBlockcount = strBlocks;
-                
-
-            }
-
-        }
-        private void saveConf()
+        private void saveConf() //Save user configs
         {
             Properties.Settings.Default.Pool = pool;
             Properties.Settings.Default.Wallet = wallet;
@@ -516,7 +543,7 @@ namespace MisasMinerSetup
             Properties.Settings.Default.Save();  
         }
 
-        private void checkBalance()
+        private void checkBalance() //Check wallet balance 
         {
             WebClient client = new WebClient();
             if (wallet != "")
@@ -534,10 +561,10 @@ namespace MisasMinerSetup
                     }
                 }
             }                
-                string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/");
+                string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/"); //Check GRLC current worth in $
                 string toBeSearched = "\"price_usd\": \"";
                 worth = downloadedWorth.Substring(downloadedWorth.IndexOf(toBeSearched) + toBeSearched.Length, 4);
-                webClient = null; //ASDASD
+                webClient = null;
         }
 
         private void checkCustomPool() //Checking if Custom is selected on pool and opening/closing textbox for custom pool
@@ -547,7 +574,7 @@ namespace MisasMinerSetup
             else { txbxPool.IsEnabled = false; }
         }
 
-        private void checkingFiles() //Checking if I am in the right folder with sgminer
+        private void checkingFiles() //Checking if I am in the right folder with miner files
         {
             if (gpuChoice != 2)
             {
@@ -559,11 +586,11 @@ namespace MisasMinerSetup
                 }
                 else if (gpuChoice == 0)
                 {
-                    fileCheck = File.Exists(appPath + "\\ccminer-x64.exe");                                                               //Checking if sgminer exists
+                    fileCheck = File.Exists(appPath + "\\ccminer-x64.exe");                                                               //Checking if ccminer exists
                 }
                 else if (gpuChoice == 3)
                 {
-                    fileCheck = File.Exists(appPath + "\\ccminer.exe");                                                               //Checking if sgminer exists
+                    fileCheck = File.Exists(appPath + "\\ccminer.exe");                                                               //Checking if ccminer for solomining exists
                 }
                 if (fileCheck == true)
                 {
@@ -591,14 +618,14 @@ namespace MisasMinerSetup
 
         private void unZipPool() //Unzipping sgminer or ccminer and moving MisasMinerSetup.exe to the new folder
         {
-            if (gpuChoice == 1)
+            if (gpuChoice == 1) //AMD
             {
                 string zipPath = appPath + "\\sg.zip";
                 string extractPath = appPath + "\\MisasMinerSetup";
                 ZipFile.ExtractToDirectory(zipPath, extractPath);                                                   //Extracting sg.zip into new folder called MisasMinerSetup
                 File.Delete(appPath + "\\sg.zip");                                                                  //Delete old zipfile
             }
-            else if (gpuChoice == 0)
+            else if (gpuChoice == 0) //NVIDIA
             {
                 string zipPath = appPath + "\\cc.zip";
                 string extractPath = appPath + "\\MisasMinerSetup";
@@ -613,13 +640,13 @@ namespace MisasMinerSetup
         private void unZipSolo() //Unzipping sgminer or ccminer and moving MisasMinerSetup.exe to the new folder
         {
 
-                string zipPath = appPath + "\\soloWallet.zip";
+                string zipPath = appPath + "\\soloWallet.zip";          
                 string extractPath = appPath + "\\MisasMinerSetup";
-                ZipFile.ExtractToDirectory(zipPath, extractPath);                                                   
+                ZipFile.ExtractToDirectory(zipPath, extractPath);                                                           
                 File.Delete(appPath + "\\soloWallet.zip");                                                                  //Delete old zipfile
             
-            File.Move(appPath + "\\MisasMinerSetup.exe", appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");   //Move MisasMinerSetup.exe to the new folder
-            System.Windows.MessageBox.Show("Wallet downloaded! Continuing with network and wallet setup"); //Hooray!
+            File.Move(appPath + "\\MisasMinerSetup.exe", appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");               //Move MisasMinerSetup.exe to the new folder
+            System.Windows.MessageBox.Show("Wallet downloaded! Continuing with network and wallet setup");                  //Hooray!
             System.Windows.MessageBox.Show("Give me network access to the cmd and do not close it! Just let it be.");
             conNetwork();
 
@@ -627,33 +654,33 @@ namespace MisasMinerSetup
 
         }
 
-        private void conNetwork()
+        private void conNetwork() //Opening network and installing needed files
         {
             //Opening cmd with given arguments
             cmd2.StartInfo.FileName = "cmd.exe";
-            cmd2.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat";
+            cmd2.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat"; 
             cmd2.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-            cmd2.Start();
+            cmd2.Start();       //Open network
             string appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             System.Windows.MessageBox.Show("Press \"ok\"");
-            string appdataPathGarli = appdataPath +"\\Garlicoin\\garlicoin.conf";
-            File.Move(appPath + "\\MisasMinerSetup\\garlicoin.conf", appdataPathGarli);
+            string appdataPathGarli = appdataPath +"\\Garlicoin\\garlicoin.conf"; 
+            File.Move(appPath + "\\MisasMinerSetup\\garlicoin.conf", appdataPathGarli); //Moving config file to the right place in %Appdata%
             Thread.Sleep(500);
-            System.Windows.MessageBox.Show("I will throw an error now. Just close it as it restarts and just let it be");
+            System.Windows.MessageBox.Show("I will throw an error now. Just close it as it restarts and just let it be"); //Didn't make the network files so I cant do anything about the errors. Is what it is.
             Thread.Sleep(500);
             cmd2.CloseMainWindow();
             System.Windows.MessageBox.Show("Press \"ok\" if you closed the error.");
             cmd2.StartInfo.FileName = "cmd.exe";
-            cmd2.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat";
+            cmd2.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat"; 
             cmd2.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-            cmd2.Start();
+            cmd2.Start();                           //Restart network to start downloading blocks
             string output = string.Empty;
             string error = string.Empty;
             Thread.Sleep(1000);
             System.Windows.MessageBox.Show("This will take a while. We are checking if you have downloaded all the blocks needed.");
             string blockCount = "asd";
             string downloadedBlock = "fgh";
-            for (int i = 0; blockCount != downloadedBlock ; i++)
+            for (int i = 0; blockCount != downloadedBlock ; i++) //Checking blockcount and comparing to downloaded blocks
             {
             ProcessStartInfo processStartInfo = new ProcessStartInfo("cmd", "/K cd " + appPath + "\\MisasMinerSetup\\ && garlicoin-cli getblockchaininfo && exit");
             processStartInfo.RedirectStandardOutput = true;
@@ -669,12 +696,12 @@ namespace MisasMinerSetup
             WebClient client = new WebClient();
             downloadedBlock = client.DownloadString("https://explorer.grlc-bakery.fun/api/getblockcount");
             webClient = null;
-            System.Windows.MessageBox.Show(blockCount + "/" + downloadedBlock + "\nPress ok to check again. Will probably take some time...");
+            System.Windows.MessageBox.Show(blockCount + "/" + downloadedBlock + "\nPress ok to check again. Will probably take some time..."); //Showing user how many blocks are downloaded from the needed amount.
             }
             System.Windows.MessageBox.Show("FINISHED! Yayyyy that was too long I know...");
             System.Windows.MessageBox.Show("Let's now setup your wallet! Copy the wallet code from the screen and close the wallet cmd. Do not close the 1st cmd that should still be running in the background. You need to run it whenever you mine or use your wallet");
             cmd3.StartInfo.FileName = "cmd.exe";
-            cmd3.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && garlicoin-cli getnewaddress";
+            cmd3.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && garlicoin-cli getnewaddress"; //Get local wallet address
             cmd3.Start();
             System.Windows.MessageBox.Show("Remember to back up your wallet.dat file! You can find it in %appdata%/Garlicoin/");
             webClient = new WebClient();
@@ -701,7 +728,7 @@ namespace MisasMinerSetup
         }
 
 
-        private void checkTemp()
+        private void checkTemp() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
     {
             Computer computer = new Computer() { GPUEnabled = true };
             computer.Open();
@@ -709,6 +736,7 @@ namespace MisasMinerSetup
             timer.Elapsed += delegate(object sender, ElapsedEventArgs e)
             {
                 minerInfo();
+                minerInfo2();
                 updateHover();
                 foreach (IHardware hardware in computer.Hardware)
                 {
@@ -730,7 +758,7 @@ namespace MisasMinerSetup
                             {
                                 if (intTemp >= temp - 5)
                                 {
-                                    notifier.ShowWarning("GPU TEMPERATURE NEARING MAX! CURRENT TEMPERATURE " + cleanTemp);
+                                    notifier.ShowWarning("GPU TEMPERATURE NEARING MAX! CURRENT TEMPERATURE " + cleanTemp); //Show temperature warning if user opted in.
                                 }
                             }
                         }
@@ -752,7 +780,7 @@ namespace MisasMinerSetup
 
         Notifier notifier = new Notifier(cfg =>
         {
-            cfg.PositionProvider = new PrimaryScreenPositionProvider(Corner.BottomRight, 0, 40);
+            cfg.PositionProvider = new PrimaryScreenPositionProvider(Corner.BottomRight, 0, 40); //Creating notifiers using ToastNotifications
 
             cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
                 notificationLifetime: TimeSpan.FromSeconds(3),
@@ -763,7 +791,7 @@ namespace MisasMinerSetup
 
 
 
-        [DllImport("User32.dll")]
+        [DllImport("User32.dll")] //Creating hotkeys for notifications of current hashrate
         private static extern bool RegisterHotKey(
             [In] IntPtr hWnd,
             [In] int id,
@@ -833,6 +861,7 @@ namespace MisasMinerSetup
         private void OnHotKeyPressed()
         {
             notifier.ShowInformation(strHash + "Kh/s");
+            notifier.ShowInformation(strFan + "%");
         }
 
     }
