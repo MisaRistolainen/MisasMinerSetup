@@ -1,3 +1,5 @@
+[![Github All Releases](https://img.shields.io/github/downloads/MisaRistolainen/MisasMinerSetup/total.svg?style=for-the-badge)](https://github.com/MisaRistolainen/MisasMinerSetup/releases)
+[![license](https://img.shields.io/github/license/MisaRistolainen/MisasMinerSetup.svg?style=for-the-badge)](https://choosealicense.com/licenses/gpl-3.0/)
 # MisasMinerSetup # 
 FOR AMD OR NVIDIA GPUs!
 -
@@ -11,16 +13,16 @@ It currently is in development and might be buggy.
 
 ---
 
-https://streamable.com/6atv7 Short walkthrough of 1st launch on AMD cards.
+Short walkthrough of the 1st launch on AMD cards can be found [Here](https://streamable.com/6atv7)
 
-https://streamable.com/89x58 A little bit more indepth walkthrough with explanations. Also for AMD
+A little bit more indepth walkthrough with explanations, also for AMD can be found [Here](https://streamable.com/89x58)
 
 ---
 
-.EXE can be found in releases.
+.EXE can be found in [releases](https://github.com/MisaRistolainen/MisasMinerSetup/releases).
 
 I have heard that windows security thinks it is a trojan but it is a falsepositive. I invite you to upload it to virustotal or your preferred virus detection program.
-Currently trying to fix that but if you don't trust me, build the file yourself from the source files.
+Currently trying to fix that, but if you don't trust me, build the file yourself from the source files.
 
 ---
 
