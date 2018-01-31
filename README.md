@@ -1,7 +1,6 @@
 # MisasMinerSetup
 FOR AMD OR NVIDIA GPUs!
 
-# MisasMinerSetup 
 This is a simple GUI setup program to start mining.
 
 Can also be used as a nice GUI while mining to get on-demand hashrates and temps.
