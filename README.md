@@ -16,7 +16,6 @@ Download .EXE file from releases.
 I have heard that it gives false positive trojan virus alerts probably due to the fact that it downloads some miner files if needed.
 Currently trying to fix that but if you don't trust me, build the file yourself from the source files.
 
-Downloadable exe will always be the newest version that is listed here.
 
 Instructions:
 
