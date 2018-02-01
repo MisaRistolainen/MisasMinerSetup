@@ -93,6 +93,7 @@ namespace MisasMinerSetup
         public bool bldevice1;
         public bool bldevice2;
         public bool bldevice3;
+        public string ddevice;
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -904,6 +905,7 @@ namespace MisasMinerSetup
                         {
                          string gpuTemp =  (sensor.Value + "°C");
                          cleanTemp = gpuTemp;
+                            System.Windows.MessageBox.Show(hardware.Name);
                          int intTemp = Int32.Parse(cleanTemp.Substring(0,2));
                             this.Dispatcher.Invoke(() =>
                                 { 
@@ -918,17 +920,9 @@ namespace MisasMinerSetup
                                 }
                             }
                         }
-                        if(sensor.SensorType == SensorType.Load)
-                        {
-                            string gpuLoad = (sensor.Value + "%");
-                            cleanLoad = gpuLoad;
-                            this.Dispatcher.Invoke(() =>
-                            {
-                                txtLoad.Text = cleanLoad;
-                            });
-                        }
 
                     }
+
                 }
 
             };
