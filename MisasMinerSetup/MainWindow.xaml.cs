@@ -94,6 +94,8 @@ namespace MisasMinerSetup
         public bool bldevice2;
         public bool bldevice3;
         public string ddevice0;
+        public string devicePar;
+        public string GPUList = Properties.Resources.GPUList;
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -883,22 +885,6 @@ namespace MisasMinerSetup
 
         }
 
-        private void ConfirmGPU()
-        {
-            while (true) //Try to connect to the API
-            {
-                try
-                {
-                    ddevice0 = ddevice0.Substring(ddevice0.IndexOf("RX"));
-                    break;
-                }
-                catch
-                {
-
-                }
-
-            }
-        }
 
         private void GetRecommendedConf()
         {
@@ -912,10 +898,12 @@ namespace MisasMinerSetup
                 }
             }
             System.Windows.MessageBox.Show(ddevice0);
-            File.ReadLines("GPUlist.txt")
-    .SkipWhile(line => !line.Contains("Start" + ddevice0))
-    //.Skip(1) // optional
-    .TakeWhile(line => !line.Contains("End" + ddevice0));
+            string completeStart = "Start" + ddevice0;
+            string completeEnd = "End" + ddevice0;
+            int deviceStart = GPUList.IndexOf(completeStart) + completeStart.Length; //Find hashrate
+            int deviceEnd = GPUList.LastIndexOf(completeEnd);
+            devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
+            System.Windows.MessageBox.Show(devicePar);
         }
             
         private void checkTemp() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
