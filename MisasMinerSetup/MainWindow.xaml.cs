@@ -909,30 +909,38 @@ namespace MisasMinerSetup
             foreach (var hardware in computer.Hardware)
             {
                 hardware.Update();
-
-                GPUHardwareNodes.Add(new GPUHardwareNode(hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors));
+                GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors));
             }
 
             foreach (var g in GPUHardwareNodes)
             {
-                notifier.ShowError($"{g.Name}--{g.Ident}--{g.Type}--{g.Sensors.Count()}");
+                notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
             }
         }
 
-        public struct GPUHardwareNode
+        public class GPUHardwareNode
         {
+            public IHardware Hardware;
             public HardwareType Type;
             public Identifier Ident;
             public String Name;
-            public ISensor[] Sensors;
+            private ISensor[] _sensors;
 
-            public GPUHardwareNode(HardwareType hwType, Identifier hwIdent, string hwName, ISensor[] hwSensors)
+            public GPUHardwareNode(IHardware hw, HardwareType hwType, Identifier hwIdent, string hwName, ISensor[] hwSensors)
             {
+                Hardware = hw;
                 Type = hwType;
                 Ident = hwIdent;
                 Name = hwName;
-                Sensors = hwSensors;
+                _sensors = hwSensors;
             }
+
+            public ISensor[] PollSensors()
+            {
+                Hardware.Update();
+                return _sensors;
+            }
+
         }
 
         private void PollHardware() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
@@ -947,7 +955,8 @@ namespace MisasMinerSetup
 
                 foreach (var hardwareNode in GPUHardwareNodes)
                 {
-                    foreach (var sensor in hardwareNode.Sensors)
+                    var hardwareSensors = hardwareNode.PollSensors();
+                    foreach (var sensor in hardwareSensors)
                     {
                         switch (sensor.SensorType)
                         {
@@ -958,7 +967,6 @@ namespace MisasMinerSetup
                             case SensorType.Temperature:
                                 var gpuTemp = (sensor.Value + "°C");
                                 cleanTemp = gpuTemp;
-                                System.Windows.MessageBox.Show(hardwareNode.Name);
                                 var intTemp = Int32.Parse(cleanTemp.Substring(0, 2));
                                 Dispatcher.Invoke(() =>
                                 {
