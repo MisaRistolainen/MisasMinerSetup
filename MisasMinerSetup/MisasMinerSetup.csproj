@@ -152,9 +152,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="BG.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Refresh.png" />
   </ItemGroup>
   <ItemGroup>

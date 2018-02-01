@@ -44,6 +44,7 @@
                 <DropShadowEffect/>
             </TextBlock.Effect>
         </TextBlock>
+        <Button x:Name="btnDevices" Content="Devices" Click="btnDevices_Click" HorizontalAlignment="Left" Margin="424,109,0,0" VerticalAlignment="Top" Width="81" Height="24" Background="#FFB2B2B2" Visibility="{Binding visi}" FontWeight="Bold" FontSize="16"/>
 
         <TextBlock x:Name="txtBal2" HorizontalAlignment="Left" Margin="381,0,0,0" TextWrapping="Wrap" Text="{Binding balance}" VerticalAlignment="Top" Height="18" Width="43" Foreground="White" ToolTip="I'm a dumb program and I crash if you're wallet is not recognised on the network. Wait and try again later if that happens"/>
         <ComboBox x:Name="ComboBox1" HorizontalAlignment="Left" Margin="108,63,0,0" VerticalAlignment="Top" Width="170" SelectedValue="{Binding selectedPool}" SelectedValuePath="Content">
@@ -76,7 +77,7 @@
         <TextBox x:Name="txtlbox" HorizontalAlignment="Left" Height="23" Margin="45,186,0,0" TextWrapping="Wrap" Text="{Binding l}" VerticalAlignment="Top" Width="55" FontSize="16" ToolTip="No touchi if no understandi"/>
         <Button x:Name="btnDonate"  Content="Thank you" Click="btnDonate_Click" HorizontalAlignment="Left" Margin="428,335,0,0" VerticalAlignment="Top" Width="80" Height="15" Background="#FFC5C5C5" FontWeight="Bold" FontSize="9"/>
         <TextBox x:Name="txtDonatos" HorizontalAlignment="Left" Height="195" Margin="63,118,0,0" TextWrapping="Wrap"  Text="BTC:  3DipZ4uwG4ZXEeYfik6JDMv6zgzw4vTwuJ&#xD;&#xA;Dash: XpqXZWWPqSj5WfuVJE3aiVSnAbcZLYd6CP&#xD;&#xA;GRLC: Gd7zf4ZsAZtcYNWmALJVMCpsj9MS5MJi2x&#xD;&#xA;XMR: 45XumvbTqLfVhhG63AAFHBYgbcSrPak3zAfJjFVnFrbeakkJmtSKTUF2fqnu7ia9tp5PGRUw4hKVwaEwpczvXu6H1CDw52H&#xD;&#xA;ETH: 0xa7c4cAC051e5c50DA870AE6385C0b5A94414B9e4           &#xD;&#xA;&#xD;&#xA;" VerticalAlignment="Top" Width="406" FontSize="14" Background="LightGray" FontWeight="Bold" Visibility="Hidden" />
-        <Button x:Name="btnsetx" Content="SETX" Click="btnsetx_Click" HorizontalAlignment="Left" Margin="424,94,0,0" VerticalAlignment="Top" Width="81" Height="24" Background="#FFB2B2B2" Visibility="{Binding visi}" FontWeight="Bold" FontSize="16"/>
+        <Button x:Name="btnsetx" Content="SETX" Click="btnsetx_Click" HorizontalAlignment="Left" Margin="424,85,0,0" VerticalAlignment="Top" Width="81" Height="24" Background="#FFB2B2B2" Visibility="{Binding visi}" FontWeight="Bold" FontSize="16"/>
         <Button x:Name="btnCloseDonate"  Content="Close" Click="btnCloseDonate_Click"  HorizontalAlignment="Left" Margin="215,266,0,0" VerticalAlignment="Top" Width="80" Height="39" Background="#FFC5C5C5" FontWeight="Bold" FontSize="16" Visibility="Hidden"/>
         <TextBlock x:Name="txtwait" HorizontalAlignment="Left" Margin="139,294,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" Visibility="Hidden"><Run Text="Downloading..."/></TextBlock>
         <TextBlock x:Name="txtChoose" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FFD1D1D1" Foreground="Black" Height="350" Width="525" TextAlignment="Center" FontSize="36"><Run/><LineBreak/><Run Text="Which GPU do you have?"/></TextBlock>
@@ -100,6 +101,19 @@
         <Slider x:Name="sldrGPU" HorizontalAlignment="Left" Margin="214,216,0,0" VerticalAlignment="Top" Width="63" Maximum="2" Value="{Binding monGPU}" Visibility="Hidden"/>
         <TextBlock x:Name="txtMonAMD" HorizontalAlignment="Left" Margin="161,210,0,0" TextWrapping="Wrap" Text="AMD" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Foreground="White" Visibility="Hidden"/>
         <TextBlock x:Name="txtMonNvidia" HorizontalAlignment="Left" Margin="282,210,0,0" TextWrapping="Wrap" Text="Nvidia" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Foreground="White" Visibility="Hidden"/>
+        <TextBlock x:Name="txtDevices" HorizontalAlignment="Left" Margin="416,110,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="110" Width="96" FontSize="14" FontWeight="Bold" TextAlignment="Center" Visibility="Hidden">
+            <TextBlock.Effect>
+                <DropShadowEffect/>
+            </TextBlock.Effect>
+            <TextBlock.Background>
+                <SolidColorBrush Color="#FF7C7C7C" Opacity="0.96"/>
+            </TextBlock.Background><Run FontSize="22" Text="Devices"/><LineBreak/><Run FontSize="22" Text="0 1 2 3"/><LineBreak/><Run FontSize="22" Text=" "/></TextBlock>
+        <CheckBox x:Name="device0" Content="" HorizontalAlignment="Left" Margin="427,168,0,0" VerticalAlignment="Top" Width="15" RenderTransformOrigin="1.222,0.634" Checked="device0_Checked" Unchecked="device0_Unchecked" IsChecked="True" Visibility="Hidden"/>
+        <CheckBox x:Name="device1" Content="" HorizontalAlignment="Left" Margin="446,168,0,0" VerticalAlignment="Top" Width="15" RenderTransformOrigin="1.222,0.634" Checked="device1_Checked" Unchecked="device1_Unchecked" Visibility="Hidden"/>
+        <CheckBox x:Name="device2" Content="" HorizontalAlignment="Left" Margin="465,168,0,0" VerticalAlignment="Top" Width="15" RenderTransformOrigin="1.222,0.634" Checked="device2_Checked" Unchecked="device2_Unchecked" Visibility="Hidden"/>
+        <CheckBox x:Name="device3" Content="" HorizontalAlignment="Left" Margin="484,168,0,0" VerticalAlignment="Top" Width="15" RenderTransformOrigin="1.222,0.634" Checked="device3_Checked" Unchecked="device3_Unchecked" Visibility="Hidden"/>
+        <Button x:Name="btnDeviceSave" Content="Save" Click="btnDeviceSave_Click" HorizontalAlignment="Left" Margin="428,187,0,0" VerticalAlignment="Top" Width="71" Height="24" Background="#FFB2B2B2" FontWeight="Bold" FontSize="16" Visibility="Hidden"/>
+
 
     </Grid>
 

@@ -89,8 +89,12 @@ namespace MisasMinerSetup
         public string strUsage;
         public int blocksFound;
         public int oldBlocksFound;
+        public bool bldevice0;
+        public bool bldevice1;
+        public bool bldevice2;
+        public bool bldevice3;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public MainWindow()
         {
@@ -140,7 +144,6 @@ namespace MisasMinerSetup
             updateHover();
             minerInfo();
             minerInfo2();
-            minerInfo3();
             checkBlocksFound();
 
 
@@ -337,9 +340,8 @@ namespace MisasMinerSetup
             btnsetxSave.Visibility = System.Windows.Visibility.Hidden;
         }
         
-            private void Refresh_Click(object sender, RoutedEventArgs e) //Update icon click
+        private void Refresh_Click(object sender, RoutedEventArgs e) //Update icon click
             {
-                isMining = true;
                 checkBalance();
                 updateHover();;
 
@@ -358,6 +360,7 @@ namespace MisasMinerSetup
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void StartButton_Click(object sender, RoutedEventArgs e) //"RIP GPU" button which starts cmd
         {
+            string devices = checkDevices();
             isMining = true;
             saveConf();
             string strPool;
@@ -387,11 +390,11 @@ namespace MisasMinerSetup
             }
             if (gpuChoice == 1) //If AMD GPU was chosen
             {
-                strArg = "sgminer --api-listen --temp-cutoff " + temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -p x -I " + strInt; //Constructing final string to run
+                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -p x -I " + strInt; //Constructing final string to run
             }
             else if (gpuChoice == 0) //If Nvidia GPU was chosen
             {
-                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -i " + strInt + " --max-temp=" + temp + " "; //Constructing final string to run
+                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -i " + strInt + " --max-temp=" + temp + " "; //Constructing final string to run
 
             }
             else if (gpuChoice == 3) //If Nvidia solomining was chosen
@@ -455,6 +458,43 @@ namespace MisasMinerSetup
             webClient = null;
             unZipSolo();                                           //Unzipping solo files.
 
+        }
+        private string checkDevices()
+        {
+            string deviceList = "";
+            if (bldevice0 == true)
+            {
+                if (deviceList == "")
+                {
+                    deviceList += "0";
+                }
+                else { deviceList += ",0"; }
+            }
+            if (bldevice1 == true)
+            {
+                if (deviceList == "")
+                {
+                    deviceList += "1";
+                }
+                else { deviceList += ",1"; }
+            }
+            if (bldevice2 == true)
+            {
+                if (deviceList == "")
+                {
+                    deviceList += "2";
+                }
+                else { deviceList += ",2"; }
+            }
+            if (bldevice3 == true)
+            {
+                if (deviceList == "")
+                {
+                    deviceList += "4";
+                }
+                else { deviceList += ",4"; }
+            }
+            return deviceList;
         }
         private void minerInfo() //Get minerinfo from miner API
         {
@@ -567,9 +607,12 @@ namespace MisasMinerSetup
                         serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
                         string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
                         serverStream.Close();
-                        int hashStart = _returndata.IndexOf("GPU Activity=") + "GPU Activity=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
-                        int hashEnd = _returndata.LastIndexOf(",Powertune=");
-                        strUsage = _returndata.Substring(hashStart, hashEnd - hashStart);
+                        int hashStart = _returndata.IndexOf("Fan Percent=") + "Fan Percent=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
+                        int hashEnd = _returndata.LastIndexOf(",GPU Clock=");
+                        strFan = _returndata.Substring(hashStart, hashEnd - hashStart);
+                        int activityStart = _returndata.IndexOf("GPU Activity=") + "GPU Activity=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
+                        int activityEnd = _returndata.LastIndexOf(",Powertune=");
+                        strUsage = _returndata.Substring(activityStart, activityEnd - activityStart);
                     }
                 }
 
@@ -613,85 +656,10 @@ namespace MisasMinerSetup
                         var usageU = float.Parse(strUsageUsed);
                         var usagePerc = usageU / usageB * 100f;
                         strUsage = usagePerc.ToString("00.00");
+                        int fanStart = _returndata.IndexOf(";FAN=") + ";FAN=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
+                        int fanEnd = _returndata.LastIndexOf(";RPM=");
+                        strFan = _returndata.Substring(fanStart, fanEnd - fanStart);
 
-                    }
-                }
-            }
-        }
-        private void minerInfo3()
-        {
-            if (isMining == true) //Is the user mining
-            {
-                if (gpuChoice == 1 || monGPU == 0) //AMD
-                {
-
-                    System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
-
-                    while (true) //Try to connect to the API
-                    {
-                        if(monGPU != 0 && gpuChoice == 2)
-                        { break; }
-                        try
-                        {
-                            clientSocket.Connect("127.0.0.1", 4028);
-                            break;
-                        }
-                        catch
-                        {
-                        }
-
-                    }
-                    if (gpuChoice == 1 || monGPU == 0) //AMD
-                    {
-                        string get_menu_request = "devs";
-                        NetworkStream serverStream = clientSocket.GetStream();
-                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
-                        serverStream.Write(outStream, 0, outStream.Length);
-                        serverStream.Flush();
-                        byte[] inStream = new byte[65556];
-                        serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
-                        string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
-                        serverStream.Close();
-                        int hashStart = _returndata.IndexOf("Fan Percent=") + "Fan Percent=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
-                        int hashEnd = _returndata.LastIndexOf(",GPU Clock=");
-                        strFan = _returndata.Substring(hashStart, hashEnd - hashStart);
-                    }
-                }
-
-                if (gpuChoice == 0 || monGPU == 2) //nvidia
-                {
-
-                    System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
-
-                    while (true) //Try to connect to the API
-                    {
-                        if (monGPU != 2 && gpuChoice == 2)
-                        { break; }
-                        try
-                        {
-                            clientSocket.Connect("127.0.0.1", 4028);
-                            break;
-                        }
-                        catch
-                        {
-                        }
-
-                    }
-
-                    if (gpuChoice == 0 || monGPU == 2) //nvidia
-                    {
-                        string get_menu_request = "threads";
-                        NetworkStream serverStream = clientSocket.GetStream();
-                        byte[] outStream = System.Text.Encoding.ASCII.GetBytes(get_menu_request);
-                        serverStream.Write(outStream, 0, outStream.Length);
-                        serverStream.Flush();
-                        byte[] inStream = new byte[65556];
-                        serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
-                        string _returndata = System.Text.Encoding.ASCII.GetString(inStream);
-                        serverStream.Close();
-                        int hashStart = _returndata.IndexOf(";FAN=") + ";FAN=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
-                        int hashEnd = _returndata.LastIndexOf(";RPM=");
-                        strFan = _returndata.Substring(hashStart, hashEnd - hashStart);
                     }
                 }
             }
@@ -714,30 +682,29 @@ namespace MisasMinerSetup
             Properties.Settings.Default.Save();  
         }
 
-        private void checkBalance() //Check wallet balance 
+        private void checkBalance() //Check worth 
         {
             WebClient client = new WebClient();
             if (wallet != "")
             {
-                while (true)
-                {
-                    try
-                    {
+
                         string downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
-                        balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
-                        break;
-                    }
-                    catch
-                    {
-                    }
-                }
+                        if (downloadedString.Substring(0, 4) != "{\"er")
+                        {
+                            balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
+                        }
+                        else
+                         {
+                    System.Windows.MessageBox.Show("Wallet not found. Are you sure it has some balance in it?");
+                         }
+                
             }                
                 string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/"); //Check GRLC current worth in $
                 string toBeSearched = "\"price_usd\": \"";
                 worth = downloadedWorth.Substring(downloadedWorth.IndexOf(toBeSearched) + toBeSearched.Length, 4);
                 webClient = null;
         }
-        private void checkBlocksFound() //Check wallet balance 
+        private void checkBlocksFound() //Check blocks founds 
         {
             if (selectedPool == "happy.garlicoin.fun:3210")
             {
@@ -822,7 +789,7 @@ namespace MisasMinerSetup
             }
             File.Move(appPath + "\\MisasMinerSetup.exe", appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");   //Move MisasMinerSetup.exe to the new folder
             System.Windows.MessageBox.Show("Download completed! You will now find me inside the folder \"MisasMinerSetup\"."); //Hooray!
-            Close();                                                                                            //Close application for restart from the new location
+            System.Windows.Application.Current.Shutdown();                                                                                         //Close application for restart from the new location
             Process.Start(appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");                                  //Restart
         }
         private void unZipSolo() //Unzipping sgminer or ccminer and moving MisasMinerSetup.exe to the new folder
@@ -926,7 +893,6 @@ namespace MisasMinerSetup
                 checkBlocksFound();
                 minerInfo();
                 minerInfo2();
-                minerInfo3();
                 updateHover();
                 foreach (IHardware hardware in computer.Hardware)
                 {
@@ -1055,7 +1021,65 @@ namespace MisasMinerSetup
             notifier.ShowInformation("GPU Usage: " + strUsage + "%");
         }
 
+        private void btnDevices_Click(object sender, RoutedEventArgs e)
+        {
+            txtDevices.Visibility = System.Windows.Visibility.Visible;
+            device0.Visibility = System.Windows.Visibility.Visible;
+            device1.Visibility = System.Windows.Visibility.Visible;
+            device2.Visibility = System.Windows.Visibility.Visible;
+            device3.Visibility = System.Windows.Visibility.Visible;
+            btnDeviceSave.Visibility = System.Windows.Visibility.Visible;
+        }
 
+        private void device0_Unchecked(object sender, RoutedEventArgs e)
+        {
+            bldevice0 = false;
+        }
+
+        private void device0_Checked(object sender, RoutedEventArgs e)
+        {
+            bldevice0 = true;
+        }
+
+        private void device1_Checked(object sender, RoutedEventArgs e)
+        {
+            bldevice1 = true;
+        }
+
+        private void device1_Unchecked(object sender, RoutedEventArgs e)
+        {
+            bldevice1 = false;
+        }
+
+        private void device2_Checked(object sender, RoutedEventArgs e)
+        {
+            bldevice2 = true;
+        }
+
+        private void device2_Unchecked(object sender, RoutedEventArgs e)
+        {
+            bldevice2 = false;
+        }
+
+        private void device3_Checked(object sender, RoutedEventArgs e)
+        {
+            bldevice3 = true;
+        }
+
+        private void device3_Unchecked(object sender, RoutedEventArgs e)
+        {
+            bldevice3 = false;
+        }
+
+        private void btnDeviceSave_Click(object sender, RoutedEventArgs e)
+        {
+            txtDevices.Visibility = System.Windows.Visibility.Hidden;
+            device0.Visibility = System.Windows.Visibility.Hidden;
+            device1.Visibility = System.Windows.Visibility.Hidden;
+            device2.Visibility = System.Windows.Visibility.Hidden;
+            device3.Visibility = System.Windows.Visibility.Hidden;
+            btnDeviceSave.Visibility = System.Windows.Visibility.Hidden;
+        }
     }
    
 }
