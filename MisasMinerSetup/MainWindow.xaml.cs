@@ -93,6 +93,9 @@ namespace MisasMinerSetup
         public bool bldevice1;
         public bool bldevice2;
         public bool bldevice3;
+
+
+
         public string ddevice0;
         public string devicePar;
         public string GPUList = Properties.Resources.GPUList;
