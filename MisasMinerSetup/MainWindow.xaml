@@ -96,6 +96,10 @@
                 <ImageBrush ImageSource="TESTIBG.png"/>
             </TextBlock.Background><Run Text="            Legit testimonials:"/><LineBreak/><Run/><LineBreak/><Run FontWeight="Bold" FontSize="14" Text="&quot;Wish it had been around when I started, makes the process so much easier. Miisu's GUI might be the father of my illegitimate daughter&quot; -Gronten"/><LineBreak/><LineBreak/><Run FontWeight="Bold" FontSize="14" Text="&quot;Misa's miner made it easy to cheat on happy garlic pool, my own wallet and even my girlfriend. Cheating has never been easier than now. Also it paid my bills.&quot; -fuckDiscord"/></TextBlock>
         <Button x:Name="btnCloseTest" Content="Sure" Click="btnCloseTest_Click" HorizontalAlignment="Left" Margin="214,316,0,0" VerticalAlignment="Top" Width="81" Height="24" Background="#FFB2B2B2" FontWeight="Bold" FontSize="16" Visibility="Hidden"/>
+        <Button x:Name="btnMonitor"  Content="Monitor" Click="btnMonitor_Click"  HorizontalAlignment="Left" Margin="388,0,0,0" VerticalAlignment="Top" Width="137" Height="37" Background="#FFC5C5C5" FontWeight="Bold" FontSize="24"/>
+        <Slider x:Name="sldrGPU" HorizontalAlignment="Left" Margin="214,216,0,0" VerticalAlignment="Top" Width="63" Maximum="2" Value="{Binding monGPU}" Visibility="Hidden"/>
+        <TextBlock x:Name="txtMonAMD" HorizontalAlignment="Left" Margin="161,210,0,0" TextWrapping="Wrap" Text="AMD" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Foreground="White" Visibility="Hidden"/>
+        <TextBlock x:Name="txtMonNvidia" HorizontalAlignment="Left" Margin="282,210,0,0" TextWrapping="Wrap" Text="Nvidia" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Foreground="White" Visibility="Hidden"/>
 
     </Grid>
 
