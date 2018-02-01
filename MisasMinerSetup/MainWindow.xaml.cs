@@ -93,7 +93,7 @@ namespace MisasMinerSetup
         public bool bldevice1;
         public bool bldevice2;
         public bool bldevice3;
-        public string ddevice;
+        public string ddevice0;
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -883,7 +883,41 @@ namespace MisasMinerSetup
 
         }
 
+        private void ConfirmGPU()
+        {
+            while (true) //Try to connect to the API
+            {
+                try
+                {
+                    ddevice0 = ddevice0.Substring(ddevice0.IndexOf("RX"));
+                    break;
+                }
+                catch
+                {
 
+                }
+
+            }
+        }
+
+        private void GetRecommendedConf()
+        {
+            string[] values = new[] { "RX", "GTX", "GT", "R9" };
+            foreach (string item in values)
+            {
+                int index = ddevice0.IndexOf(item);
+                if (index != -1)
+                {
+                    ddevice0 = ddevice0.Substring(index);
+                }
+            }
+            System.Windows.MessageBox.Show(ddevice0);
+            File.ReadLines("GPUlist.txt")
+    .SkipWhile(line => !line.Contains("Start" + ddevice0))
+    //.Skip(1) // optional
+    .TakeWhile(line => !line.Contains("End" + ddevice0));
+        }
+            
         private void checkTemp() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
     {
             Computer computer = new Computer() { GPUEnabled = true };
@@ -905,7 +939,8 @@ namespace MisasMinerSetup
                         {
                          string gpuTemp =  (sensor.Value + "°C");
                          cleanTemp = gpuTemp;
-                            System.Windows.MessageBox.Show(hardware.Name);
+                            ddevice0 = hardware.Name;
+                            GetRecommendedConf();
                          int intTemp = Int32.Parse(cleanTemp.Substring(0,2));
                             this.Dispatcher.Invoke(() =>
                                 { 
