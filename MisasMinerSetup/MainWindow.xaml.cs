@@ -93,12 +93,8 @@ namespace MisasMinerSetup
         public bool bldevice1;
         public bool bldevice2;
         public bool bldevice3;
-
-
-
         public string devicePar;
         public string GPUList = Properties.Resources.GPUList;
-        public string ddevice;
         public Computer computer;
         public List<GPUHardwareNode> GPUHardwareNodes = new List<GPUHardwareNode>();
 
@@ -268,6 +264,7 @@ namespace MisasMinerSetup
             txtlbox.Visibility = System.Windows.Visibility.Hidden;
             btnMonitor.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
+            GetRecommendedConf();
         }
         private void BtnMonitor_Click(object sender, RoutedEventArgs e)
         {
@@ -911,22 +908,25 @@ namespace MisasMinerSetup
 
         private void GetRecommendedConf()
         {
-            string[] values = new[] { "RX", "GTX", "GT", "R9" };
-            foreach (string item in values)
+            foreach (var g in GPUHardwareNodes)
             {
-                int index = ddevice.IndexOf(item);
-                if (index != -1)
+                string[] values = new[] { "RX", "GTX", "GT", "R9" };
+                foreach (string item in values)
                 {
-                    ddevice = ddevice.Substring(index);
+                    int index = g.Name.IndexOf(item);
+                    if (index != -1)
+                    {
+                        g.Name = g.Name.Substring(index);
+                    }
                 }
+                System.Windows.MessageBox.Show(g.Name);
+                string completeStart = "Start" + g.Name;
+                string completeEnd = "End" + g.Name;
+                int deviceStart = GPUList.IndexOf(completeStart) + completeStart.Length; //Find hashrate
+                int deviceEnd = GPUList.LastIndexOf(completeEnd);
+                devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
+                System.Windows.MessageBox.Show(devicePar);
             }
-            System.Windows.MessageBox.Show(ddevice);
-            string completeStart = "Start" + ddevice;
-            string completeEnd = "End" + ddevice;
-            int deviceStart = GPUList.IndexOf(completeStart) + completeStart.Length; //Find hashrate
-            int deviceEnd = GPUList.LastIndexOf(completeEnd);
-            devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
-            System.Windows.MessageBox.Show(devicePar);
         }
             
 
