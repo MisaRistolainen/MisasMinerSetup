@@ -96,7 +96,6 @@ namespace MisasMinerSetup
 
 
 
-        public string ddevice0;
         public string devicePar;
         public string GPUList = Properties.Resources.GPUList;
         public string ddevice;
@@ -124,6 +123,7 @@ namespace MisasMinerSetup
             MinerInfo();
             MinerInfo2();
             CheckBlocksFound();
+            
 
         }
 
@@ -914,15 +914,15 @@ namespace MisasMinerSetup
             string[] values = new[] { "RX", "GTX", "GT", "R9" };
             foreach (string item in values)
             {
-                int index = ddevice0.IndexOf(item);
+                int index = ddevice.IndexOf(item);
                 if (index != -1)
                 {
-                    ddevice0 = ddevice0.Substring(index);
+                    ddevice = ddevice.Substring(index);
                 }
             }
-            System.Windows.MessageBox.Show(ddevice0);
-            string completeStart = "Start" + ddevice0;
-            string completeEnd = "End" + ddevice0;
+            System.Windows.MessageBox.Show(ddevice);
+            string completeStart = "Start" + ddevice;
+            string completeEnd = "End" + ddevice;
             int deviceStart = GPUList.IndexOf(completeStart) + completeStart.Length; //Find hashrate
             int deviceEnd = GPUList.LastIndexOf(completeEnd);
             devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
@@ -948,6 +948,7 @@ namespace MisasMinerSetup
             {
                 notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
             }
+
         }
 
         public class GPUHardwareNode
