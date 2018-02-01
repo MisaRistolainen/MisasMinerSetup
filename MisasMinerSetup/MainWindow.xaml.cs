@@ -65,7 +65,7 @@ namespace MisasMinerSetup
         public int intcheckLook;
         public string strlookup;
         private string _selectedPool;
-        public string selectedPool { get { return _selectedPool; } set   { _selectedPool = value; checkCustomPool();}  } //Selected pool from the list
+        public string selectedPool { get { return _selectedPool; } set { _selectedPool = value; CheckCustomPool(); } } //Selected pool from the list
         public string selectedgap { get; set; }
         public string strArg; //Storing arguments
         public string hoverText { get; set; }
@@ -93,16 +93,38 @@ namespace MisasMinerSetup
         public bool bldevice1;
         public bool bldevice2;
         public bool bldevice3;
-        public string ddevice;
+        public string devicePar;
+        public string GPUList = Properties.Resources.GPUList;
+        public Computer computer;
+        public List<GPUHardwareNode> GPUHardwareNodes = new List<GPUHardwareNode>();
+
+
+
+
+
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public MainWindow()
         {
 
-            checkTemp();
+            CatalogGPUHardware();
+            PollHardware();
             InitializeComponent();
-            MouseDown += Window_MouseDown;
+            SetDefaults();
+            SetMenus();
+            SetHandlers();
+
+            UpdateHover();
+            MinerInfo();
+            MinerInfo2();
+            CheckBlocksFound();
+            
+
+        }
+
+        private void SetDefaults()
+        {
             DataContext = this;
             i = 15; //Default intensity
             n = 11; //Default nFactor
@@ -135,37 +157,36 @@ namespace MisasMinerSetup
             if (l != "Auto")
             {
                 l = Properties.Settings.Default.l;
-            }            
+            }
+        }
+
+        private void SetMenus()
+        {
             ni.Icon = MisasMinerSetup.Properties.Resources.Myicon;
             ni.Visible = true;
             System.Windows.Forms.ContextMenu mn = new System.Windows.Forms.ContextMenu(); //Setting up icontray icon
             ni.ContextMenu = mn;
             mn.MenuItems.Add("Copy active wallet", WalletTray);
-            mn.MenuItems.Add("Exit",  ExitApplication);
-            updateHover();
-            minerInfo();
-            minerInfo2();
-            checkBlocksFound();
-
-
+            mn.MenuItems.Add("Exit", ExitApplication);
         }
 
+        private void SetHandlers()
+        {
+            MouseDown += Window_MouseDown;
+        }
 
-
-
-
-        private void updateHover() //Handling doubleclick and tooltip updates
+        private void UpdateHover() //Handling doubleclick and tooltip updates
         {
             Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
-            updateHover2();
+            UpdateHover2();
             ni.DoubleClick +=
-                delegate(object sender, EventArgs args)
+                delegate (object sender, EventArgs args)
                 {
                     this.Show();
                     this.WindowState = WindowState.Normal;
                 };
         }
-        private void updateHover2() //Constructing new tooltip
+        private void UpdateHover2() //Constructing new tooltip
         {
             Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
             strWorth = doubleWorth.ToString();
@@ -173,17 +194,17 @@ namespace MisasMinerSetup
             hoverText = "Balance: " + balance + "\nWorth: " + strWorth + "$\nGPU temp:" + cleanTemp + "\n" + strHash + "Kh/s";
             ni.Text = hoverText;
         }
-        protected override void OnStateChanged(EventArgs e) 
+        protected override void OnStateChanged(EventArgs e)
         {
             if (WindowState == WindowState.Minimized)
                 this.Hide();
 
             base.OnStateChanged(e);
         }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void ExitApplication(object sender, EventArgs e)
         {
-            shutClose();
+            ShutClose();
         }
         private void WalletTray(object sender, EventArgs e)
         {
@@ -197,7 +218,7 @@ namespace MisasMinerSetup
                 this.DragMove();
         }
 
-        private void btnNvidia_Click(object sender, RoutedEventArgs e) //Person selected Nvidia
+        private void BtnNvidia_Click(object sender, RoutedEventArgs e) //Person selected Nvidia
         {
             gpuChoice = 0;
             btnAMD.Visibility = System.Windows.Visibility.Hidden;
@@ -212,10 +233,10 @@ namespace MisasMinerSetup
             checkingFiles();
         }
 
-        private void btnNvidiaSolo_Click(object sender, RoutedEventArgs e) //Person selected Nvidia Solo mining
+        private void BtnNvidiaSolo_Click(object sender, RoutedEventArgs e) //Person selected Nvidia Solo mining
         {
             gpuChoice = 3;
-            btnAMD.Visibility = System.Windows.Visibility.Hidden;
+            btnAMD.Visibility = Visibility.Hidden;
             btnNvidia.Visibility = System.Windows.Visibility.Hidden;
             btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
             txtChoose.Visibility = System.Windows.Visibility.Hidden;
@@ -232,7 +253,7 @@ namespace MisasMinerSetup
             checkingFiles();
         }
 
-        private void btnAMD_Click(object sender, RoutedEventArgs e) //Person selected AMD
+        private void BtnAMD_Click(object sender, RoutedEventArgs e) //Person selected AMD
         {
             gpuChoice = 1;
             btnAMD.Visibility = System.Windows.Visibility.Hidden;
@@ -243,8 +264,9 @@ namespace MisasMinerSetup
             txtlbox.Visibility = System.Windows.Visibility.Hidden;
             btnMonitor.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
+            GetRecommendedConf();
         }
-        private void btnMonitor_Click(object sender, RoutedEventArgs e)
+        private void BtnMonitor_Click(object sender, RoutedEventArgs e)
         {
             txtMonAMD.Visibility = System.Windows.Visibility.Visible;
             txtMonNvidia.Visibility = System.Windows.Visibility.Visible;
@@ -276,26 +298,26 @@ namespace MisasMinerSetup
             txbxtemp.Visibility = System.Windows.Visibility.Hidden;
             isMining = true;
         }
-        private void shutClose() //Closing the app
+        private void ShutClose() //Closing the app
         {
-            saveConf();
+            SaveConf();
             System.Windows.Application.Current.Shutdown();
             ni.Visible = false;
-            
+
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) //X-button click
         {
 
-            shutClose();
+            ShutClose();
         }
         private void MiniButton_Click(object sender, RoutedEventArgs e) //Minimalize click
         {
 
-            saveConf();
+            SaveConf();
             this.Hide();
         }
-        private void btnTesti_Click(object sender, RoutedEventArgs e) //Testimonials click
+        private void BtnTesti_Click(object sender, RoutedEventArgs e) //Testimonials click
         {
 
             txtTestimonials.Visibility = System.Windows.Visibility.Visible;
@@ -303,26 +325,26 @@ namespace MisasMinerSetup
 
         }
 
-        private void btnCloseTest_Click(object sender, RoutedEventArgs e)  //Close testimonials click
+        private void BtnCloseTest_Click(object sender, RoutedEventArgs e)  //Close testimonials click
         {
 
             txtTestimonials.Visibility = System.Windows.Visibility.Hidden;
             btnCloseTest.Visibility = System.Windows.Visibility.Hidden;
         }
 
-        private void btnDonate_Click(object sender, RoutedEventArgs e) //Show wallet addresses for donations
+        private void BtnDonate_Click(object sender, RoutedEventArgs e) //Show wallet addresses for donations
         {
             txtDonatos.Visibility = System.Windows.Visibility.Visible;
             btnCloseDonate.Visibility = System.Windows.Visibility.Visible;
         }
 
-        private void btnCloseDonate_Click(object sender, RoutedEventArgs e) //Close donation window
+        private void BtnCloseDonate_Click(object sender, RoutedEventArgs e) //Close donation window
         {
             txtDonatos.Visibility = System.Windows.Visibility.Hidden;
             btnCloseDonate.Visibility = System.Windows.Visibility.Hidden;
         }
 
-        private void btnsetx_Click(object sender, RoutedEventArgs e) //Open setx window
+        private void Btnsetx_Click(object sender, RoutedEventArgs e) //Open setx window
         {
             txtsetx.Visibility = System.Windows.Visibility.Visible;
             txtsetx2.Visibility = System.Windows.Visibility.Visible;
@@ -331,7 +353,7 @@ namespace MisasMinerSetup
             txtsetx5.Visibility = System.Windows.Visibility.Visible;
             btnsetxSave.Visibility = System.Windows.Visibility.Visible;
         }
-        private void btnsetxSave_Click(object sender, RoutedEventArgs e) //Close setx window
+        private void BtnsetxSave_Click(object sender, RoutedEventArgs e) //Close setx window
         {
             txtsetx.Visibility = System.Windows.Visibility.Hidden;
             txtsetx2.Visibility = System.Windows.Visibility.Hidden;
@@ -340,15 +362,15 @@ namespace MisasMinerSetup
             txtsetx5.Visibility = System.Windows.Visibility.Hidden;
             btnsetxSave.Visibility = System.Windows.Visibility.Hidden;
         }
-        
+
         private void Refresh_Click(object sender, RoutedEventArgs e) //Update icon click
-            {
-                checkBalance();
-                updateHover();;
+        {
+            CheckBalance();
+            UpdateHover(); ;
 
 
-                
-            }        
+
+        }
         private void TempCheck_Checked(object sender, RoutedEventArgs e) //Temperature alert checkbox selected
         {
             tempCheck = true;
@@ -363,17 +385,17 @@ namespace MisasMinerSetup
         {
             string devices = checkDevices();
             isMining = true;
-            saveConf();
+            SaveConf();
             string strPool;
             if (selectedPool == "Custom")
             {
-                strPool = pool;                                          
+                strPool = pool;
             }
             else                                                         //Checking what pool to use and storing it
             {
                 strPool = "stratum+tcp://" + selectedPool;
             }
-            
+
             string strWallet = wallet;                      //Storing wallet
             string strInt = i.ToString();                   //Storing intensity
             string strFac = n.ToString();                   //Storing nFactor
@@ -416,7 +438,7 @@ namespace MisasMinerSetup
 
         }
 
-       
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void btnDownload_Click(object sender, EventArgs e) //Install button
         {
@@ -444,20 +466,20 @@ namespace MisasMinerSetup
                 webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/Wallet.zip"), appPath + "\\soloWallet.zip"); //Downloading Wallet
             }
         }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         private void CompletedPool(object sender, AsyncCompletedEventArgs e) //After download completion
         {
             webClient = null;
-            unZipPool();                                           //Unzipping sg/ccminer and moving MisasMinerSetup.exe to the new folder
+            UnZipPool();                                           //Unzipping sg/ccminer and moving MisasMinerSetup.exe to the new folder
             btnInstall.IsEnabled = true;                           //Enable button if something goes wrong
             txtwait.Visibility = System.Windows.Visibility.Hidden; //Hide "Downloading..." text
-            
+
         }
         private void CompletedSolo(object sender, AsyncCompletedEventArgs e) //After solo download completion
         {
             webClient = null;
-            unZipSolo();                                           //Unzipping solo files.
+            UnZipSolo();                                           //Unzipping solo files.
 
         }
         private string checkDevices()
@@ -497,7 +519,7 @@ namespace MisasMinerSetup
             }
             return deviceList;
         }
-        private void minerInfo() //Get minerinfo from miner API
+        private void MinerInfo() //Get minerinfo from miner API
         {
             if (isMining == true) //Is the user mining
             {
@@ -574,7 +596,7 @@ namespace MisasMinerSetup
                 }
             }
         }
-        private void minerInfo2()
+        private void MinerInfo2()
         {
             if (isMining == true) //Is the user mining
             {
@@ -665,8 +687,8 @@ namespace MisasMinerSetup
                 }
             }
         }
-            
-        private void saveConf() //Save user configs
+
+        private void SaveConf() //Save user configs
         {
             Properties.Settings.Default.Pool = pool;
             Properties.Settings.Default.Wallet = wallet;
@@ -680,32 +702,32 @@ namespace MisasMinerSetup
             Properties.Settings.Default.temp = temp;
             Properties.Settings.Default.selectedgap = selectedgap;
             Properties.Settings.Default.selectedPool = selectedPool;
-            Properties.Settings.Default.Save();  
+            Properties.Settings.Default.Save();
         }
 
-        private void checkBalance() //Check worth 
+        private void CheckBalance() //Check worth 
         {
             WebClient client = new WebClient();
             if (wallet != "")
             {
 
-                        string downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
-                        if (downloadedString.Substring(0, 4) != "{\"er")
-                        {
-                            balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
-                        }
-                        else
-                         {
+                string downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
+                if (downloadedString.Substring(0, 4) != "{\"er")
+                {
+                    balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
+                }
+                else
+                {
                     System.Windows.MessageBox.Show("Wallet not found. Are you sure it has some balance in it?");
-                         }
-                
-            }                
-                string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/"); //Check GRLC current worth in $
-                string toBeSearched = "\"price_usd\": \"";
-                worth = downloadedWorth.Substring(downloadedWorth.IndexOf(toBeSearched) + toBeSearched.Length, 4);
-                webClient = null;
+                }
+
+            }
+            string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/"); //Check GRLC current worth in $
+            string toBeSearched = "\"price_usd\": \"";
+            worth = downloadedWorth.Substring(downloadedWorth.IndexOf(toBeSearched) + toBeSearched.Length, 4);
+            webClient = null;
         }
-        private void checkBlocksFound() //Check blocks founds 
+        private void CheckBlocksFound() //Check blocks founds 
         {
             if (selectedPool == "happy.garlicoin.fun:3210")
             {
@@ -723,7 +745,7 @@ namespace MisasMinerSetup
             }
         }
 
-        private void checkCustomPool() //Checking if Custom is selected on pool and opening/closing textbox for custom pool
+        private void CheckCustomPool() //Checking if Custom is selected on pool and opening/closing textbox for custom pool
         {
             if (selectedPool == "Custom")
             { txbxPool.IsEnabled = true; }
@@ -734,7 +756,7 @@ namespace MisasMinerSetup
         {
             if (gpuChoice != 2)
             {
-                
+
                 appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString(); //Storing current path
                 if (gpuChoice == 1)
                 {
@@ -772,7 +794,7 @@ namespace MisasMinerSetup
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private void unZipPool() //Unzipping sgminer or ccminer and moving MisasMinerSetup.exe to the new folder
+        private void UnZipPool() //Unzipping sgminer or ccminer and moving MisasMinerSetup.exe to the new folder
         {
             if (gpuChoice == 1) //AMD
             {
@@ -793,33 +815,33 @@ namespace MisasMinerSetup
             System.Windows.Application.Current.Shutdown();                                                                                         //Close application for restart from the new location
             Process.Start(appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");                                  //Restart
         }
-        private void unZipSolo() //Unzipping sgminer or ccminer and moving MisasMinerSetup.exe to the new folder
+        private void UnZipSolo() //Unzipping sgminer or ccminer and moving MisasMinerSetup.exe to the new folder
         {
 
-                string zipPath = appPath + "\\soloWallet.zip";          
-                string extractPath = appPath + "\\MisasMinerSetup";
-                ZipFile.ExtractToDirectory(zipPath, extractPath);                                                           
-                File.Delete(appPath + "\\soloWallet.zip");                                                                  //Delete old zipfile
-            
+            string zipPath = appPath + "\\soloWallet.zip";
+            string extractPath = appPath + "\\MisasMinerSetup";
+            ZipFile.ExtractToDirectory(zipPath, extractPath);
+            File.Delete(appPath + "\\soloWallet.zip");                                                                  //Delete old zipfile
+
             File.Move(appPath + "\\MisasMinerSetup.exe", appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");               //Move MisasMinerSetup.exe to the new folder
             System.Windows.MessageBox.Show("Wallet downloaded! Continuing with network and wallet setup");                  //Hooray!
             System.Windows.MessageBox.Show("Give me network access to the cmd and do not close it! Just let it be.");
-            conNetwork();
+            ConNetwork();
 
 
 
         }
 
-        private void conNetwork() //Opening network and installing needed files
+        private void ConNetwork() //Opening network and installing needed files
         {
             //Opening cmd with given arguments
             cmd2.StartInfo.FileName = "cmd.exe";
-            cmd2.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat"; 
+            cmd2.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat";
             cmd2.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
             cmd2.Start();       //Open network
             string appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             System.Windows.MessageBox.Show("Press \"ok\"");
-            string appdataPathGarli = appdataPath +"\\Garlicoin\\garlicoin.conf"; 
+            string appdataPathGarli = appdataPath + "\\Garlicoin\\garlicoin.conf";
             File.Move(appPath + "\\MisasMinerSetup\\garlicoin.conf", appdataPathGarli); //Moving config file to the right place in %Appdata%
             Thread.Sleep(500);
             System.Windows.MessageBox.Show("I will throw an error now. Just close it as it restarts and just let it be"); //Didn't make the network files so I cant do anything about the errors. Is what it is.
@@ -827,7 +849,7 @@ namespace MisasMinerSetup
             cmd2.CloseMainWindow();
             System.Windows.MessageBox.Show("Press \"ok\" if you closed the error.");
             cmd2.StartInfo.FileName = "cmd.exe";
-            cmd2.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat"; 
+            cmd2.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && Run-Network.bat";
             cmd2.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
             cmd2.Start();                           //Restart network to start downloading blocks
             string output = string.Empty;
@@ -836,23 +858,23 @@ namespace MisasMinerSetup
             System.Windows.MessageBox.Show("This will take a while. We are checking if you have downloaded all the blocks needed.");
             string blockCount = "asd";
             string downloadedBlock = "fgh";
-            for (int i = 0; blockCount != downloadedBlock ; i++) //Checking blockcount and comparing to downloaded blocks
+            for (int i = 0; blockCount != downloadedBlock; i++) //Checking blockcount and comparing to downloaded blocks
             {
-            ProcessStartInfo processStartInfo = new ProcessStartInfo("cmd", "/K cd " + appPath + "\\MisasMinerSetup\\ && garlicoin-cli getblockchaininfo && exit");
-            processStartInfo.RedirectStandardOutput = true;
-            processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
-            processStartInfo.UseShellExecute = false;
-            Process process = Process.Start(processStartInfo);
-            using (StreamReader streamReader = process.StandardOutput)
-            {
-                output = streamReader.ReadToEnd();
-            }
-            string toBeSearched = "\"blocks\": ";
-            blockCount = output.Substring(output.IndexOf(toBeSearched) + toBeSearched.Length, 5);
-            WebClient client = new WebClient();
-            downloadedBlock = client.DownloadString("https://explorer.grlc-bakery.fun/api/getblockcount");
-            webClient = null;
-            System.Windows.MessageBox.Show(blockCount + "/" + downloadedBlock + "\nPress ok to check again. Will probably take some time..."); //Showing user how many blocks are downloaded from the needed amount.
+                ProcessStartInfo processStartInfo = new ProcessStartInfo("cmd", "/K cd " + appPath + "\\MisasMinerSetup\\ && garlicoin-cli getblockchaininfo && exit");
+                processStartInfo.RedirectStandardOutput = true;
+                processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
+                processStartInfo.UseShellExecute = false;
+                Process process = Process.Start(processStartInfo);
+                using (StreamReader streamReader = process.StandardOutput)
+                {
+                    output = streamReader.ReadToEnd();
+                }
+                string toBeSearched = "\"blocks\": ";
+                blockCount = output.Substring(output.IndexOf(toBeSearched) + toBeSearched.Length, 5);
+                WebClient client = new WebClient();
+                downloadedBlock = client.DownloadString("https://explorer.grlc-bakery.fun/api/getblockcount");
+                webClient = null;
+                System.Windows.MessageBox.Show(blockCount + "/" + downloadedBlock + "\nPress ok to check again. Will probably take some time..."); //Showing user how many blocks are downloaded from the needed amount.
             }
             System.Windows.MessageBox.Show("FINISHED! Yayyyy that was too long I know...");
             System.Windows.MessageBox.Show("Let's now setup your wallet! Copy the wallet code from the screen and close the wallet cmd. Do not close the 1st cmd that should still be running in the background. You need to run it whenever you mine or use your wallet");
@@ -879,54 +901,170 @@ namespace MisasMinerSetup
             Process.Start(appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");                                  //Restart
 
 
-            
+
 
         }
 
 
-        private void checkTemp() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
-    {
-            Computer computer = new Computer() { GPUEnabled = true };
+        private void GetRecommendedConf()
+        {
+            foreach (var g in GPUHardwareNodes)
+            {
+                string[] values = new[] { "RX", "GTX", "GT", "R9" };
+                foreach (string item in values)
+                {
+                    int index = g.Name.IndexOf(item);
+                    if (index != -1)
+                    {
+                        g.Name = g.Name.Substring(index);
+                    }
+                }
+                System.Windows.MessageBox.Show(g.Name);
+                string completeStart = "Start" + g.Name;
+                string completeEnd = "End" + g.Name;
+                int deviceStart = GPUList.IndexOf(completeStart) + completeStart.Length; //Find hashrate
+                int deviceEnd = GPUList.LastIndexOf(completeEnd);
+                devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
+                System.Windows.MessageBox.Show(devicePar);
+            }
+        }
+            
+
+        /// <summary>
+        /// Handles cataloging the hardware present on the machine
+        /// </summary>
+        private void CatalogGPUHardware()
+        {
+            computer = new Computer() { GPUEnabled = true };
             computer.Open();
-            System.Timers.Timer timer = new System.Timers.Timer() { Enabled = true, Interval = 1000 };
+
+            foreach (var hardware in computer.Hardware)
+            {
+                hardware.Update();
+                GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors));
+            }
+
+            foreach (var g in GPUHardwareNodes)
+            {
+                notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
+            }
+
+        }
+
+        public class GPUHardwareNode
+        {
+            public IHardware Hardware;
+            public HardwareType Type;
+            public Identifier Ident;
+            public String Name;
+            private ISensor[] _sensors;
+
+            public GPUHardwareNode(IHardware hw, HardwareType hwType, Identifier hwIdent, string hwName, ISensor[] hwSensors)
+            {
+                Hardware = hw;
+                Type = hwType;
+                Ident = hwIdent;
+                Name = hwName;
+                _sensors = hwSensors;
+            }
+
+            public ISensor[] PollSensors()
+            {
+                Hardware.Update();
+                return _sensors;
+            }
+
+        }
+
+        private void PollHardware() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
+        {
+            var timer = new System.Timers.Timer() { Enabled = true, Interval = 1000 };
             timer.Elapsed += delegate(object sender, ElapsedEventArgs e)
             {
-                checkBlocksFound();
-                minerInfo();
-                minerInfo2();
-                updateHover();
-                foreach (IHardware hardware in computer.Hardware)
+                CheckBlocksFound();
+                MinerInfo();
+                MinerInfo2();
+                UpdateHover();
+
+                foreach (var hardwareNode in GPUHardwareNodes)
                 {
-                    hardware.Update();
-
-                    foreach (ISensor sensor in hardware.Sensors)
-                    { 
-                        if (sensor.SensorType == SensorType.Temperature)
+                    var hardwareSensors = hardwareNode.PollSensors();
+                    foreach (var sensor in hardwareSensors)
+                    {
+                        switch (sensor.SensorType)
                         {
-                         string gpuTemp =  (sensor.Value + "°C");
-                         cleanTemp = gpuTemp;
-                            System.Windows.MessageBox.Show(hardware.Name);
-                         int intTemp = Int32.Parse(cleanTemp.Substring(0,2));
-                            this.Dispatcher.Invoke(() =>
-                                { 
-                                txtTemp.Text = cleanTemp;
-                               });
+                            case SensorType.Voltage:
+                                break;
+                            case SensorType.Clock:
+                                break;
+                            case SensorType.Temperature:
+                                var gpuTemp = (sensor.Value + "°C");
+                                cleanTemp = gpuTemp;
+                                var intTemp = Int32.Parse(cleanTemp.Substring(0, 2));
+                                Dispatcher.Invoke(() =>
+                                {
+                                    txtTemp.Text = cleanTemp;
+                                });
 
-                            if (tempCheck == true)
-                            {
-                                if (intTemp >= temp - 5)
+                                if (tempCheck == true && intTemp >= (temp - 5))
                                 {
                                     notifier.ShowWarning("GPU TEMPERATURE NEARING MAX! CURRENT TEMPERATURE " + cleanTemp); //Show temperature warning if user opted in.
                                 }
-                            }
+                                break;
+                            case SensorType.Load:
+                                break;
+                            case SensorType.Fan:
+                                break;
+                            case SensorType.Flow:
+                                break;
+                            case SensorType.Control:
+                                break;
+                            case SensorType.Level:
+                                break;
+                            case SensorType.Factor:
+                                break;
+                            case SensorType.Power:
+                                break;
+                            case SensorType.Data:
+                                break;
+                            case SensorType.SmallData:
+                                break;
                         }
-
                     }
-
                 }
 
+                //foreach (IHardware hardware in computer.Hardware)
+                //{
+                //    hardware.Update();
+
+                //    foreach (ISensor sensor in hardware.Sensors)
+                //    { 
+                //        if (sensor.SensorType == SensorType.Temperature)
+                //        {
+                //         string gpuTemp =  (sensor.Value + "°C");
+                //         cleanTemp = gpuTemp;
+                //            System.Windows.MessageBox.Show(hardware.Name);
+                //         int intTemp = Int32.Parse(cleanTemp.Substring(0,2));
+                //            this.Dispatcher.Invoke(() =>
+                //                { 
+                //                txtTemp.Text = cleanTemp;
+                //               });
+
+                //            if (tempCheck == true)
+                //            {
+                //                if (intTemp >= temp - 5)
+                //                {
+                //                    notifier.ShowWarning("GPU TEMPERATURE NEARING MAX! CURRENT TEMPERATURE " + cleanTemp); //Show temperature warning if user opted in.
+                //                }
+                //            }
+                //        }
+
+                //    }
+
+                //}
+
             };
-    }
+        }
 
         Notifier notifier = new Notifier(cfg =>
         {
@@ -1075,5 +1213,5 @@ namespace MisasMinerSetup
             btnDeviceSave.Visibility = System.Windows.Visibility.Hidden;
         }
     }
-   
+
 }

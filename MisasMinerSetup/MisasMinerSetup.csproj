@@ -167,6 +167,10 @@
     <Resource Include="TESTIBG.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\GPUList.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\GPUList.ico" />
     <None Include="FodyWeavers.xml" />
     <Content Include="OpenHardwareMonitorLib.dll" />
   </ItemGroup>
