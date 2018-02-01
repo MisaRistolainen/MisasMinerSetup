@@ -107,19 +107,17 @@ namespace MisasMinerSetup
 
         public MainWindow()
         {
-
-            CatalogGPUHardware();
-            PollHardware();
             InitializeComponent();
             SetDefaults();
+            CatalogGPUHardware();
+            PollHardware();
             SetMenus();
             SetHandlers();
-
             UpdateHover();
             MinerInfo();
             MinerInfo2();
             CheckBlocksFound();
-            
+            GetGPUType();
 
         }
 
@@ -218,11 +216,9 @@ namespace MisasMinerSetup
                 this.DragMove();
         }
 
-        private void BtnNvidia_Click(object sender, RoutedEventArgs e) //Person selected Nvidia
+        private void SelectedNvidia() //Person selected Nvidia
         {
             gpuChoice = 0;
-            btnAMD.Visibility = System.Windows.Visibility.Hidden;
-            btnNvidia.Visibility = System.Windows.Visibility.Hidden;
             btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
             txtChoose.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
@@ -236,8 +232,6 @@ namespace MisasMinerSetup
         private void BtnNvidiaSolo_Click(object sender, RoutedEventArgs e) //Person selected Nvidia Solo mining
         {
             gpuChoice = 3;
-            btnAMD.Visibility = Visibility.Hidden;
-            btnNvidia.Visibility = System.Windows.Visibility.Hidden;
             btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
             txtChoose.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
@@ -253,27 +247,23 @@ namespace MisasMinerSetup
             checkingFiles();
         }
 
-        private void BtnAMD_Click(object sender, RoutedEventArgs e) //Person selected AMD
+        private void SelectedAMD() //Person selected AMD
         {
             gpuChoice = 1;
-            btnAMD.Visibility = System.Windows.Visibility.Hidden;
             btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
-            btnNvidia.Visibility = System.Windows.Visibility.Hidden;
             txtChoose.Visibility = System.Windows.Visibility.Hidden;
             txtl.Visibility = System.Windows.Visibility.Hidden;
             txtlbox.Visibility = System.Windows.Visibility.Hidden;
             btnMonitor.Visibility = System.Windows.Visibility.Hidden;
             checkingFiles();
-            GetRecommendedConf();
+            
         }
         private void BtnMonitor_Click(object sender, RoutedEventArgs e)
         {
             txtMonAMD.Visibility = System.Windows.Visibility.Visible;
             txtMonNvidia.Visibility = System.Windows.Visibility.Visible;
             sldrGPU.Visibility = System.Windows.Visibility.Visible;
-            btnAMD.Visibility = System.Windows.Visibility.Hidden;
             btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
-            btnNvidia.Visibility = System.Windows.Visibility.Hidden;
             txtChoose.Visibility = System.Windows.Visibility.Hidden;
             txtl.Visibility = System.Windows.Visibility.Hidden;
             txtlbox.Visibility = System.Windows.Visibility.Hidden;
@@ -678,7 +668,7 @@ namespace MisasMinerSetup
                         var usageB = float.Parse(strUsageBasic);
                         var usageU = float.Parse(strUsageUsed);
                         var usagePerc = usageU / usageB * 100f;
-                        strUsage = usagePerc.ToString("00.00");
+                        strUsage = usagePerc.ToString("000.00");
                         int fanStart = _returndata.IndexOf(";FAN=") + ";FAN=".Length; //Find fanspeed. NOT CURRENTLY WORKING!
                         int fanEnd = _returndata.LastIndexOf(";RPM=");
                         strFan = _returndata.Substring(fanStart, fanEnd - fanStart);
@@ -905,7 +895,24 @@ namespace MisasMinerSetup
 
         }
 
+        private void GetGPUType()
+        {
+            foreach (var g in GPUHardwareNodes)
+            {
+                string gpuType = g.Type.ToString();
+                if (gpuType == "GpuAti")
+                {
+                    gpuChoice = 1;
+                    SelectedAMD();
 
+                }
+                else if (gpuType == "GpuNvidia")
+                {
+                    gpuChoice = 0;
+                    SelectedNvidia();
+                }
+            }
+        }
         private void GetRecommendedConf()
         {
             foreach (var g in GPUHardwareNodes)
@@ -919,13 +926,11 @@ namespace MisasMinerSetup
                         g.Name = g.Name.Substring(index);
                     }
                 }
-                System.Windows.MessageBox.Show(g.Name);
                 string completeStart = "Start" + g.Name;
                 string completeEnd = "End" + g.Name;
                 int deviceStart = GPUList.IndexOf(completeStart) + completeStart.Length; //Find hashrate
                 int deviceEnd = GPUList.LastIndexOf(completeEnd);
                 devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
-                System.Windows.MessageBox.Show(devicePar);
             }
         }
             
@@ -948,7 +953,8 @@ namespace MisasMinerSetup
             {
                 notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
             }
-
+            
+            GetRecommendedConf();
         }
 
         public class GPUHardwareNode
