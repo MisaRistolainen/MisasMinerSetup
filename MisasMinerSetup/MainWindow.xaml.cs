@@ -929,9 +929,6 @@ namespace MisasMinerSetup
             System.Windows.MessageBox.Show(devicePar);
         }
             
-        private void checkTemp() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
-    {
-            Computer computer = new Computer() { GPUEnabled = true };
 
         /// <summary>
         /// Handles cataloging the hardware present on the machine
