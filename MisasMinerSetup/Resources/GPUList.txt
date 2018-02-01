@@ -1,7 +1,6 @@
 NVIDIA
 
-NVIDIA GeForce GTX 960M
---lookup-gap=2 -l T20x5 --no-autotune 
+NVIDIA GeForce StartGTX 960M--lookup-gap=2 -l T20x5 --no-autotuneEndGTX 960M
 
 GTX 970
 gap=2
