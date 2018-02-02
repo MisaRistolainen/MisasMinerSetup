@@ -111,9 +111,9 @@ namespace MisasMinerSetup
         public MainWindow()
         {
             InitializeComponent();
+            SetDefaults();
             LoadConf();
             FirstTimeCheck();
-            SetDefaults();
             ConfigureUI();
             CatalogGPUHardware();
             PollHardware();
@@ -165,7 +165,7 @@ namespace MisasMinerSetup
             setx5 = Properties.Settings.Default.setx5;   //Loading saved setx values
             temp = Properties.Settings.Default.temp;     //Loading saved maxtemp
             selectedgap = Properties.Settings.Default.selectedgap;       //Loading saved lookup-gap
-            selectedPool = Properties.Settings.Default.selectedPool;     //Loading saved lookup-gap
+            selectedPool = Properties.Settings.Default.selectedPool;     //Loading saved pool
             firstRun = Properties.Settings.Default.FirstRun;
         }
 
@@ -996,22 +996,29 @@ namespace MisasMinerSetup
         }
         private void GetRecommendedConf()
         {
-            foreach (var g in GPUHardwareNodes)
+            try
             {
-                string[] values = new[] { "RX", "GTX", "GT", "R9" };
-                foreach (string item in values)
+                foreach (var g in GPUHardwareNodes)
                 {
-                    int index = g.Name.IndexOf(item);
-                    if (index != -1)
+                    string[] values = new[] { "RX", "GTX", "GT", "R9", "WX" };
+                    foreach (string item in values)
                     {
-                        g.Name = g.Name.Substring(index);
+                        int index = g.Name.IndexOf(item);
+                        if (index != -1)
+                        {
+                            g.Name = g.Name.Substring(index);
+                        }
                     }
+                    string completeStart = "Start" + g.Name + "g";
+                    string completeEnd = "End" + g.Name;
+                    int deviceStart = GPUList.IndexOf(completeStart) + (completeStart.Length - 1); //Find hashrate
+                    int deviceEnd = GPUList.LastIndexOf(completeEnd);
+                    devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
                 }
-                string completeStart = "Start" + g.Name + "g";
-                string completeEnd = "End" + g.Name;
-                int deviceStart = GPUList.IndexOf(completeStart) + (completeStart.Length - 1); //Find hashrate
-                int deviceEnd = GPUList.LastIndexOf(completeEnd);
-                devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
+            }
+            catch
+            {
+                System.Windows.MessageBox.Show("Something something error fuck you too");
             }
         }
             
@@ -1143,6 +1150,7 @@ namespace MisasMinerSetup
                                     GPUHardwareNodes[nodeCounter].StatGrid.Temperature.Text = readableTemp;
                                     GPUHardwareNodes[nodeCounter].StatGrid.Temperature.Foreground = brushColor;
                                     GPUHardwareNodes[nodeCounter].StatGrid.Utilization.Text = "";
+                                    GPUHardwareNodes[nodeCounter].StatGrid.GridObject.ToolTip = GPUHardwareNodes[nodeCounter].Name;
                                 });
                                 break;
                             case SensorType.Load:

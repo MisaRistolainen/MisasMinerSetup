@@ -9,6 +9,8 @@ StartGTX 1080gap=3,-l=T39x10EndGTX 1080
 
 StartGTX 1070 Tigap=2,-l=T37x20EndGTX 1070 Ti
 
+StartGTX 1050 Tigap=2,-l=AutoEndGTX 1050 Ti
+
 StartGTX 1070gap=2,-l=T29x20EndGTX 1070
 
 StartGTX 1060gap=2,-l=T30x20EndGTX 1060
