@@ -1028,8 +1028,10 @@ namespace MisasMinerSetup
             foreach (var hardware in computer.Hardware)
             {
                 hardware.Update();
-                GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]));
-                _statGrids[hardwareCounter].GridObject.Visibility = Visibility.Visible;
+                var newNode = new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]);
+                newNode.StatGrid.GridObject.Visibility = Visibility.Visible;
+                GPUHardwareNodes.Add(newNode);
+                hardwareCounter++;
             }
 
             foreach (var g in GPUHardwareNodes)
