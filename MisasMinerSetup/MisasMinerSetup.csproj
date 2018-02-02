@@ -167,6 +167,7 @@
     <Resource Include="TESTIBG.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="garlicoin.png" />
     <Content Include="Resources\GPUList.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

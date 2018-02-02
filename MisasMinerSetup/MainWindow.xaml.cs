@@ -99,6 +99,7 @@ namespace MisasMinerSetup
         public string GPUList = Properties.Resources.GPUList;
         public Computer computer;
         public List<GPUHardwareNode> GPUHardwareNodes = new List<GPUHardwareNode>();
+        private List<StatGrid> _statGrids = new List<StatGrid>();
 
 
 
@@ -113,6 +114,7 @@ namespace MisasMinerSetup
             LoadConf();
             FirstTimeCheck();
             SetDefaults();
+            ConfigureUI();
             CatalogGPUHardware();
             PollHardware();
             SetMenus();
@@ -122,8 +124,6 @@ namespace MisasMinerSetup
             MinerInfo2();
             CheckBlocksFound();
             GetGPUType();
-            
-
         }
 
         private void SetDefaults()
@@ -230,29 +230,29 @@ namespace MisasMinerSetup
         private void SelectedNvidia() //Person selected Nvidia
         {
             gpuChoice = 0;
-            btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
-            txtChoose.Visibility = System.Windows.Visibility.Hidden;
+            btnNvidiaSolo.Visibility = Visibility.Hidden;
+            txtChoose.Visibility = Visibility.Hidden;
             checkingFiles();
-            txtn.Visibility = System.Windows.Visibility.Hidden;
-            txtnFactor.Visibility = System.Windows.Visibility.Hidden;
-            txtTouch.Visibility = System.Windows.Visibility.Hidden;
-            btnMonitor.Visibility = System.Windows.Visibility.Hidden;
+            txtn.Visibility = Visibility.Hidden;
+            txtnFactor.Visibility = Visibility.Hidden;
+            txtTouch.Visibility = Visibility.Hidden;
+            btnMonitor.Visibility = Visibility.Hidden;
             checkingFiles();
         }
 
         private void BtnNvidiaSolo_Click(object sender, RoutedEventArgs e) //Person selected Nvidia Solo mining
         {
             gpuChoice = 3;
-            btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
-            txtChoose.Visibility = System.Windows.Visibility.Hidden;
+            btnNvidiaSolo.Visibility = Visibility.Hidden;
+            txtChoose.Visibility = Visibility.Hidden;
             checkingFiles();
-            sldrIntensity.Visibility = System.Windows.Visibility.Hidden;
-            txtn.Visibility = System.Windows.Visibility.Hidden;
-            txtIntensity.Visibility = System.Windows.Visibility.Hidden;
-            txtnFactor.Visibility = System.Windows.Visibility.Hidden;
-            txtTouch.Visibility = System.Windows.Visibility.Hidden;
-            inCalc.Visibility = System.Windows.Visibility.Hidden;
-            btnMonitor.Visibility = System.Windows.Visibility.Hidden;
+            sldrIntensity.Visibility = Visibility.Hidden;
+            txtn.Visibility = Visibility.Hidden;
+            txtIntensity.Visibility = Visibility.Hidden;
+            txtnFactor.Visibility = Visibility.Hidden;
+            txtTouch.Visibility = Visibility.Hidden;
+            inCalc.Visibility = Visibility.Hidden;
+            btnMonitor.Visibility = Visibility.Hidden;
             ComboBox1.IsEnabled = false;
             ComboBox1.SelectedIndex = -1;
             checkingFiles();
@@ -261,42 +261,42 @@ namespace MisasMinerSetup
         private void SelectedAMD() //Person selected AMD
         {
             gpuChoice = 1;
-            btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
-            txtChoose.Visibility = System.Windows.Visibility.Hidden;
-            txtl.Visibility = System.Windows.Visibility.Hidden;
-            txtlbox.Visibility = System.Windows.Visibility.Hidden;
-            btnMonitor.Visibility = System.Windows.Visibility.Hidden;
+            btnNvidiaSolo.Visibility = Visibility.Hidden;
+            txtChoose.Visibility = Visibility.Hidden;
+            txtl.Visibility = Visibility.Hidden;
+            txtlbox.Visibility = Visibility.Hidden;
+            btnMonitor.Visibility = Visibility.Hidden;
             checkingFiles();
             
         }
         private void BtnMonitor_Click(object sender, RoutedEventArgs e)
         {
-            txtMonAMD.Visibility = System.Windows.Visibility.Visible;
-            txtMonNvidia.Visibility = System.Windows.Visibility.Visible;
-            sldrGPU.Visibility = System.Windows.Visibility.Visible;
-            btnNvidiaSolo.Visibility = System.Windows.Visibility.Hidden;
-            txtChoose.Visibility = System.Windows.Visibility.Hidden;
-            txtl.Visibility = System.Windows.Visibility.Hidden;
-            txtlbox.Visibility = System.Windows.Visibility.Hidden;
-            sldrIntensity.Visibility = System.Windows.Visibility.Hidden;
-            txtn.Visibility = System.Windows.Visibility.Hidden;
-            txtIntensity.Visibility = System.Windows.Visibility.Hidden;
-            txtnFactor.Visibility = System.Windows.Visibility.Hidden;
-            txtTouch.Visibility = System.Windows.Visibility.Hidden;
-            inCalc.Visibility = System.Windows.Visibility.Hidden;
-            btnMonitor.Visibility = System.Windows.Visibility.Hidden;
-            btnInstall.Visibility = System.Windows.Visibility.Hidden;
-            btnsetx.Visibility = System.Windows.Visibility.Hidden;
-            txtsetx.Visibility = System.Windows.Visibility.Hidden;
-            txbxPool.Visibility = System.Windows.Visibility.Hidden;
-            comboGap.Visibility = System.Windows.Visibility.Hidden;
-            btnStart.Visibility = System.Windows.Visibility.Hidden;
-            txtLook.Visibility = System.Windows.Visibility.Hidden;
-            txttemp.Visibility = System.Windows.Visibility.Hidden;
-            TempCheck.Visibility = System.Windows.Visibility.Hidden;
-            txtninstall.Visibility = System.Windows.Visibility.Hidden;
-            txtninstall2.Visibility = System.Windows.Visibility.Hidden;
-            txbxtemp.Visibility = System.Windows.Visibility.Hidden;
+            txtMonAMD.Visibility = Visibility.Visible;
+            txtMonNvidia.Visibility = Visibility.Visible;
+            sldrGPU.Visibility = Visibility.Visible;
+            btnNvidiaSolo.Visibility = Visibility.Hidden;
+            txtChoose.Visibility = Visibility.Hidden;
+            txtl.Visibility = Visibility.Hidden;
+            txtlbox.Visibility = Visibility.Hidden;
+            sldrIntensity.Visibility = Visibility.Hidden;
+            txtn.Visibility = Visibility.Hidden;
+            txtIntensity.Visibility = Visibility.Hidden;
+            txtnFactor.Visibility = Visibility.Hidden;
+            txtTouch.Visibility = Visibility.Hidden;
+            inCalc.Visibility = Visibility.Hidden;
+            btnMonitor.Visibility = Visibility.Hidden;
+            btnInstall.Visibility = Visibility.Hidden;
+            btnsetx.Visibility = Visibility.Hidden;
+            txtsetx.Visibility = Visibility.Hidden;
+            txbxPool.Visibility = Visibility.Hidden;
+            comboGap.Visibility = Visibility.Hidden;
+            btnStart.Visibility = Visibility.Hidden;
+            txtLook.Visibility = Visibility.Hidden;
+            txttemp.Visibility = Visibility.Hidden;
+            TempCheck.Visibility = Visibility.Hidden;
+            txtninstall.Visibility = Visibility.Hidden;
+            txtninstall2.Visibility = Visibility.Hidden;
+            txbxtemp.Visibility = Visibility.Hidden;
             isMining = true;
         }
         private void ShutClose() //Closing the app
@@ -321,47 +321,47 @@ namespace MisasMinerSetup
         private void BtnTesti_Click(object sender, RoutedEventArgs e) //Testimonials click
         {
 
-            txtTestimonials.Visibility = System.Windows.Visibility.Visible;
-            btnCloseTest.Visibility = System.Windows.Visibility.Visible;
+            txtTestimonials.Visibility = Visibility.Visible;
+            btnCloseTest.Visibility = Visibility.Visible;
 
         }
 
         private void BtnCloseTest_Click(object sender, RoutedEventArgs e)  //Close testimonials click
         {
 
-            txtTestimonials.Visibility = System.Windows.Visibility.Hidden;
-            btnCloseTest.Visibility = System.Windows.Visibility.Hidden;
+            txtTestimonials.Visibility = Visibility.Hidden;
+            btnCloseTest.Visibility = Visibility.Hidden;
         }
 
         private void BtnDonate_Click(object sender, RoutedEventArgs e) //Show wallet addresses for donations
         {
-            txtDonatos.Visibility = System.Windows.Visibility.Visible;
-            btnCloseDonate.Visibility = System.Windows.Visibility.Visible;
+            txtDonatos.Visibility = Visibility.Visible;
+            btnCloseDonate.Visibility = Visibility.Visible;
         }
 
         private void BtnCloseDonate_Click(object sender, RoutedEventArgs e) //Close donation window
         {
-            txtDonatos.Visibility = System.Windows.Visibility.Hidden;
-            btnCloseDonate.Visibility = System.Windows.Visibility.Hidden;
+            txtDonatos.Visibility = Visibility.Hidden;
+            btnCloseDonate.Visibility = Visibility.Hidden;
         }
 
         private void Btnsetx_Click(object sender, RoutedEventArgs e) //Open setx window
         {
-            txtsetx.Visibility = System.Windows.Visibility.Visible;
-            txtsetx2.Visibility = System.Windows.Visibility.Visible;
-            txtsetx3.Visibility = System.Windows.Visibility.Visible;
-            txtsetx4.Visibility = System.Windows.Visibility.Visible;
-            txtsetx5.Visibility = System.Windows.Visibility.Visible;
-            btnsetxSave.Visibility = System.Windows.Visibility.Visible;
+            txtsetx.Visibility = Visibility.Visible;
+            txtsetx2.Visibility = Visibility.Visible;
+            txtsetx3.Visibility = Visibility.Visible;
+            txtsetx4.Visibility = Visibility.Visible;
+            txtsetx5.Visibility = Visibility.Visible;
+            btnsetxSave.Visibility = Visibility.Visible;
         }
         private void BtnsetxSave_Click(object sender, RoutedEventArgs e) //Close setx window
         {
-            txtsetx.Visibility = System.Windows.Visibility.Hidden;
-            txtsetx2.Visibility = System.Windows.Visibility.Hidden;
-            txtsetx3.Visibility = System.Windows.Visibility.Hidden;
-            txtsetx4.Visibility = System.Windows.Visibility.Hidden;
-            txtsetx5.Visibility = System.Windows.Visibility.Hidden;
-            btnsetxSave.Visibility = System.Windows.Visibility.Hidden;
+            txtsetx.Visibility = Visibility.Hidden;
+            txtsetx2.Visibility = Visibility.Hidden;
+            txtsetx3.Visibility = Visibility.Hidden;
+            txtsetx4.Visibility = Visibility.Hidden;
+            txtsetx5.Visibility = Visibility.Hidden;
+            btnsetxSave.Visibility = Visibility.Hidden;
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e) //Update icon click
@@ -452,7 +452,7 @@ namespace MisasMinerSetup
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void btnDownload_Click(object sender, EventArgs e) //Install button
         {
-            txtwait.Visibility = System.Windows.Visibility.Visible; //Show "Downloading..." text
+            txtwait.Visibility = Visibility.Visible; //Show "Downloading..." text
             btnInstall.IsEnabled = false; //Disable install button
             // Is file downloading yet?
             if (webClient != null)
@@ -483,7 +483,7 @@ namespace MisasMinerSetup
             webClient = null;
             UnZipPool();                                           //Unzipping sg/ccminer and moving MisasMinerSetup.exe to the new folder
             btnInstall.IsEnabled = true;                           //Enable button if something goes wrong
-            txtwait.Visibility = System.Windows.Visibility.Hidden; //Hide "Downloading..." text
+            txtwait.Visibility = Visibility.Hidden; //Hide "Downloading..." text
 
         }
         private void CompletedSolo(object sender, AsyncCompletedEventArgs e) //After solo download completion
@@ -825,9 +825,9 @@ namespace MisasMinerSetup
                 {
                     txtFileCheck.Text = "Miner found✔";
                     visi = "Hidden";
-                    txtninstall.Visibility = System.Windows.Visibility.Hidden;
-                    txtninstall2.Visibility = System.Windows.Visibility.Hidden;
-                    btnInstall.Visibility = System.Windows.Visibility.Hidden;
+                    txtninstall.Visibility = Visibility.Hidden;
+                    txtninstall2.Visibility = Visibility.Hidden;
+                    btnInstall.Visibility = Visibility.Hidden;
                     btnStart.IsEnabled = true;
                     loadPresets();
                 }
@@ -1024,10 +1024,12 @@ namespace MisasMinerSetup
             computer = new Computer() { GPUEnabled = true };
             computer.Open();
 
+            var hardwareCounter = 0;
             foreach (var hardware in computer.Hardware)
             {
                 hardware.Update();
-                GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors));
+                GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]));
+                _statGrids[hardwareCounter].GridObject.Visibility = Visibility.Visible;
             }
 
             foreach (var g in GPUHardwareNodes)
@@ -1038,6 +1040,30 @@ namespace MisasMinerSetup
             GetRecommendedConf();
         }
 
+        /// <summary>
+        /// Used to configure any UI elements that need to be set at time of application start
+        /// </summary>
+        private void ConfigureUI()
+        {
+            //StatGrid0
+            StatGrid0Temp.Text = "";
+            StatGrid0Utilization.Text = "";
+            StatGrid1Temp.Text = "";
+            StatGrid1Utilization.Text = "";
+            StatGrid2Temp.Text = "";
+            StatGrid2Utilization.Text = "";
+            StatGrid3Temp.Text = "";
+            StatGrid3Utilization.Text = "";
+            StatGrid0.Visibility = Visibility.Hidden;
+            StatGrid1.Visibility = Visibility.Hidden;
+            StatGrid2.Visibility = Visibility.Hidden;
+            StatGrid3.Visibility = Visibility.Hidden;
+            _statGrids.Add(new StatGrid(StatGrid0, StatGrid0Temp, StatGrid0Utilization));
+            _statGrids.Add(new StatGrid(StatGrid1, StatGrid1Temp, StatGrid1Utilization));
+            _statGrids.Add(new StatGrid(StatGrid2, StatGrid2Temp, StatGrid2Utilization));
+            _statGrids.Add(new StatGrid(StatGrid3, StatGrid3Temp, StatGrid3Utilization));
+        }
+
         public class GPUHardwareNode
         {
             public IHardware Hardware;
@@ -1045,14 +1071,16 @@ namespace MisasMinerSetup
             public Identifier Ident;
             public String Name;
             private ISensor[] _sensors;
+            public StatGrid StatGrid;
 
-            public GPUHardwareNode(IHardware hw, HardwareType hwType, Identifier hwIdent, string hwName, ISensor[] hwSensors)
+            public GPUHardwareNode(IHardware hw, HardwareType hwType, Identifier hwIdent, string hwName, ISensor[] hwSensors, StatGrid statGrid)
             {
                 Hardware = hw;
                 Type = hwType;
                 Ident = hwIdent;
                 Name = hwName;
                 _sensors = hwSensors;
+                StatGrid = statGrid;
             }
 
             public ISensor[] PollSensors()
@@ -1062,6 +1090,21 @@ namespace MisasMinerSetup
             }
 
         }
+
+        public class StatGrid
+        {
+            public Grid GridObject;
+            public TextBlock Temperature;
+            public TextBlock Utilization;
+
+            public StatGrid(Grid gridObject, TextBlock temperature, TextBlock utilization)
+            {
+                GridObject = gridObject;
+                Temperature = temperature;
+                Utilization = utilization;
+            }
+        }
+
 
         private void PollHardware() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
         {
@@ -1073,6 +1116,7 @@ namespace MisasMinerSetup
                 MinerInfo2();
                 UpdateHover();
 
+                var nodeCounter = 0;
                 foreach (var hardwareNode in GPUHardwareNodes)
                 {
                     var hardwareSensors = hardwareNode.PollSensors();
@@ -1085,18 +1129,21 @@ namespace MisasMinerSetup
                             case SensorType.Clock:
                                 break;
                             case SensorType.Temperature:
-                                var gpuTemp = (sensor.Value + "°C");
-                                cleanTemp = gpuTemp;
-                                var intTemp = Int32.Parse(cleanTemp.Substring(0, 2));
+                                var sensorTemp = sensor.Value;
+                                var readableTemp = ($"{sensorTemp}°C");
+                                var brushColor = System.Windows.Media.Brushes.LightBlue;
+                                if (sensorTemp >= temp - 5)
+                                {
+                                    brushColor = System.Windows.Media.Brushes.Red;
+                                    if (tempCheck == true)
+                                        notifier.ShowWarning("GPU TEMPERATURE WARNING! CURRENT TEMPERATURE " + cleanTemp); //Show temperature warning if user opted in.
+                                }
                                 Dispatcher.Invoke(() =>
                                 {
-                                    txtTemp.Text = cleanTemp;
+                                    GPUHardwareNodes[nodeCounter].StatGrid.Temperature.Text = readableTemp;
+                                    GPUHardwareNodes[nodeCounter].StatGrid.Temperature.Foreground = brushColor;
+                                    GPUHardwareNodes[nodeCounter].StatGrid.Utilization.Text = "";
                                 });
-
-                                if (tempCheck == true && intTemp >= (temp - 5))
-                                {
-                                    notifier.ShowWarning("GPU TEMPERATURE NEARING MAX! CURRENT TEMPERATURE " + cleanTemp); //Show temperature warning if user opted in.
-                                }
                                 break;
                             case SensorType.Load:
                                 break;
@@ -1118,6 +1165,7 @@ namespace MisasMinerSetup
                                 break;
                         }
                     }
+                    nodeCounter++;
                 }
 
                 //foreach (IHardware hardware in computer.Hardware)
@@ -1242,12 +1290,12 @@ namespace MisasMinerSetup
 
         private void btnDevices_Click(object sender, RoutedEventArgs e)
         {
-            txtDevices.Visibility = System.Windows.Visibility.Visible;
-            device0.Visibility = System.Windows.Visibility.Visible;
-            device1.Visibility = System.Windows.Visibility.Visible;
-            device2.Visibility = System.Windows.Visibility.Visible;
-            device3.Visibility = System.Windows.Visibility.Visible;
-            btnDeviceSave.Visibility = System.Windows.Visibility.Visible;
+            txtDevices.Visibility = Visibility.Visible;
+            device0.Visibility = Visibility.Visible;
+            device1.Visibility = Visibility.Visible;
+            device2.Visibility = Visibility.Visible;
+            device3.Visibility = Visibility.Visible;
+            btnDeviceSave.Visibility = Visibility.Visible;
         }
 
         private void device0_Unchecked(object sender, RoutedEventArgs e)
@@ -1292,12 +1340,12 @@ namespace MisasMinerSetup
 
         private void btnDeviceSave_Click(object sender, RoutedEventArgs e)
         {
-            txtDevices.Visibility = System.Windows.Visibility.Hidden;
-            device0.Visibility = System.Windows.Visibility.Hidden;
-            device1.Visibility = System.Windows.Visibility.Hidden;
-            device2.Visibility = System.Windows.Visibility.Hidden;
-            device3.Visibility = System.Windows.Visibility.Hidden;
-            btnDeviceSave.Visibility = System.Windows.Visibility.Hidden;
+            txtDevices.Visibility = Visibility.Hidden;
+            device0.Visibility = Visibility.Hidden;
+            device1.Visibility = Visibility.Hidden;
+            device2.Visibility = Visibility.Hidden;
+            device3.Visibility = Visibility.Hidden;
+            btnDeviceSave.Visibility = Visibility.Hidden;
         }
     }
 
