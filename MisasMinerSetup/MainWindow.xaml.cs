@@ -63,7 +63,7 @@ namespace MisasMinerSetup
         public bool fileCheck { get; set; } //Boolean for checking if sgminer.exe/ccminer.exe exists
         public string appPath;              // Current application path
         public int intcheckLook;
-        public string strlookup;
+        public string strLookup;
         private string _selectedPool;
         public string selectedPool { get { return _selectedPool; } set { _selectedPool = value; CheckCustomPool(); } } //Selected pool from the list
         public string selectedgap { get; set; }
@@ -87,12 +87,14 @@ namespace MisasMinerSetup
         public bool tempCheck;
         public string strFan;
         public string strUsage;
+        public string strInt;
         public int blocksFound;
         public int oldBlocksFound;
         public bool bldevice0;
         public bool bldevice1;
         public bool bldevice2;
         public bool bldevice3;
+        public bool firstRun;
         public string devicePar;
         public string GPUList = Properties.Resources.GPUList;
         public Computer computer;
@@ -108,6 +110,8 @@ namespace MisasMinerSetup
         public MainWindow()
         {
             InitializeComponent();
+            LoadConf();
+            FirstTimeCheck();
             SetDefaults();
             CatalogGPUHardware();
             PollHardware();
@@ -118,11 +122,13 @@ namespace MisasMinerSetup
             MinerInfo2();
             CheckBlocksFound();
             GetGPUType();
+            
 
         }
 
         private void SetDefaults()
         {
+
             DataContext = this;
             i = 15; //Default intensity
             n = 11; //Default nFactor
@@ -140,7 +146,15 @@ namespace MisasMinerSetup
             strBlocks = "0";
             strHash = "0";
             firstCon = true;
+            fileCheck = false;
             txtDonatos.IsReadOnly = true;                //Donation box
+            if (l != "Auto")
+            {
+                l = Properties.Settings.Default.l;
+            }
+        }
+        private void LoadConf()
+        {
             pool = Properties.Settings.Default.Pool;     //Loading saved custom pool address
             wallet = Properties.Settings.Default.Wallet; //Loading saved wallet address
             i = Properties.Settings.Default.Inten;       //Loading saved intensity
@@ -152,10 +166,7 @@ namespace MisasMinerSetup
             temp = Properties.Settings.Default.temp;     //Loading saved maxtemp
             selectedgap = Properties.Settings.Default.selectedgap;       //Loading saved lookup-gap
             selectedPool = Properties.Settings.Default.selectedPool;     //Loading saved lookup-gap
-            if (l != "Auto")
-            {
-                l = Properties.Settings.Default.l;
-            }
+            firstRun = Properties.Settings.Default.FirstRun;
         }
 
         private void SetMenus()
@@ -385,29 +396,38 @@ namespace MisasMinerSetup
             {
                 strPool = "stratum+tcp://" + selectedPool;
             }
-
+            string strFac = n.ToString(); 
             string strWallet = wallet;                      //Storing wallet
-            string strInt = i.ToString();                   //Storing intensity
-            string strFac = n.ToString();                   //Storing nFactor
-            if (selectedgap == "1")
+
+            if (firstRun == true)
             {
-                strlookup = "--lookup-gap=1";
+                loadPresets();
+                strLookup = "--lookup-gap=" + strLookup;
             }
-            else if (selectedgap == "2")
+            else
             {
-                strlookup = "--lookup-gap=2";               //Checking what lookup-gap option was selected
-            }
-            else if (selectedgap == "3")
-            {
-                strlookup = "--lookup-gap=3";
+                strInt = i.ToString();                   //Storing intensity
+                                                         //Storing nFactor
+                if (selectedgap == "1")
+                {
+                    strLookup = "--lookup-gap=1";
+                }
+                else if (selectedgap == "2")
+                {
+                    strLookup = "--lookup-gap=2";               //Checking what lookup-gap option was selected
+                }
+                else if (selectedgap == "3")
+                {
+                    strLookup = "--lookup-gap=3";
+                }
             }
             if (gpuChoice == 1) //If AMD GPU was chosen
             {
-                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -p x -I " + strInt; //Constructing final string to run
+                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strLookup + " -p x -I " + strInt; //Constructing final string to run
             }
             else if (gpuChoice == 0) //If Nvidia GPU was chosen
             {
-                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strlookup + " -i " + strInt + " --max-temp=" + temp + " "; //Constructing final string to run
+                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strLookup + " --max-temp=" + temp + " "; //Constructing final string to run
 
             }
             else if (gpuChoice == 3) //If Nvidia solomining was chosen
@@ -417,7 +437,7 @@ namespace MisasMinerSetup
                 cmd5.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
                 cmd5.Start();
 
-                strArg = " ccminer.exe --algo=scrypt:10 -l " + l + " -o 127.0.0.1:42068 -u test -p test --no-longpoll " + strlookup + " --no-getwork --no-stratum --coinbase-addr=" + strWallet + " --max-temp=" + temp + " "; //Constructing final string to run. EXPERIMENTAL!
+                strArg = " ccminer.exe --algo=scrypt:10 -l " + l + " -o 127.0.0.1:42068 -u test -p test --no-longpoll " + strLookup + " --no-getwork --no-stratum --coinbase-addr=" + strWallet + " --max-temp=" + temp + " "; //Constructing final string to run. EXPERIMENTAL!
 
             }
             System.Windows.MessageBox.Show(strArg);
@@ -471,6 +491,46 @@ namespace MisasMinerSetup
             webClient = null;
             UnZipSolo();                                           //Unzipping solo files.
 
+        }
+
+        private void loadPresets()
+        {
+            if (firstRun == true)
+            {
+                if (fileCheck == true)
+                {
+                    try
+                    {
+                        if (gpuChoice == 1)
+                        {
+                            int gapStart = devicePar.IndexOf("gap=") + "gap=".Length;
+                            int gapEnd = devicePar.LastIndexOf(",I=");
+                            strLookup = devicePar.Substring(gapStart, gapEnd - gapStart);
+                            selectedgap = strLookup;
+                            int intStart = devicePar.IndexOf(",I=") + ",I=".Length;
+                            strInt = devicePar.Substring(intStart);
+                            i = Int32.Parse(strInt);
+                            firstRun = false;
+                        }
+                        else if(gpuChoice == 0)
+                        {
+                            int gapStart = devicePar.IndexOf("gap=") + "gap=".Length;
+                            int gapEnd = devicePar.LastIndexOf(",-l");
+                            strLookup = devicePar.Substring(gapStart, gapEnd - gapStart);
+                            selectedgap = strLookup;
+                            int launchStart = devicePar.IndexOf(",-l=") + ",-l=".Length;
+                            strInt = devicePar.Substring(launchStart);
+                            l = strInt;
+                            firstRun = false;
+                        }
+                        System.Windows.MessageBox.Show("Hello and welcome to MMS! I've went ahead and loaded up community based optimized values for your GPU!");
+                    }
+                    catch
+                    {
+                        System.Windows.MessageBox.Show("Couldn't find optimized values for your GPU. If you can you can submit your own optimized values for this project to help out our \"job\". Miisu#5852");
+                    }
+                }
+            }
         }
         private string checkDevices()
         {
@@ -692,6 +752,7 @@ namespace MisasMinerSetup
             Properties.Settings.Default.temp = temp;
             Properties.Settings.Default.selectedgap = selectedgap;
             Properties.Settings.Default.selectedPool = selectedPool;
+            Properties.Settings.Default.FirstRun = false;
             Properties.Settings.Default.Save();
         }
 
@@ -768,12 +829,32 @@ namespace MisasMinerSetup
                     txtninstall2.Visibility = System.Windows.Visibility.Hidden;
                     btnInstall.Visibility = System.Windows.Visibility.Hidden;
                     btnStart.IsEnabled = true;
+                    loadPresets();
                 }
                 else
                 {
                     txtFileCheck.Text = "";
                     visi = "Visible";
                     btnStart.IsEnabled = false;
+                }
+            }
+            
+        }
+
+        private void FirstTimeCheck()
+        {
+            if (fileCheck == true)
+            {
+                if (Properties.Settings.Default.FirstRun == true)
+                {
+
+                    firstRun = true;
+                    Properties.Settings.Default.FirstRun = false;
+                    Properties.Settings.Default.Save();
+                }
+                else
+                {
+                    firstRun = false;
                 }
             }
         }
@@ -926,9 +1007,9 @@ namespace MisasMinerSetup
                         g.Name = g.Name.Substring(index);
                     }
                 }
-                string completeStart = "Start" + g.Name;
+                string completeStart = "Start" + g.Name + "g";
                 string completeEnd = "End" + g.Name;
-                int deviceStart = GPUList.IndexOf(completeStart) + completeStart.Length; //Find hashrate
+                int deviceStart = GPUList.IndexOf(completeStart) + (completeStart.Length - 1); //Find hashrate
                 int deviceEnd = GPUList.LastIndexOf(completeEnd);
                 devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
             }

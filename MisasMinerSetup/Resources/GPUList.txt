@@ -1,16 +1,18 @@
-StartGTX 960Mgap=2 -l T20x5 --no-autotuneEndGTX 960M
+StartGTX 960Mgap=2,-l=T20x5EndGTX 960M
 
-StartGTX 970gap=2EndGTX 970
+StartGTX 970gap=2,-l=T13x20EndGTX 970
 
 
-StartGTX 1080 Tigap=3 -l=T55x20EndGTX 1080 Ti
+StartGTX 1080 Tigap=3,-l=T55x20EndGTX 1080 Ti
 
-StartGTX 1080gap=3 -l=T39x10EndGTX 1080
+StartGTX 1080gap=3,-l=T39x10EndGTX 1080
 
-StartGTX 1070 Tigap=2 -l=T37x20EndGTX 1070 Ti
+StartGTX 1070 Tigap=2,-l=T37x20EndGTX 1070 Ti
 
-StartGTX 1070gap=2 -l=T29x20EndGTX 1070
+StartGTX 1070gap=2,-l=T29x20EndGTX 1070
 
-StartGTX 1060gap=2 -l=T30x20EndGTX 1060
+StartGTX 1060gap=2,-l=T30x20EndGTX 1060
 
-StartRX 480 Graphicslookup-gap=2,I=20EndRX 480 Graphics
+StartRX 480 Graphicsgap=2,I=20EndRX 480 Graphics
+
+

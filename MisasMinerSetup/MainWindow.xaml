@@ -1,7 +1,7 @@
 ﻿<Window x:Class="MisasMinerSetup.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Misa's Miner Setup"  Height="350" Width="525" ResizeMode="CanMinimize" Visibility="Visible" BorderThickness="0,0,0,0" AllowsTransparency="True" SnapsToDevicePixels="False" Background="Black" WindowStyle="None">
+        Title="Misa's Miner Setup"  Height="350" Width="525" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Visibility="Visible" BorderThickness="0,0,0,0" AllowsTransparency="True" SnapsToDevicePixels="False" Background="Black" WindowStyle="None">
 
     <Grid>
         <Grid.Background>
