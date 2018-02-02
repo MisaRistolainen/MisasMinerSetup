@@ -113,8 +113,8 @@ namespace MisasMinerSetup
             InitializeComponent();
             SetDefaults();
             LoadConf();
-            FirstTimeCheck();
             ConfigureUI();
+            FirstTimeCheck();
             CatalogGPUHardware();
             PollHardware();
             SetMenus();
@@ -1125,7 +1125,6 @@ namespace MisasMinerSetup
                 MinerInfo2();
                 UpdateHover();
 
-                var nodeCounter = 0;
                 foreach (var hardwareNode in GPUHardwareNodes)
                 {
                     var hardwareSensors = hardwareNode.PollSensors();
@@ -1149,10 +1148,10 @@ namespace MisasMinerSetup
                                 }
                                 Dispatcher.Invoke(() =>
                                 {
-                                    GPUHardwareNodes[nodeCounter].StatGrid.Temperature.Text = readableTemp;
-                                    GPUHardwareNodes[nodeCounter].StatGrid.Temperature.Foreground = brushColor;
-                                    GPUHardwareNodes[nodeCounter].StatGrid.Utilization.Text = "";
-                                    GPUHardwareNodes[nodeCounter].StatGrid.GridObject.ToolTip = GPUHardwareNodes[nodeCounter].Name;
+                                    hardwareNode.StatGrid.Temperature.Text = readableTemp;
+                                    hardwareNode.StatGrid.Temperature.Foreground = brushColor;
+                                    hardwareNode.StatGrid.Utilization.Text = "";
+                                    hardwareNode.StatGrid.GridObject.ToolTip = hardwareNode.Name;
                                 });
                                 break;
                             case SensorType.Load:
@@ -1175,38 +1174,7 @@ namespace MisasMinerSetup
                                 break;
                         }
                     }
-                    nodeCounter++;
                 }
-
-                //foreach (IHardware hardware in computer.Hardware)
-                //{
-                //    hardware.Update();
-
-                //    foreach (ISensor sensor in hardware.Sensors)
-                //    { 
-                //        if (sensor.SensorType == SensorType.Temperature)
-                //        {
-                //         string gpuTemp =  (sensor.Value + "°C");
-                //         cleanTemp = gpuTemp;
-                //            System.Windows.MessageBox.Show(hardware.Name);
-                //         int intTemp = Int32.Parse(cleanTemp.Substring(0,2));
-                //            this.Dispatcher.Invoke(() =>
-                //                { 
-                //                txtTemp.Text = cleanTemp;
-                //               });
-
-                //            if (tempCheck == true)
-                //            {
-                //                if (intTemp >= temp - 5)
-                //                {
-                //                    notifier.ShowWarning("GPU TEMPERATURE NEARING MAX! CURRENT TEMPERATURE " + cleanTemp); //Show temperature warning if user opted in.
-                //                }
-                //            }
-                //        }
-
-                //    }
-
-                //}
 
             };
         }
