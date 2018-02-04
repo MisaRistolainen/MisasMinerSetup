@@ -1089,6 +1089,7 @@ namespace MisasMinerSetup
                 _sensors = hwSensors;
                 StatGrid = statGrid;
                 StatGrid.GridObject.Visibility = Visibility.Visible;
+                StatGrid.GridObject.ToolTip = hwName;
             }
 
             public ISensor[] PollSensors()
