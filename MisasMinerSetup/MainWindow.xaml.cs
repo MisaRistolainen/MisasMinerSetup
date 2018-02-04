@@ -102,8 +102,16 @@ namespace MisasMinerSetup
         private List<StatGrid> _statGrids = new List<StatGrid>();
 
 
+        public Notifier notifier = new Notifier(cfg =>
+        {
+            cfg.PositionProvider = new PrimaryScreenPositionProvider(Corner.BottomRight, 0, 40); //Creating notifiers using ToastNotifications
 
+            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                notificationLifetime: TimeSpan.FromSeconds(3),
+                maximumNotificationCount: MaximumNotificationCount.FromCount(5));
 
+            cfg.Dispatcher = System.Windows.Application.Current.Dispatcher;
+        });
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -898,9 +906,6 @@ namespace MisasMinerSetup
             System.Windows.MessageBox.Show("Wallet downloaded! Continuing with network and wallet setup");                  //Hooray!
             System.Windows.MessageBox.Show("Give me network access to the cmd and do not close it! Just let it be.");
             ConNetwork();
-
-
-
         }
 
         private void ConNetwork() //Opening network and installing needed files
@@ -970,10 +975,6 @@ namespace MisasMinerSetup
             System.Windows.MessageBox.Show("Miner Downloaded! You will now find me inside the folder \"MisasMinerSetup\"."); //Hooray!
             System.Windows.Application.Current.Shutdown();                                                                                          //Close application for restart from the new location
             Process.Start(appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");                                  //Restart
-
-
-
-
         }
 
         private void GetGPUType()
@@ -1035,9 +1036,7 @@ namespace MisasMinerSetup
             foreach (var hardware in computer.Hardware)
             {
                 hardware.Update();
-                var newNode = new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]);
-                newNode.StatGrid.GridObject.Visibility = Visibility.Visible;
-                GPUHardwareNodes.Add(newNode);
+                GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]));
                 hardwareCounter++;
             }
 
@@ -1054,7 +1053,6 @@ namespace MisasMinerSetup
         /// </summary>
         private void ConfigureUI()
         {
-            //StatGrid0
             StatGrid0Temp.Text = "";
             StatGrid0Utilization.Text = "";
             StatGrid1Temp.Text = "";
@@ -1090,6 +1088,7 @@ namespace MisasMinerSetup
                 Name = hwName;
                 _sensors = hwSensors;
                 StatGrid = statGrid;
+                StatGrid.GridObject.Visibility = Visibility.Visible;
             }
 
             public ISensor[] PollSensors()
@@ -1117,6 +1116,7 @@ namespace MisasMinerSetup
 
         private void PollHardware() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
         {
+            List<HardwareNodeDisplayOutput> nodeDisplayUpdate = new List<HardwareNodeDisplayOutput>();
             var timer = new System.Timers.Timer() { Enabled = true, Interval = 1000 };
             timer.Elapsed += delegate(object sender, ElapsedEventArgs e)
             {
@@ -1125,9 +1125,13 @@ namespace MisasMinerSetup
                 MinerInfo2();
                 UpdateHover();
 
+                nodeDisplayUpdate.Clear();
                 foreach (var hardwareNode in GPUHardwareNodes)
                 {
                     var hardwareSensors = hardwareNode.PollSensors();
+                    var readableTemp = "";
+                    var readableUtilization = ""; //$"{utilizationPercent}%";
+                    var brushColor = System.Windows.Media.Brushes.LightBlue;
                     foreach (var sensor in hardwareSensors)
                     {
                         switch (sensor.SensorType)
@@ -1138,21 +1142,13 @@ namespace MisasMinerSetup
                                 break;
                             case SensorType.Temperature:
                                 var sensorTemp = sensor.Value;
-                                var readableTemp = ($"{sensorTemp}°C");
-                                var brushColor = System.Windows.Media.Brushes.LightBlue;
+                                readableTemp = $"{sensorTemp}°C";
                                 if (sensorTemp >= temp - 5)
                                 {
                                     brushColor = System.Windows.Media.Brushes.Red;
                                     if (tempCheck == true)
                                         notifier.ShowWarning("GPU TEMPERATURE WARNING! CURRENT TEMPERATURE " + cleanTemp); //Show temperature warning if user opted in.
                                 }
-                                Dispatcher.Invoke(() =>
-                                {
-                                    hardwareNode.StatGrid.Temperature.Text = readableTemp;
-                                    hardwareNode.StatGrid.Temperature.Foreground = brushColor;
-                                    hardwareNode.StatGrid.Utilization.Text = "";
-                                    hardwareNode.StatGrid.GridObject.ToolTip = hardwareNode.Name;
-                                });
                                 break;
                             case SensorType.Load:
                                 break;
@@ -1174,22 +1170,35 @@ namespace MisasMinerSetup
                                 break;
                         }
                     }
+                    nodeDisplayUpdate.Add(new HardwareNodeDisplayOutput(hardwareNode.StatGrid, readableTemp, brushColor, readableUtilization));
                 }
-
+                Dispatcher.Invoke(() =>
+                {
+                    foreach (var n in nodeDisplayUpdate)
+                    {
+                        n.StatGrid.Temperature.Text = n.ReadableTemp;
+                        n.StatGrid.Temperature.Foreground = n.BrushColor;
+                        n.StatGrid.Utilization.Text = n.UtilizationPercent;
+                    }
+                });
             };
         }
 
-        Notifier notifier = new Notifier(cfg =>
+        class HardwareNodeDisplayOutput
         {
-            cfg.PositionProvider = new PrimaryScreenPositionProvider(Corner.BottomRight, 0, 40); //Creating notifiers using ToastNotifications
+            public StatGrid StatGrid;
+            public string ReadableTemp;
+            public SolidColorBrush BrushColor;
+            public string UtilizationPercent;
 
-            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-                notificationLifetime: TimeSpan.FromSeconds(3),
-                maximumNotificationCount: MaximumNotificationCount.FromCount(5));
-
-            cfg.Dispatcher = System.Windows.Application.Current.Dispatcher;
-        });
-
+            public HardwareNodeDisplayOutput(StatGrid statGrid, string readableTemp, SolidColorBrush brushColor, string utilizationPercent)
+            {
+                StatGrid = statGrid;
+                ReadableTemp = readableTemp;
+                BrushColor = brushColor;
+                UtilizationPercent = utilizationPercent;
+            }
+        }
 
 
         [DllImport("User32.dll")] //Creating hotkeys for notifications of current hashrate
