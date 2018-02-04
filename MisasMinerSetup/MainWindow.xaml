@@ -29,7 +29,7 @@
             </Button.Background>
         </Button>
         <TextBlock x:Name="txtLoad" HorizontalAlignment="Left" Margin="56,335,0,-7" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" Width="107" Height="22" Visibility="Hidden"/>
-        <Button x:Name="btntesti" Content="Testimonials" Click="BtnTesti_Click" HorizontalAlignment="Left" Margin="434,299,0,0" VerticalAlignment="Top" Width="91" Height="19" Background="#FFB2B2B2" Visibility="{Binding visi}" FontWeight="Bold"/>
+        <Button x:Name="btntesti" Content="Testimonials" Click="BtnTesti_Click" HorizontalAlignment="Left" Margin="337,296,0,0" VerticalAlignment="Top" Width="91" Height="19" Background="#FFB2B2B2" Visibility="{Binding visi}" FontWeight="Bold"/>
         <TextBox x:Name="txbxPool" HorizontalAlignment="Left" Height="22" Margin="282,94,0,0" TextWrapping="Wrap" Text="{Binding pool}" VerticalAlignment="Top" Width="230" FontSize="14"/>
         <TextBox x:Name="txbxWallet" HorizontalAlignment="Left" Height="24" Margin="78,65,0,0" TextWrapping="Wrap" Text="{Binding wallet}" VerticalAlignment="Top" Width="434" FontSize="14" ToolTip="Wallet address here." RenderTransformOrigin="0.5,0.5">
             <TextBox.RenderTransform>
@@ -83,7 +83,7 @@
         <TextBlock x:Name="txtninstall2" HorizontalAlignment="Left" Margin="13,249,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="14" Visibility="{Binding visi}"><Run Text="You can also let me install the miner."/></TextBlock>
         <TextBlock x:Name="txtl" HorizontalAlignment="Left" Margin="13,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="20" Width="30" Text="-L:" ToolTip="No touchi if no understandi"/>
         <TextBox x:Name="txtlbox" HorizontalAlignment="Left" Height="23" Margin="39,152,0,0" TextWrapping="Wrap" Text="{Binding l}" VerticalAlignment="Top" Width="65" FontSize="16" ToolTip="No touchi if no understandi"/>
-        <Button x:Name="btnDonate"  Click="BtnDonate_Click" HorizontalAlignment="Left" Margin="434,320,0,0" VerticalAlignment="Top" Width="91" Height="30" Background="#FFC5C5C5" FontWeight="Bold" FontSize="9">
+        <Button x:Name="btnDonate"  Click="BtnDonate_Click" HorizontalAlignment="Left" Margin="434,291,0,0" VerticalAlignment="Top" Width="91" Height="30" Background="#FFC5C5C5" FontWeight="Bold" FontSize="9">
             <Grid Width="90" Height="18">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20"/>
@@ -142,7 +142,7 @@
             <TextBlock x:Name="StatGrid0Temp" Grid.Column="1" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="000°C" Grid.ColumnSpan="1" Width="35" Height="15" Foreground="White"/>
             <TextBlock x:Name="StatGrid0Utilization" Grid.Column="2" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="100%" Grid.ColumnSpan="1" Width="30" Height="15" Foreground="White"/>
         </Grid>
-        <Grid x:Name="StatGrid1"  HorizontalAlignment="Left" Height="15" Margin="110,335,0,0" VerticalAlignment="Top" Width="85">
+        <Grid x:Name="StatGrid1"  HorizontalAlignment="Left" Height="15" Margin="107,335,0,0" VerticalAlignment="Top" Width="85">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20"/>
                 <ColumnDefinition Width="35"/>
@@ -152,7 +152,7 @@
             <TextBlock x:Name="StatGrid1Temp"  Grid.Column="1" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="000°C" Grid.ColumnSpan="1" Width="35" Height="15" Foreground="White"/>
             <TextBlock x:Name="StatGrid1Utilization" Grid.Column="2" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="100%" Grid.ColumnSpan="1" Width="30" Height="15" Foreground="White"/>
         </Grid>
-        <Grid x:Name="StatGrid2"  HorizontalAlignment="Left" Height="15" Margin="200,335,0,0" VerticalAlignment="Top" Width="85">
+        <Grid x:Name="StatGrid2"  HorizontalAlignment="Left" Height="15" Margin="194,335,0,0" VerticalAlignment="Top" Width="86">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20"/>
                 <ColumnDefinition Width="35"/>
@@ -162,7 +162,7 @@
             <TextBlock x:Name="StatGrid2Temp"  Grid.Column="1" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="000°C" Grid.ColumnSpan="1" Width="35" Height="15" Foreground="White"/>
             <TextBlock x:Name="StatGrid2Utilization" Grid.Column="2" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="100%" Grid.ColumnSpan="1" Width="30" Height="15" Foreground="White"/>
         </Grid>
-        <Grid x:Name="StatGrid3"  HorizontalAlignment="Left" Height="15" Margin="290,335,0,0" VerticalAlignment="Top" Width="85">
+        <Grid x:Name="StatGrid3"  HorizontalAlignment="Left" Height="15" Margin="282,335,0,0" VerticalAlignment="Top" Width="85">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20"/>
                 <ColumnDefinition Width="35"/>
@@ -171,6 +171,26 @@
             <TextBlock Grid.Column="0" TextAlignment="Center" Margin="0,0,0,0" TextWrapping="Wrap" Text="#3" Grid.ColumnSpan="1" Width="20" Height="15" Foreground="White"/>
             <TextBlock x:Name="StatGrid3Temp"  Grid.Column="1" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="000°C" Grid.ColumnSpan="1" Width="35" Height="15" Foreground="White"/>
             <TextBlock x:Name="StatGrid3Utilization" Grid.Column="2" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="100%" Grid.ColumnSpan="1" Width="30" Height="15" Foreground="White"/>
+        </Grid>
+        <Grid x:Name="StatGrid4"  HorizontalAlignment="Left" Height="15" Margin="369,335,0,0" VerticalAlignment="Top" Width="85">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="35"/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" TextAlignment="Center" Margin="0,0,0,0" TextWrapping="Wrap" Text="#4" Grid.ColumnSpan="1" Width="20" Height="15" Foreground="White"/>
+            <TextBlock x:Name="StatGrid4Temp"  Grid.Column="1" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="000°C" Grid.ColumnSpan="1" Width="35" Height="15" Foreground="White"/>
+            <TextBlock x:Name="StatGrid4Utilization" Grid.Column="2" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="100%" Grid.ColumnSpan="1" Width="30" Height="15" Foreground="White"/>
+        </Grid>
+        <Grid x:Name="StatGrid5"  HorizontalAlignment="Left" Height="15" Margin="456,335,-17,0" VerticalAlignment="Top" Width="86">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="35"/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" TextAlignment="Center" Margin="0,0,0,0" TextWrapping="Wrap" Text="#5" Grid.ColumnSpan="1" Width="20" Height="15" Foreground="White"/>
+            <TextBlock x:Name="StatGrid5Temp"  Grid.Column="1" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="000°C" Grid.ColumnSpan="1" Width="35" Height="15" Foreground="White"/>
+            <TextBlock x:Name="StatGrid5Utilization" Grid.Column="2" TextAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="100%" Grid.ColumnSpan="1" Width="30" Height="15" Foreground="White"/>
         </Grid>
 
 
