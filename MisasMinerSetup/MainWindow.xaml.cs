@@ -1219,15 +1219,23 @@ namespace MisasMinerSetup
                 {
                     foreach (var n in nodeDisplayUpdate)
                     {
-                    if (n.IntTemp >= temp - 5)
+                        try
                         {
-                            n.BrushColor = System.Windows.Media.Brushes.Red;
-                            if (tempCheck == true)
-                                notifier.ShowWarning("GPU TEMPERATURE WARNING! CURRENT TEMPERATURE " + n.ReadableTemp); //Show temperature warning if user opted in.
+                            if (n.IntTemp >= temp - 5)
+                            {
+                                n.BrushColor = System.Windows.Media.Brushes.Red;
+                                if (tempCheck == true)
+                                    notifier.ShowWarning("GPU TEMPERATURE WARNING! CURRENT TEMPERATURE " + n.ReadableTemp); //Show temperature warning if user opted in.
+                            }
+                            n.StatGrid.Temperature.Text = n.ReadableTemp;
+                            n.StatGrid.Temperature.Foreground = n.BrushColor;
+                            n.StatGrid.Utilization.Text = n.UtilizationPercent;
                         }
-                        n.StatGrid.Temperature.Text = n.ReadableTemp;
-                        n.StatGrid.Temperature.Foreground = n.BrushColor;
-                        n.StatGrid.Utilization.Text = n.UtilizationPercent;
+                        catch (Exception ex)
+                        {
+                            // This is an empty catch - intended if the user has more GPUs than is currently supported by the GUI
+                            Debug.WriteLine(ex.Message);
+                        }
                     }
                 });
             };
@@ -1378,6 +1386,26 @@ namespace MisasMinerSetup
             bldevice3 = false;
         }
 
+        private void device4_Checked(object sender, RoutedEventArgs e)
+        {
+            bldevice4 = true;
+        }
+
+        private void device4_Unchecked(object sender, RoutedEventArgs e)
+        {
+            bldevice4 = false;
+        }
+
+        private void device5_Checked(object sender, RoutedEventArgs e)
+        {
+            bldevice5 = true;
+        }
+
+        private void device5_Unchecked(object sender, RoutedEventArgs e)
+        {
+            bldevice5 = false;
+        }
+
         private void btnDeviceSave_Click(object sender, RoutedEventArgs e)
         {
             txtDevices.Visibility = Visibility.Hidden;
@@ -1388,22 +1416,6 @@ namespace MisasMinerSetup
             device4.Visibility = Visibility.Hidden;
             device5.Visibility = Visibility.Hidden;
             btnDeviceSave.Visibility = Visibility.Hidden;
-        }
-        private void device4_Unchecked(object sender, RoutedEventArgs e)
-        {
-            bldevice4 = false;
-        }
-        private void device4_Checked(object sender, RoutedEventArgs e)
-        {
-            bldevice4 = true;
-        }
-        private void device5_Checked(object sender, RoutedEventArgs e)
-        {
-            bldevice5 = true;
-        }
-        private void device5_Unchecked(object sender, RoutedEventArgs e)
-        {
-            bldevice5 = true;
         }
     }
 
