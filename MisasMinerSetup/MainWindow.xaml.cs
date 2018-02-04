@@ -1061,16 +1061,28 @@ namespace MisasMinerSetup
             StatGrid2Utilization.Text = "";
             StatGrid3Temp.Text = "";
             StatGrid3Utilization.Text = "";
+            StatGrid4Temp.Text = "";
+            StatGrid4Utilization.Text = "";
+            StatGrid5Temp.Text = "";
+            StatGrid5Utilization.Text = "";
             StatGrid0.Visibility = Visibility.Hidden;
             StatGrid1.Visibility = Visibility.Hidden;
             StatGrid2.Visibility = Visibility.Hidden;
             StatGrid3.Visibility = Visibility.Hidden;
+            StatGrid4.Visibility = Visibility.Hidden;
+            StatGrid5.Visibility = Visibility.Hidden;
             _statGrids.Add(new StatGrid(StatGrid0, StatGrid0Temp, StatGrid0Utilization));
             _statGrids.Add(new StatGrid(StatGrid1, StatGrid1Temp, StatGrid1Utilization));
             _statGrids.Add(new StatGrid(StatGrid2, StatGrid2Temp, StatGrid2Utilization));
             _statGrids.Add(new StatGrid(StatGrid3, StatGrid3Temp, StatGrid3Utilization));
+            _statGrids.Add(new StatGrid(StatGrid4, StatGrid4Temp, StatGrid4Utilization));
+            _statGrids.Add(new StatGrid(StatGrid5, StatGrid5Temp, StatGrid5Utilization));
         }
 
+        /// <summary>
+        /// Class object to define each hardware item we're monitoring from within the application
+        /// This will track not only the OpenHardwareMonitor values, but also store the StatGrid to which it will output it's values
+        /// </summary>
         public class GPUHardwareNode
         {
             public IHardware Hardware;
