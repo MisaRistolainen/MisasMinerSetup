@@ -94,6 +94,8 @@ namespace MisasMinerSetup
         public bool bldevice1;
         public bool bldevice2;
         public bool bldevice3;
+        public bool bldevice4;
+        public bool bldevice5;
         public bool firstRun;
         public string devicePar;
         public string GPUList = Properties.Resources.GPUList;
@@ -409,8 +411,8 @@ namespace MisasMinerSetup
 
             if (firstRun == true)
             {
-                loadPresets();
                 strLookup = "--lookup-gap=" + strLookup;
+                
             }
             else
             {
@@ -536,6 +538,22 @@ namespace MisasMinerSetup
                     catch
                     {
                         System.Windows.MessageBox.Show("Couldn't find optimized values for your GPU. If you can you can submit your own optimized values for this project to help out our \"job\". Miisu#5852");
+                        strInt = i.ToString();                   //Storing intensity
+                                                                 //Storing nFactor
+                        if (selectedgap == "1")
+                        {
+                            strLookup = "--lookup-gap=1";
+                        }
+                        else if (selectedgap == "2")
+                        {
+                            strLookup = "--lookup-gap=2";               //Checking what lookup-gap option was selected
+                        }
+                        else if (selectedgap == "3")
+                        {
+                            strLookup = "--lookup-gap=3";
+                        }
+                        firstRun = false;
+
                     }
                 }
             }
@@ -571,9 +589,25 @@ namespace MisasMinerSetup
             {
                 if (deviceList == "")
                 {
+                    deviceList += "3";
+                }
+                else { deviceList += ",3"; }
+            }
+            if (bldevice4 == true)
+            {
+                if (deviceList == "")
+                {
                     deviceList += "4";
                 }
                 else { deviceList += ",4"; }
+            }
+            if (bldevice5 == true)
+            {
+                if (deviceList == "")
+                {
+                    deviceList += "5";
+                }
+                else { deviceList += ",5"; }
             }
             return deviceList;
         }
@@ -1143,6 +1177,7 @@ namespace MisasMinerSetup
                 {
                     var hardwareSensors = hardwareNode.PollSensors();
                     var readableTemp = "";
+                    int intTemp = 0;
                     var readableUtilization = ""; //$"{utilizationPercent}%";
                     var brushColor = System.Windows.Media.Brushes.LightBlue;
                     foreach (var sensor in hardwareSensors)
@@ -1155,13 +1190,8 @@ namespace MisasMinerSetup
                                 break;
                             case SensorType.Temperature:
                                 var sensorTemp = sensor.Value;
+                                intTemp = (int)sensorTemp;
                                 readableTemp = $"{sensorTemp}°C";
-                                if (sensorTemp >= temp - 5)
-                                {
-                                    brushColor = System.Windows.Media.Brushes.Red;
-                                    if (tempCheck == true)
-                                        notifier.ShowWarning("GPU TEMPERATURE WARNING! CURRENT TEMPERATURE " + cleanTemp); //Show temperature warning if user opted in.
-                                }
                                 break;
                             case SensorType.Load:
                                 break;
@@ -1183,12 +1213,18 @@ namespace MisasMinerSetup
                                 break;
                         }
                     }
-                    nodeDisplayUpdate.Add(new HardwareNodeDisplayOutput(hardwareNode.StatGrid, readableTemp, brushColor, readableUtilization));
+                    nodeDisplayUpdate.Add(new HardwareNodeDisplayOutput(hardwareNode.StatGrid, readableTemp, brushColor, readableUtilization, intTemp));
                 }
                 Dispatcher.Invoke(() =>
                 {
                     foreach (var n in nodeDisplayUpdate)
                     {
+                    if (n.IntTemp >= temp - 5)
+                        {
+                            n.BrushColor = System.Windows.Media.Brushes.Red;
+                            if (tempCheck == true)
+                                notifier.ShowWarning("GPU TEMPERATURE WARNING! CURRENT TEMPERATURE " + n.ReadableTemp); //Show temperature warning if user opted in.
+                        }
                         n.StatGrid.Temperature.Text = n.ReadableTemp;
                         n.StatGrid.Temperature.Foreground = n.BrushColor;
                         n.StatGrid.Utilization.Text = n.UtilizationPercent;
@@ -1203,13 +1239,15 @@ namespace MisasMinerSetup
             public string ReadableTemp;
             public SolidColorBrush BrushColor;
             public string UtilizationPercent;
+            public int IntTemp;
 
-            public HardwareNodeDisplayOutput(StatGrid statGrid, string readableTemp, SolidColorBrush brushColor, string utilizationPercent)
+            public HardwareNodeDisplayOutput(StatGrid statGrid, string readableTemp, SolidColorBrush brushColor, string utilizationPercent, int intTemp)
             {
                 StatGrid = statGrid;
                 ReadableTemp = readableTemp;
                 BrushColor = brushColor;
                 UtilizationPercent = utilizationPercent;
+                IntTemp = intTemp;
             }
         }
 
@@ -1295,6 +1333,8 @@ namespace MisasMinerSetup
             device1.Visibility = Visibility.Visible;
             device2.Visibility = Visibility.Visible;
             device3.Visibility = Visibility.Visible;
+            device4.Visibility = Visibility.Visible;
+            device5.Visibility = Visibility.Visible;
             btnDeviceSave.Visibility = Visibility.Visible;
         }
 
@@ -1345,7 +1385,25 @@ namespace MisasMinerSetup
             device1.Visibility = Visibility.Hidden;
             device2.Visibility = Visibility.Hidden;
             device3.Visibility = Visibility.Hidden;
+            device4.Visibility = Visibility.Hidden;
+            device5.Visibility = Visibility.Hidden;
             btnDeviceSave.Visibility = Visibility.Hidden;
+        }
+        private void device4_Unchecked(object sender, RoutedEventArgs e)
+        {
+            bldevice4 = false;
+        }
+        private void device4_Checked(object sender, RoutedEventArgs e)
+        {
+            bldevice4 = true;
+        }
+        private void device5_Checked(object sender, RoutedEventArgs e)
+        {
+            bldevice5 = true;
+        }
+        private void device5_Unchecked(object sender, RoutedEventArgs e)
+        {
+            bldevice5 = true;
         }
     }
 
