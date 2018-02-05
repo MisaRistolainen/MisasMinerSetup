@@ -1070,7 +1070,14 @@ namespace MisasMinerSetup
             foreach (var hardware in computer.Hardware)
             {
                 hardware.Update();
-                GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]));
+                try
+                {
+                    GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]));
+                }
+                catch (Exception)
+                {
+                    // Empty catch - simply ignoring additional hardware for now and setting a hard limit to 6
+                }
                 hardwareCounter++;
             }
 
