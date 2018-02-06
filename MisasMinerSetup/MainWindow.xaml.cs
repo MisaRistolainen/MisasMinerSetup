@@ -105,6 +105,7 @@ namespace MisasMinerSetup
         public Computer computer;
         public List<GPUHardwareNode> GPUHardwareNodes = new List<GPUHardwareNode>();
         private List<StatGrid> _statGrids = new List<StatGrid>();
+        private List<TextBlock> _hardwareNames = new List<TextBlock>();
 
 
         public Notifier notifier = new Notifier(cfg =>
@@ -153,10 +154,9 @@ namespace MisasMinerSetup
             setx4 = 100;
             setx5 = 1;
             balance = 0;
-            worth = "0";
             monGPU = 1;
             tempCheck = false;
-            worth = "0,0";
+            worth = "N/A";
             l = "Auto";
             strBlocks = "0";
             strHash = "0";
@@ -170,18 +170,20 @@ namespace MisasMinerSetup
         }
         private void LoadConf()
         {
-            pool = Properties.Settings.Default.Pool;     //Loading saved custom pool address
-            wallet = Properties.Settings.Default.Wallet; //Loading saved wallet address
-            i = Properties.Settings.Default.Inten;       //Loading saved intensity
-            n = Properties.Settings.Default.nFac;        //Loading saved nFactor
-            setx2 = Properties.Settings.Default.setx2;   //Loading saved setx values
-            setx3 = Properties.Settings.Default.setx3;   //Loading saved setx values
-            setx4 = Properties.Settings.Default.setx4;   //Loading saved setx values
-            setx5 = Properties.Settings.Default.setx5;   //Loading saved setx values
-            temp = Properties.Settings.Default.temp;     //Loading saved maxtemp
-            selectedgap = Properties.Settings.Default.selectedgap;       //Loading saved lookup-gap
-            selectedPool = Properties.Settings.Default.selectedPool;     //Loading saved pool
-            firstRun = Properties.Settings.Default.FirstRun;
+            pool = Properties.Settings.Default.Pool;                    //Loading saved custom pool address
+            wallet = Properties.Settings.Default.Wallet;                //Loading saved wallet address
+            i = Properties.Settings.Default.Inten;                      //Loading saved intensity
+            n = Properties.Settings.Default.nFac;                       //Loading saved nFactor
+            setx2 = Properties.Settings.Default.setx2;                  //Loading saved setx values
+            setx3 = Properties.Settings.Default.setx3;                  //Loading saved setx values
+            setx4 = Properties.Settings.Default.setx4;                  //Loading saved setx values
+            setx5 = Properties.Settings.Default.setx5;                  //Loading saved setx values
+            temp = Properties.Settings.Default.temp;                    //Loading saved maxtemp
+            selectedgap = Properties.Settings.Default.selectedgap;      //Loading saved lookup-gap
+            selectedPool = Properties.Settings.Default.selectedPool;    //Loading saved pool
+            firstRun = Properties.Settings.Default.FirstRun;            //Loading whether first time running application
+
+            txbxWallet.Text = wallet;
         }
 
         private void SetMenus()
@@ -805,17 +807,27 @@ namespace MisasMinerSetup
 
         private void CheckBalance() //Check worth 
         {
-            WebClient client = new WebClient();
-            string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/"); //Check GRLC current worth in $
-            string toBeSearched = "\"price_usd\": \"";
-            worth = downloadedWorth.Substring(downloadedWorth.IndexOf(toBeSearched) + toBeSearched.Length, 4);
+            var client = new WebClient();
+            try
+            {
+                var downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/"); //Check GRLC current worth in $
+                var toBeSearched = "\"price_usd\": \"";
+                worth = downloadedWorth.Substring(downloadedWorth.IndexOf(toBeSearched) + toBeSearched.Length, 4);
+            }
+            catch
+            {
+                // 404 downloadedWorth
+            }
+
             garliWorth = "$" + worth + "USD";
+            wallet = txbxWallet.Text;
+
             if (wallet != "")
             {
-
-                string downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
+                notifier.ShowSuccess($"Wallet set\r\n{wallet}");
                 try
                 {
+                    var downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
                     if (downloadedString.Substring(0, 4) != "{\"er")
                     {
                         balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
@@ -827,14 +839,20 @@ namespace MisasMinerSetup
                 }
                 catch
                 {
-                    //Something "Hey explorer is down blahblah
+                    // 404 Garlic Bakery Explorer down
                 }
             }
-            double myWorth = Double.Parse(worth) * balance;
-            txtBal2.Text = balance.ToString() + " GRCL (" + myWorth + " USD)";
+            else
+            {
+                notifier.ShowInformation("No wallet set.");
+            }
+
+            var myWorth = float.Parse(worth) * balance;
+            txtBal2.Text = $"{balance} GRLC (${myWorth:0.00} USD)";
 
             webClient = null;
         }
+
         private void CheckBlocksFound() //Check blocks founds 
         {
             if (selectedPool == "happy.garlicoin.fun:3210")
@@ -1089,6 +1107,7 @@ namespace MisasMinerSetup
                 try
                 {
                     GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]));
+                    _hardwareNames[hardwareCounter].Text = hardware.Name;
                 }
                 catch (Exception)
                 {
@@ -1128,6 +1147,13 @@ namespace MisasMinerSetup
             _statGrids.Add(new StatGrid(StatGrid3, StatGrid3Temp));
             _statGrids.Add(new StatGrid(StatGrid4, StatGrid4Temp));
             _statGrids.Add(new StatGrid(StatGrid5, StatGrid5Temp));
+
+            _hardwareNames.Add(device0Name);
+            _hardwareNames.Add(device1Name);
+            _hardwareNames.Add(device2Name);
+            _hardwareNames.Add(device3Name);
+            _hardwareNames.Add(device4Name);
+            _hardwareNames.Add(device5Name);
         }
 
         /// <summary>
@@ -1428,6 +1454,12 @@ namespace MisasMinerSetup
             device4.Visibility = Visibility.Hidden;
             device5.Visibility = Visibility.Hidden;
             btnDeviceSave.Visibility = Visibility.Hidden;
+        }
+
+        private void txbxWallet_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                CheckBalance();
         }
     }
 
