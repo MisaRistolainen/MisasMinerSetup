@@ -128,6 +128,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -158,9 +159,6 @@
     <Resource Include="Myicon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="BG2.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="BG3.png" />
   </ItemGroup>
   <ItemGroup>
@@ -168,6 +166,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="garlicoin.png" />
+    <Resource Include="BG2.png" />
+    <Resource Include="Depend\BG.png" />
+    <Resource Include="Depend\BG2.png" />
+    <Resource Include="Depend\garlicoin.png" />
+    <Resource Include="Depend\GPUList.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\GPUList.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

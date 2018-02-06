@@ -57,9 +57,11 @@ namespace MisasMinerSetup
         public int setx4 { get; set; }      //setx setting
         public int setx5 { get; set; }      //setx setting
         public int temp { get; set; }       //maxtemp setting
+        private string _garliWorth;
+        public string garliWorth { get { return _garliWorth; } set { _garliWorth = value; txtgarliWorth.Text = garliWorth; } }
         private double _balance;
         private string worth;
-        public double balance { get { return _balance; } set { _balance = value; txtBal2.Text = balance.ToString(); } }
+        public double balance { get { return _balance; } set { _balance = value; } }
         public bool fileCheck { get; set; } //Boolean for checking if sgminer.exe/ccminer.exe exists
         public string appPath;              // Current application path
         public int intcheckLook;
@@ -88,6 +90,7 @@ namespace MisasMinerSetup
         public string strFan;
         public string strUsage;
         public string strInt;
+        public string myWallet;
         public int blocksFound;
         public int oldBlocksFound;
         public bool bldevice0;
@@ -127,6 +130,7 @@ namespace MisasMinerSetup
             FirstTimeCheck();
             CatalogGPUHardware();
             PollHardware();
+            CheckBalance();
             SetMenus();
             SetHandlers();
             UpdateHover();
@@ -149,6 +153,7 @@ namespace MisasMinerSetup
             setx4 = 100;
             setx5 = 1;
             balance = 0;
+            worth = "0";
             monGPU = 1;
             tempCheck = false;
             worth = "0,0";
@@ -210,7 +215,7 @@ namespace MisasMinerSetup
             Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
             strWorth = doubleWorth.ToString();
             strWorth = strWorth.Split(',')[0];
-            hoverText = "Balance: " + balance + "\nWorth: " + strWorth + "$\nGPU temp:" + cleanTemp + "\n" + strHash + "Kh/s";
+            hoverText = "Balance: " + balance + "\nGPU temp:" + cleanTemp + "\n" + strHash + "Kh/s";
             ni.Text = hoverText;
         }
         protected override void OnStateChanged(EventArgs e)
@@ -801,23 +806,33 @@ namespace MisasMinerSetup
         private void CheckBalance() //Check worth 
         {
             WebClient client = new WebClient();
+            string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/"); //Check GRLC current worth in $
+            string toBeSearched = "\"price_usd\": \"";
+            worth = downloadedWorth.Substring(downloadedWorth.IndexOf(toBeSearched) + toBeSearched.Length, 4);
+            garliWorth = "$" + worth + "USD";
             if (wallet != "")
             {
 
                 string downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
-                if (downloadedString.Substring(0, 4) != "{\"er")
+                try
                 {
-                    balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
+                    if (downloadedString.Substring(0, 4) != "{\"er")
+                    {
+                        balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
+                    }
+                    else
+                    {
+                        notifier.ShowWarning("Wallet not found.");
+                    }
                 }
-                else
+                catch
                 {
-                    System.Windows.MessageBox.Show("Wallet not found. Are you sure it has some balance in it?");
+                    //Something "Hey explorer is down blahblah
                 }
-
             }
-            string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/"); //Check GRLC current worth in $
-            string toBeSearched = "\"price_usd\": \"";
-            worth = downloadedWorth.Substring(downloadedWorth.IndexOf(toBeSearched) + toBeSearched.Length, 4);
+            double myWorth = Double.Parse(worth) * balance;
+            txtBal2.Text = balance.ToString() + " GRCL (" + myWorth + " USD)";
+
             webClient = null;
         }
         private void CheckBlocksFound() //Check blocks founds 
@@ -833,6 +848,7 @@ namespace MisasMinerSetup
                 {
                     notifier.ShowSuccess("Your Pool hit a block!");
                     oldBlocksFound = blocksFound;
+
                 }
                 webClient = null;
             }
@@ -1095,29 +1111,23 @@ namespace MisasMinerSetup
         private void ConfigureUI()
         {
             StatGrid0Temp.Text = "";
-            StatGrid0Utilization.Text = "";
             StatGrid1Temp.Text = "";
-            StatGrid1Utilization.Text = "";
             StatGrid2Temp.Text = "";
-            StatGrid2Utilization.Text = "";
             StatGrid3Temp.Text = "";
-            StatGrid3Utilization.Text = "";
             StatGrid4Temp.Text = "";
-            StatGrid4Utilization.Text = "";
             StatGrid5Temp.Text = "";
-            StatGrid5Utilization.Text = "";
             StatGrid0.Visibility = Visibility.Hidden;
             StatGrid1.Visibility = Visibility.Hidden;
             StatGrid2.Visibility = Visibility.Hidden;
             StatGrid3.Visibility = Visibility.Hidden;
             StatGrid4.Visibility = Visibility.Hidden;
             StatGrid5.Visibility = Visibility.Hidden;
-            _statGrids.Add(new StatGrid(StatGrid0, StatGrid0Temp, StatGrid0Utilization));
-            _statGrids.Add(new StatGrid(StatGrid1, StatGrid1Temp, StatGrid1Utilization));
-            _statGrids.Add(new StatGrid(StatGrid2, StatGrid2Temp, StatGrid2Utilization));
-            _statGrids.Add(new StatGrid(StatGrid3, StatGrid3Temp, StatGrid3Utilization));
-            _statGrids.Add(new StatGrid(StatGrid4, StatGrid4Temp, StatGrid4Utilization));
-            _statGrids.Add(new StatGrid(StatGrid5, StatGrid5Temp, StatGrid5Utilization));
+            _statGrids.Add(new StatGrid(StatGrid0, StatGrid0Temp));
+            _statGrids.Add(new StatGrid(StatGrid1, StatGrid1Temp));
+            _statGrids.Add(new StatGrid(StatGrid2, StatGrid2Temp));
+            _statGrids.Add(new StatGrid(StatGrid3, StatGrid3Temp));
+            _statGrids.Add(new StatGrid(StatGrid4, StatGrid4Temp));
+            _statGrids.Add(new StatGrid(StatGrid5, StatGrid5Temp));
         }
 
         /// <summary>
@@ -1157,13 +1167,11 @@ namespace MisasMinerSetup
         {
             public Grid GridObject;
             public TextBlock Temperature;
-            public TextBlock Utilization;
 
-            public StatGrid(Grid gridObject, TextBlock temperature, TextBlock utilization)
+            public StatGrid(Grid gridObject, TextBlock temperature)
             {
                 GridObject = gridObject;
                 Temperature = temperature;
-                Utilization = utilization;
             }
         }
 
@@ -1236,7 +1244,6 @@ namespace MisasMinerSetup
                             }
                             n.StatGrid.Temperature.Text = n.ReadableTemp;
                             n.StatGrid.Temperature.Foreground = n.BrushColor;
-                            n.StatGrid.Utilization.Text = n.UtilizationPercent;
                         }
                         catch (Exception ex)
                         {
@@ -1253,7 +1260,6 @@ namespace MisasMinerSetup
             public StatGrid StatGrid;
             public string ReadableTemp;
             public SolidColorBrush BrushColor;
-            public string UtilizationPercent;
             public int IntTemp;
 
             public HardwareNodeDisplayOutput(StatGrid statGrid, string readableTemp, SolidColorBrush brushColor, string utilizationPercent, int intTemp)
@@ -1261,7 +1267,6 @@ namespace MisasMinerSetup
                 StatGrid = statGrid;
                 ReadableTemp = readableTemp;
                 BrushColor = brushColor;
-                UtilizationPercent = utilizationPercent;
                 IntTemp = intTemp;
             }
         }

@@ -61,33 +61,27 @@ namespace MisasMinerSetup.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NVIDIA
+        ///   Looks up a localized string similar to StartGTX 960Mgap=2,-l=T20x5EndGTX 960M
         ///
-        ///NVIDIA GeForce GTX 960M
-        ///--lookup-gap=2 -l T20x5 --no-autotune 
-        ///
-        ///GTX 970
-        ///gap=2
-        ///
-        ///GTX 1080 Ti
-        ///gap=3 -l=T55x20
-        ///
-        ///GTX 1080
-        ///gap=3 -l=T39x10
-        ///
-        ///GTX 1070 Ti 
-        ///gap=2 -l=T37x20
-        ///
-        ///GTX 1070 
-        ///gap=2 -l=T29x20
-        ///
-        ///GTX 1060
-        ///gap=2 -l=T30x20
+        ///StartGTX 970gap=2,-l=T13x20EndGTX 970
         ///
         ///
-        ///AMD
-        ///RX 480 //Correct
-        ///-I 20 --lookup-gap=2.
+        ///StartGTX 1080 Tigap=3,-l=T55x20EndGTX 1080 Ti
+        ///
+        ///StartGTX 1080gap=3,-l=T39x10EndGTX 1080
+        ///
+        ///StartGTX 1070 Tigap=2,-l=T37x20EndGTX 1070 Ti
+        ///
+        ///StartGTX 1050 Tigap=2,-l=AutoEndGTX 1050 Ti
+        ///
+        ///StartGTX 1070gap=2,-l=T29x20EndGTX 1070
+        ///
+        ///StartGTX 1060gap=2,-l=T30x20EndGTX 1060
+        ///
+        ///StartRX 480 Graphicsgap=2,I=20EndRX 480 Graphics
+        ///
+        ///
+        ///.
         /// </summary>
         internal static string GPUList {
             get {
