@@ -173,6 +173,7 @@
     <Resource Include="Depend\GPUList.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Depend\Abby.jpg" />
     <Content Include="Resources\GPUList.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

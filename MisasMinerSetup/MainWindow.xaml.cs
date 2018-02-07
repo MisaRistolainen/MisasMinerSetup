@@ -57,6 +57,7 @@ namespace MisasMinerSetup
         public int setx4 { get; set; }      //setx setting
         public int setx5 { get; set; }      //setx setting
         public int temp { get; set; }       //maxtemp setting
+        public string custom { get; set; }
         private string _garliWorth;
         public string garliWorth { get { return _garliWorth; } set { _garliWorth = value; txtgarliWorth.Text = garliWorth; } }
         private double _balance;
@@ -182,6 +183,7 @@ namespace MisasMinerSetup
             selectedgap = Properties.Settings.Default.selectedgap;      //Loading saved lookup-gap
             selectedPool = Properties.Settings.Default.selectedPool;    //Loading saved pool
             firstRun = Properties.Settings.Default.FirstRun;            //Loading whether first time running application
+            custom = Properties.Settings.Default.Custom;
 
             txbxWallet.Text = wallet;
         }
@@ -340,6 +342,7 @@ namespace MisasMinerSetup
 
             txtTestimonials.Visibility = Visibility.Visible;
             btnCloseTest.Visibility = Visibility.Visible;
+            Abby.Visibility = Visibility.Visible;
 
         }
 
@@ -348,6 +351,7 @@ namespace MisasMinerSetup
 
             txtTestimonials.Visibility = Visibility.Hidden;
             btnCloseTest.Visibility = Visibility.Hidden;
+            Abby.Visibility = Visibility.Hidden;
         }
 
         private void BtnDonate_Click(object sender, RoutedEventArgs e) //Show wallet addresses for donations
@@ -440,11 +444,11 @@ namespace MisasMinerSetup
             }
             if (gpuChoice == 1) //If AMD GPU was chosen
             {
-                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strLookup + " -p x -I " + strInt; //Constructing final string to run
+                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strLookup + " -p x -I " + strInt + " " + custom; //Constructing final string to run
             }
             else if (gpuChoice == 0) //If Nvidia GPU was chosen
             {
-                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strLookup + " --max-temp=" + temp + " "; //Constructing final string to run
+                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strLookup + " --max-temp=" + temp + " " + custom; //Constructing final string to run
 
             }
             else if (gpuChoice == 3) //If Nvidia solomining was chosen
@@ -802,6 +806,7 @@ namespace MisasMinerSetup
             Properties.Settings.Default.selectedgap = selectedgap;
             Properties.Settings.Default.selectedPool = selectedPool;
             Properties.Settings.Default.FirstRun = false;
+            Properties.Settings.Default.Custom = custom;
             Properties.Settings.Default.Save();
         }
 

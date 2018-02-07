@@ -178,5 +178,17 @@ namespace MisasMinerSetup.Properties {
                 this["Wallet"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Custom {
+            get {
+                return ((string)(this["Custom"]));
+            }
+            set {
+                this["Custom"] = value;
+            }
+        }
     }
 }
