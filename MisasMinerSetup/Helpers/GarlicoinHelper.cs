@@ -51,8 +51,30 @@ namespace MisasMinerSetup.Helpers
                     // 404 downloadedWorth
                 }
             }
-            
+
             return retVal;
         }
+        public static string GetProfitability(string strHash)
+        {
+            double profHourly = 0;
+            using (var client = new WebClient())
+            {
+                try
+                {
+                    var downloadedHash = client.DownloadString("https://garli.co.in/api/getnetworkhashps"); //Check GRLC current worth in $
+                    double networkHash = double.Parse(downloadedHash.Substring(0, 10));
+                    double grlcWorth = double.Parse(GetCurrentPrice());
+                    double ownHash = double.Parse(strHash) * 1000;
+                    profHourly = 50 * 3600 / 40 * ownHash / networkHash * grlcWorth;
+                }
+                catch
+                {
+                    // 404 GetProfitability
+                }
+            }
+
+            return profHourly.ToString().Substring(0,5);
+        }
+        
     }
 }

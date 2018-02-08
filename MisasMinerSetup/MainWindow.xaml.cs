@@ -1269,9 +1269,10 @@ namespace MisasMinerSetup
 
         private void Instance_OnHotkeyPressed(object sender, EventArgs e)
         {
+            
             notifier.ShowInformation(strHash + "Kh/s");
             notifier.ShowInformation("GPU Fan Speed: " + strFan + "%");
-            notifier.ShowInformation("GPU Usage: " + strUsage + "%");
+            notifier.ShowInformation(GarlicoinHelper.GetProfitability(strHash) + "$ in 1h");
         }
 
         #endregion
