@@ -1090,10 +1090,41 @@ namespace MisasMinerSetup
                     devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
                 }
             }
-            catch
+            catch (Exception e)
             {
-                System.Windows.MessageBox.Show("Something something error fuck you too");
+                // Handle any exceptions here
             }
+        }
+
+        /// <summary>
+        /// Handles cataloging the hardware present on the machine
+        /// </summary>
+        private void CatalogGPUHardware()
+        {
+            computer = new Computer() { GPUEnabled = true };
+            computer.Open();
+
+            var hardwareCounter = 0;
+            foreach (var hardware in computer.Hardware)
+            {
+                hardware.Update();
+                try
+                {
+                    GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]));
+                }
+                catch (Exception)
+                {
+                    // Empty catch - simply ignoring additional hardware for now and setting a hard limit to 6
+                }
+                hardwareCounter++;
+            }
+
+            foreach (var g in GPUHardwareNodes)
+            {
+                notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
+            }
+            
+            //GetRecommendedConf();
         }
 
         /// <summary>
