@@ -1067,9 +1067,9 @@ namespace MisasMinerSetup
                     devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
                 }
             }
-            catch
+            catch (Exception e)
             {
-                System.Windows.MessageBox.Show("Something something error fuck you too");
+                // Handle any exceptions here
             }
         }
             
@@ -1102,7 +1102,7 @@ namespace MisasMinerSetup
                 notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
             }
             
-            GetRecommendedConf();
+            //GetRecommendedConf();
         }
 
         /// <summary>
