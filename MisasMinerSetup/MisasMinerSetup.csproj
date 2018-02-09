@@ -98,6 +98,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Configuration\MinerConfig.cs" />
+    <Compile Include="HardwareNodeDisplayOutput.cs" />
+    <Compile Include="Helpers\GarlicoinHelper.cs" />
+    <Compile Include="Helpers\HotkeyHelper.cs" />
+    <Compile Include="StatGrid.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -106,6 +111,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GPUHardwareNode.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -153,26 +159,27 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Refresh.png" />
+    <Resource Include="Images\Refresh.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Myicon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="BG3.png" />
+    <Resource Include="Images\BG3.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="TESTIBG.png" />
+    <Resource Include="Images\TESTIBG.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="garlicoin.png" />
-    <Resource Include="BG2.png" />
+    <Resource Include="Images\garlicoin.png" />
+    <Resource Include="Images\BG2.png" />
     <Resource Include="Depend\BG.png" />
     <Resource Include="Depend\BG2.png" />
     <Resource Include="Depend\garlicoin.png" />
     <Resource Include="Depend\GPUList.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Depend\Abby.jpg" />
     <Content Include="Resources\GPUList.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -180,6 +187,7 @@
     <None Include="FodyWeavers.xml" />
     <Content Include="OpenHardwareMonitorLib.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.2.0.0\build\portable-net+sl+win+wpa+wp\Fody.targets" Condition="Exists('..\packages\Fody.2.0.0\build\portable-net+sl+win+wpa+wp\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

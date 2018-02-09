@@ -33,42 +33,39 @@ using ToastNotifications.Position;
 using ToastNotifications.Messages;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using MisasMinerSetup.Helpers;
+using MisasMinerSetup.Configuration;
 
 namespace MisasMinerSetup
 {
-
-
     public partial class MainWindow : Window
     {
+        #region Properties
 
+        public MinerConfig Config { get; set; }
 
-        private WebClient webClient = null;
-        private int gpuChoice = 2;
-        public string visi { get; set; }    //Visibility on "Miner not found"
-        public string pool { get; set; }    //Custom pool
-        public string wallet { get; set; }  //Wallet address
-        private int _i;
-        public int i { get { return _i; } set { _i = value; inCalc.Text = value.ToString(); } } //Intensity
-        public int n { get; set; }          //nFactor
-        public string l { get; set; }       //-l for nvidia
-        public int setx1 { get; set; }      //setx setting
-        public int setx2 { get; set; }      //setx setting
-        public int setx3 { get; set; }      //setx setting
-        public int setx4 { get; set; }      //setx setting
-        public int setx5 { get; set; }      //setx setting
-        public int temp { get; set; }       //maxtemp setting
-        private string _garliWorth;
-        public string garliWorth { get { return _garliWorth; } set { _garliWorth = value; txtgarliWorth.Text = garliWorth; } }
-        private double _balance;
-        private string worth;
-        public double balance { get { return _balance; } set { _balance = value; } }
-        public bool fileCheck { get; set; } //Boolean for checking if sgminer.exe/ccminer.exe exists
-        public string appPath;              // Current application path
-        public int intcheckLook;
-        public string strLookup;
-        private string _selectedPool;
-        public string selectedPool { get { return _selectedPool; } set { _selectedPool = value; CheckCustomPool(); } } //Selected pool from the list
-        public string selectedgap { get; set; }
+        public int Intensity
+        {
+            get { return Config.Intensity; }
+            set
+            {
+                Config.Intensity = value;
+                inCalc.Text = value.ToString();
+            }
+        }
+        
+        public string SelectedPool
+        {
+            get { return Config.SelectedPool; }
+            set
+            {
+                Config.SelectedPool = value;
+                CheckCustomPool();
+            }
+        }
+
+        // ToDo: stallone: these should all be capitalized.. didnt have time to fix this yet.
+
         public string strArg; //Storing arguments
         public string hoverText { get; set; }
         public string cleanTemp { get; set; }
@@ -77,6 +74,7 @@ namespace MisasMinerSetup
         public string cleanWat { get; set; }
         public string strWorth;
         public System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
+        public string visi { get; set; }    //Visibility on "Miner not found"
         public Process cmd2 = new Process();
         public Process cmd3 = new Process();
         public Process cmd4 = new Process();
@@ -93,20 +91,54 @@ namespace MisasMinerSetup
         public string myWallet;
         public int blocksFound;
         public int oldBlocksFound;
+
         public bool bldevice0;
         public bool bldevice1;
         public bool bldevice2;
         public bool bldevice3;
         public bool bldevice4;
         public bool bldevice5;
-        public bool firstRun;
+        
         public string devicePar;
         public string GPUList = Properties.Resources.GPUList;
         public Computer computer;
         public List<GPUHardwareNode> GPUHardwareNodes = new List<GPUHardwareNode>();
+        public bool fileCheck { get; set; } //Boolean for checking if sgminer.exe/ccminer.exe exists
+        public string appPath;              // Current application path
+        public int intcheckLook;
+        public string strLookup;        
+
+        private double _balance;
+        public double Balance
+        {
+            get { return _balance; }
+            set { _balance = value; }
+        }
+
+        private string _garliWorth;
+        public string GarliWorth
+        {
+            get { return _garliWorth; }
+            set
+            {
+                _garliWorth = value;
+                txtgarliWorth.Text = GarliWorth;
+            }
+        }
+
+        #endregion
+
+        #region Private Fields
+        
+        private int gpuChoice = 2;        
+        private string worth;
         private List<StatGrid> _statGrids = new List<StatGrid>();
+        private List<TextBlock> _hardwareNames = new List<TextBlock>();
 
+        #endregion
 
+        #region Notifier
+    
         public Notifier notifier = new Notifier(cfg =>
         {
             cfg.PositionProvider = new PrimaryScreenPositionProvider(Corner.BottomRight, 0, 40); //Creating notifiers using ToastNotifications
@@ -118,14 +150,19 @@ namespace MisasMinerSetup
             cfg.Dispatcher = System.Windows.Application.Current.Dispatcher;
         });
 
+        #endregion
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        #region Constructor
 
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
+
             SetDefaults();
-            LoadConf();
+            
+            txbxWallet.Text = Config.Wallet;
+
             ConfigureUI();
             FirstTimeCheck();
             CatalogGPUHardware();
@@ -140,50 +177,24 @@ namespace MisasMinerSetup
             GetGPUType();
         }
 
+        #endregion
+
         private void SetDefaults()
         {
+            Config = new MinerConfig();
+            Config.Load();
 
-            DataContext = this;
-            i = 15; //Default intensity
-            n = 11; //Default nFactor
-            temp = 85; //Default maxtemp
-            setx1 = 0;
-            setx2 = 100;
-            setx3 = 100;
-            setx4 = 100;
-            setx5 = 1;
-            balance = 0;
-            worth = "0";
+            Balance = 0;
             monGPU = 1;
             tempCheck = false;
-            worth = "0,0";
-            l = "Auto";
+            worth = "N/A";            
             strBlocks = "0";
             strHash = "0";
             firstCon = true;
             fileCheck = false;
-            txtDonatos.IsReadOnly = true;                //Donation box
-            if (l != "Auto")
-            {
-                l = Properties.Settings.Default.l;
-            }
+            txtDonatos.IsReadOnly = true;                //Donation box            
         }
-        private void LoadConf()
-        {
-            pool = Properties.Settings.Default.Pool;     //Loading saved custom pool address
-            wallet = Properties.Settings.Default.Wallet; //Loading saved wallet address
-            i = Properties.Settings.Default.Inten;       //Loading saved intensity
-            n = Properties.Settings.Default.nFac;        //Loading saved nFactor
-            setx2 = Properties.Settings.Default.setx2;   //Loading saved setx values
-            setx3 = Properties.Settings.Default.setx3;   //Loading saved setx values
-            setx4 = Properties.Settings.Default.setx4;   //Loading saved setx values
-            setx5 = Properties.Settings.Default.setx5;   //Loading saved setx values
-            temp = Properties.Settings.Default.temp;     //Loading saved maxtemp
-            selectedgap = Properties.Settings.Default.selectedgap;       //Loading saved lookup-gap
-            selectedPool = Properties.Settings.Default.selectedPool;     //Loading saved pool
-            firstRun = Properties.Settings.Default.FirstRun;
-        }
-
+        
         private void SetMenus()
         {
             ni.Icon = MisasMinerSetup.Properties.Resources.Myicon;
@@ -201,8 +212,9 @@ namespace MisasMinerSetup
 
         private void UpdateHover() //Handling doubleclick and tooltip updates
         {
-            Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
+            Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * Balance;
             UpdateHover2();
+
             ni.DoubleClick +=
                 delegate (object sender, EventArgs args)
                 {
@@ -210,31 +222,33 @@ namespace MisasMinerSetup
                     this.WindowState = WindowState.Normal;
                 };
         }
+
         private void UpdateHover2() //Constructing new tooltip
         {
-            Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * balance;
+            Double doubleWorth = Double.Parse(worth, CultureInfo.InvariantCulture) * Balance;
             strWorth = doubleWorth.ToString();
             strWorth = strWorth.Split(',')[0];
-            hoverText = "Balance: " + balance + "\nGPU temp:" + cleanTemp + "\n" + strHash + "Kh/s";
+            hoverText = "Balance: " + Balance + "\nGPU temp:" + cleanTemp + "\n" + strHash + "Kh/s";
             ni.Text = hoverText;
         }
+
         protected override void OnStateChanged(EventArgs e)
         {
             if (WindowState == WindowState.Minimized)
                 this.Hide();
 
             base.OnStateChanged(e);
-        }
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }                
+
         private void ExitApplication(object sender, EventArgs e)
         {
             ShutClose();
         }
+
         private void WalletTray(object sender, EventArgs e)
         {
-            System.Windows.Forms.Clipboard.SetText(wallet); //Copy current wallet address to clipboard
+            System.Windows.Forms.Clipboard.SetText(Config.Wallet); //Copy current wallet address to clipboard
         }
-
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e) //Moving the window
         {
@@ -253,7 +267,29 @@ namespace MisasMinerSetup
             txtTouch.Visibility = Visibility.Hidden;
             btnMonitor.Visibility = Visibility.Hidden;
             checkingFiles();
+        }        
+
+        private void SelectedAMD() //Person selected AMD
+        {
+            gpuChoice = 1;
+            btnNvidiaSolo.Visibility = Visibility.Hidden;
+            txtChoose.Visibility = Visibility.Hidden;
+            txtl.Visibility = Visibility.Hidden;
+            txtlbox.Visibility = Visibility.Hidden;
+            btnMonitor.Visibility = Visibility.Hidden;
+            checkingFiles();
+            
+        }        
+
+        private void ShutClose() //Closing the app
+        {
+            Config.Save();
+
+            System.Windows.Application.Current.Shutdown();
+            ni.Visible = false;
         }
+
+        #region UI Events
 
         private void BtnNvidiaSolo_Click(object sender, RoutedEventArgs e) //Person selected Nvidia Solo mining
         {
@@ -273,17 +309,6 @@ namespace MisasMinerSetup
             checkingFiles();
         }
 
-        private void SelectedAMD() //Person selected AMD
-        {
-            gpuChoice = 1;
-            btnNvidiaSolo.Visibility = Visibility.Hidden;
-            txtChoose.Visibility = Visibility.Hidden;
-            txtl.Visibility = Visibility.Hidden;
-            txtlbox.Visibility = Visibility.Hidden;
-            btnMonitor.Visibility = Visibility.Hidden;
-            checkingFiles();
-            
-        }
         private void BtnMonitor_Click(object sender, RoutedEventArgs e)
         {
             txtMonAMD.Visibility = Visibility.Visible;
@@ -314,31 +339,23 @@ namespace MisasMinerSetup
             txbxtemp.Visibility = Visibility.Hidden;
             isMining = true;
         }
-        private void ShutClose() //Closing the app
-        {
-            SaveConf();
-            System.Windows.Application.Current.Shutdown();
-            ni.Visible = false;
-
-        }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) //X-button click
         {
-
             ShutClose();
         }
+
         private void MiniButton_Click(object sender, RoutedEventArgs e) //Minimalize click
         {
+            Config.Save();
 
-            SaveConf();
             this.Hide();
         }
+
         private void BtnTesti_Click(object sender, RoutedEventArgs e) //Testimonials click
         {
-
             txtTestimonials.Visibility = Visibility.Visible;
             btnCloseTest.Visibility = Visibility.Visible;
-
         }
 
         private void BtnCloseTest_Click(object sender, RoutedEventArgs e)  //Close testimonials click
@@ -369,6 +386,7 @@ namespace MisasMinerSetup
             txtsetx5.Visibility = Visibility.Visible;
             btnsetxSave.Visibility = Visibility.Visible;
         }
+
         private void BtnsetxSave_Click(object sender, RoutedEventArgs e) //Close setx window
         {
             txtsetx.Visibility = Visibility.Hidden;
@@ -382,67 +400,67 @@ namespace MisasMinerSetup
         private void Refresh_Click(object sender, RoutedEventArgs e) //Update icon click
         {
             CheckBalance();
-            UpdateHover(); ;
-
-
-
+            UpdateHover();
         }
+
         private void TempCheck_Checked(object sender, RoutedEventArgs e) //Temperature alert checkbox selected
         {
             tempCheck = true;
         }
+
         private void TempCheck_Unchecked(object sender, RoutedEventArgs e) //Temperature alert checkbox selected
         {
             tempCheck = false;
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void StartButton_Click(object sender, RoutedEventArgs e) //"RIP GPU" button which starts cmd
         {
             string devices = checkDevices();
             isMining = true;
-            SaveConf();
+
+            Config.Save();
+
             string strPool;
-            if (selectedPool == "Custom")
+            if (SelectedPool == "Custom")
             {
-                strPool = pool;
+                strPool = Config.Pool;
             }
             else                                                         //Checking what pool to use and storing it
             {
-                strPool = "stratum+tcp://" + selectedPool;
+                strPool = "stratum+tcp://" + SelectedPool;
             }
-            string strFac = n.ToString(); 
-            string strWallet = wallet;                      //Storing wallet
+            string strFac = Config.NFactor.ToString(); 
+            string strWallet = Config.Wallet;                      //Storing wallet
 
-            if (firstRun == true)
+            if (Config.FirstRun == true)
             {
                 strLookup = "--lookup-gap=" + strLookup;
                 
             }
             else
             {
-                strInt = i.ToString();                   //Storing intensity
+                strInt = Intensity.ToString();                   //Storing intensity
                                                          //Storing nFactor
-                if (selectedgap == "1")
+                if (Config.SelectedGap == "1")
                 {
                     strLookup = "--lookup-gap=1";
                 }
-                else if (selectedgap == "2")
+                else if (Config.SelectedGap == "2")
                 {
                     strLookup = "--lookup-gap=2";               //Checking what lookup-gap option was selected
                 }
-                else if (selectedgap == "3")
+                else if (Config.SelectedGap == "3")
                 {
                     strLookup = "--lookup-gap=3";
                 }
             }
             if (gpuChoice == 1) //If AMD GPU was chosen
             {
-                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strLookup + " -p x -I " + strInt; //Constructing final string to run
+                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + Config.Temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strLookup + " -p x -I " + strInt; //Constructing final string to run
             }
             else if (gpuChoice == 0) //If Nvidia GPU was chosen
             {
-                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=scrypt:10 -l " + l + " -o " + strPool + " -u " + strWallet + " " + strLookup + " --max-temp=" + temp + " "; //Constructing final string to run
+                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=scrypt:10 -l " + Config.LValue + " -o " + strPool + " -u " + strWallet + " " + strLookup + " --max-temp=" + Config.Temp + " "; //Constructing final string to run
 
             }
             else if (gpuChoice == 3) //If Nvidia solomining was chosen
@@ -452,65 +470,90 @@ namespace MisasMinerSetup
                 cmd5.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
                 cmd5.Start();
 
-                strArg = " ccminer.exe --algo=scrypt:10 -l " + l + " -o 127.0.0.1:42068 -u test -p test --no-longpoll " + strLookup + " --no-getwork --no-stratum --coinbase-addr=" + strWallet + " --max-temp=" + temp + " "; //Constructing final string to run. EXPERIMENTAL!
+                strArg = " ccminer.exe --algo=scrypt:10 -l " + Config.LValue + " -o 127.0.0.1:42068 -u test -p test --no-longpoll " + strLookup + " --no-getwork --no-stratum --coinbase-addr=" + strWallet + " --max-temp=" + Config.Temp + " "; //Constructing final string to run. EXPERIMENTAL!
 
             }
             System.Windows.MessageBox.Show(strArg);
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.Arguments = "/K cd " + appPath + " && color 02 && setx GPU_MAX_HEAP_SIZE " + setx2 + " && setx GPU_MAX_SINGLE_ALLOC_PERCENT " + setx3 + " && setx GPU_MAX_ALLOC_PERCENT " + setx4 + " && setx GPU_USE_SYNC_OBJECTS " + setx5 + " && " + strArg + "&& pause"; //Final argument given to cmd
+            cmd.StartInfo.Arguments = "/K cd " + appPath + " && color 02 && setx GPU_MAX_HEAP_SIZE " + Config.Setx2 + " && setx GPU_MAX_SINGLE_ALLOC_PERCENT " + Config.Setx3 + " && setx GPU_MAX_ALLOC_PERCENT " + Config.Setx4 + " && setx GPU_USE_SYNC_OBJECTS " + Config.Setx5 + " && " + strArg + "&& pause"; //Final argument given to cmd
             cmd.Start();            //Opening cmd with given arguments
 
         }
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
         private void btnDownload_Click(object sender, EventArgs e) //Install button
         {
             txtwait.Visibility = Visibility.Visible; //Show "Downloading..." text
             btnInstall.IsEnabled = false; //Disable install button
-            // Is file downloading yet?
-            if (webClient != null)
-                return;
 
-            webClient = new WebClient();
-            webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CompletedPool);
-            if (gpuChoice == 1) //AMD
+            using (var webClient = new WebClient())
             {
-                webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/sgminer-5.5.5.zip"), appPath + "\\sg.zip"); //Downloading sgminer
-            }
-            else if (gpuChoice == 0) //NVIDIA
-            {
-                webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/ccminer.zip"), appPath + "\\cc.zip"); //Downloading ccminer
-            }
-            if (gpuChoice == 3) //NVIDIA SOLO
-            {
-                webClient = new WebClient();
-                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CompletedSolo);
+                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CompletedPool);
+                if (gpuChoice == 1) //AMD
+                {
+                    webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/sgminer-5.5.5.zip"), appPath + "\\sg.zip"); //Downloading sgminer
+                }
+                else if (gpuChoice == 0) //NVIDIA
+                {
+                    webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/ccminer.zip"), appPath + "\\cc.zip"); //Downloading ccminer
+                }
 
-                webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/Wallet.zip"), appPath + "\\soloWallet.zip"); //Downloading Wallet
+                if (gpuChoice == 3) //NVIDIA SOLO
+                {
+                    webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CompletedSolo);
+                    webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/Wallet.zip"), appPath + "\\soloWallet.zip"); //Downloading Wallet
+                }
             }
         }
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        private void btnDevices_Click(object sender, RoutedEventArgs e)
+        {
+            txtDevices.Visibility = Visibility.Visible;
+            device0.Visibility = Visibility.Visible;
+            device1.Visibility = Visibility.Visible;
+            device2.Visibility = Visibility.Visible;
+            device3.Visibility = Visibility.Visible;
+            device4.Visibility = Visibility.Visible;
+            device5.Visibility = Visibility.Visible;
+            btnDeviceSave.Visibility = Visibility.Visible;
+        }
+
+        private void btnDeviceSave_Click(object sender, RoutedEventArgs e)
+        {
+            txtDevices.Visibility = Visibility.Hidden;
+            device0.Visibility = Visibility.Hidden;
+            device1.Visibility = Visibility.Hidden;
+            device2.Visibility = Visibility.Hidden;
+            device3.Visibility = Visibility.Hidden;
+            device4.Visibility = Visibility.Hidden;
+            device5.Visibility = Visibility.Hidden;
+            btnDeviceSave.Visibility = Visibility.Hidden;
+        }
+
+        private void txbxWallet_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                CheckBalance();
+        }
+
+        #endregion
 
         private void CompletedPool(object sender, AsyncCompletedEventArgs e) //After download completion
         {
-            webClient = null;
             UnZipPool();                                           //Unzipping sg/ccminer and moving MisasMinerSetup.exe to the new folder
             btnInstall.IsEnabled = true;                           //Enable button if something goes wrong
             txtwait.Visibility = Visibility.Hidden; //Hide "Downloading..." text
 
         }
+
         private void CompletedSolo(object sender, AsyncCompletedEventArgs e) //After solo download completion
         {
-            webClient = null;
             UnZipSolo();                                           //Unzipping solo files.
-
         }
 
         private void loadPresets()
         {
-            if (firstRun == true)
+            if (Config.FirstRun == true)
             {
                 if (fileCheck == true)
                 {
@@ -521,48 +564,49 @@ namespace MisasMinerSetup
                             int gapStart = devicePar.IndexOf("gap=") + "gap=".Length;
                             int gapEnd = devicePar.LastIndexOf(",I=");
                             strLookup = devicePar.Substring(gapStart, gapEnd - gapStart);
-                            selectedgap = strLookup;
+                            Config.SelectedGap = strLookup;
                             int intStart = devicePar.IndexOf(",I=") + ",I=".Length;
                             strInt = devicePar.Substring(intStart);
-                            i = Int32.Parse(strInt);
-                            firstRun = false;
+                            Intensity = Int32.Parse(strInt);
+                            Config.FirstRun = false;
                         }
                         else if(gpuChoice == 0)
                         {
                             int gapStart = devicePar.IndexOf("gap=") + "gap=".Length;
                             int gapEnd = devicePar.LastIndexOf(",-l");
                             strLookup = devicePar.Substring(gapStart, gapEnd - gapStart);
-                            selectedgap = strLookup;
+                            Config.SelectedGap = strLookup;
                             int launchStart = devicePar.IndexOf(",-l=") + ",-l=".Length;
                             strInt = devicePar.Substring(launchStart);
-                            l = strInt;
-                            firstRun = false;
+                            Config.LValue = strInt;
+                            Config.FirstRun = false;
                         }
                         System.Windows.MessageBox.Show("Hello and welcome to MMS! I've went ahead and loaded up community based optimized values for your GPU!");
                     }
                     catch
                     {
                         System.Windows.MessageBox.Show("Couldn't find optimized values for your GPU. If you can you can submit your own optimized values for this project to help out our \"job\". Miisu#5852");
-                        strInt = i.ToString();                   //Storing intensity
+                        strInt = Intensity.ToString();                   //Storing intensity
                                                                  //Storing nFactor
-                        if (selectedgap == "1")
+                        if (Config.SelectedGap == "1")
                         {
                             strLookup = "--lookup-gap=1";
                         }
-                        else if (selectedgap == "2")
+                        else if (Config.SelectedGap == "2")
                         {
                             strLookup = "--lookup-gap=2";               //Checking what lookup-gap option was selected
                         }
-                        else if (selectedgap == "3")
+                        else if (Config.SelectedGap == "3")
                         {
                             strLookup = "--lookup-gap=3";
                         }
-                        firstRun = false;
+                        Config.FirstRun = false;
 
                     }
                 }
             }
         }
+
         private string checkDevices()
         {
             string deviceList = "";
@@ -616,6 +660,7 @@ namespace MisasMinerSetup
             }
             return deviceList;
         }
+
         private void MinerInfo() //Get minerinfo from miner API
         {
             if (isMining == true) //Is the user mining
@@ -693,6 +738,7 @@ namespace MisasMinerSetup
                 }
             }
         }
+
         private void MinerInfo2()
         {
             if (isMining == true) //Is the user mining
@@ -785,78 +831,53 @@ namespace MisasMinerSetup
             }
         }
 
-        private void SaveConf() //Save user configs
-        {
-            Properties.Settings.Default.Pool = pool;
-            Properties.Settings.Default.Wallet = wallet;
-            Properties.Settings.Default.Inten = i;
-            Properties.Settings.Default.nFac = n;
-            Properties.Settings.Default.l = l;
-            Properties.Settings.Default.setx2 = setx2;
-            Properties.Settings.Default.setx3 = setx3;
-            Properties.Settings.Default.setx4 = setx4;
-            Properties.Settings.Default.setx5 = setx5;
-            Properties.Settings.Default.temp = temp;
-            Properties.Settings.Default.selectedgap = selectedgap;
-            Properties.Settings.Default.selectedPool = selectedPool;
-            Properties.Settings.Default.FirstRun = false;
-            Properties.Settings.Default.Save();
-        }
-
         private void CheckBalance() //Check worth 
         {
-            WebClient client = new WebClient();
-            string downloadedWorth = client.DownloadString("https://api.coinmarketcap.com/v1/ticker/garlicoin/"); //Check GRLC current worth in $
-            string toBeSearched = "\"price_usd\": \"";
-            worth = downloadedWorth.Substring(downloadedWorth.IndexOf(toBeSearched) + toBeSearched.Length, 4);
-            garliWorth = "$" + worth + "USD";
-            if (wallet != "")
+            worth = GarlicoinHelper.GetCurrentPrice();
+            GarliWorth = String.Format("${0} (US)", worth);
+
+            Config.Wallet = txbxWallet.Text;
+            if (!String.IsNullOrWhiteSpace(Config.Wallet))
             {
+                notifier.ShowSuccess($"Wallet set\r\n{Config.Wallet}");
 
-                string downloadedString = client.DownloadString("https://explorer.grlc-bakery.fun/ext/getbalance/" + wallet);
-                try
-                {
-                    if (downloadedString.Substring(0, 4) != "{\"er")
-                    {
-                        balance = Math.Round(Double.Parse(downloadedString, CultureInfo.InvariantCulture), 2);
-                    }
-                    else
-                    {
-                        notifier.ShowWarning("Wallet not found.");
-                    }
-                }
-                catch
-                {
-                    //Something "Hey explorer is down blahblah
-                }
+                double balance;
+                if (GarlicoinHelper.GetBalance(Config.Wallet, out balance))
+                    Balance = balance;
+                else
+                    notifier.ShowWarning("Wallet not found.");
             }
-            double myWorth = Double.Parse(worth) * balance;
-            txtBal2.Text = balance.ToString() + " GRCL (" + myWorth + " USD)";
+            else
+            {
+                notifier.ShowInformation("No wallet set.");
+            }
 
-            webClient = null;
+            var myWorth = float.Parse(worth) * Balance;
+            txtBal2.Text = $"{Balance} GRLC (${myWorth:0.00} (US))";
         }
+
         private void CheckBlocksFound() //Check blocks founds 
         {
-            if (selectedPool == "happy.garlicoin.fun:3210")
+            if (SelectedPool == "happy.garlicoin.fun:3210")
             {
-                WebClient client = new WebClient();
-                string downloadedBlocks = client.DownloadString("http://happy.garlicoin.fun/api/stats/"); //Checks for blocks
-                int blockStart = downloadedBlocks.IndexOf("\"validBlocks\":\"") + "\"validBlocks\":\"".Length; //Find fanspeed. NOT CURRENTLY WORKING!
-                int blocksEnd = downloadedBlocks.LastIndexOf("\",\"inva");
-                blocksFound = Int32.Parse(downloadedBlocks.Substring(blockStart, blocksEnd - blockStart));
-                if (blocksFound != oldBlocksFound)
+                using (WebClient client = new WebClient())
                 {
-                    notifier.ShowSuccess("Your Pool hit a block!");
-                    oldBlocksFound = blocksFound;
-
+                    string downloadedBlocks = client.DownloadString("http://happy.garlicoin.fun/api/stats/"); //Checks for blocks
+                    int blockStart = downloadedBlocks.IndexOf("\"validBlocks\":\"") + "\"validBlocks\":\"".Length; //Find fanspeed. NOT CURRENTLY WORKING!
+                    int blocksEnd = downloadedBlocks.LastIndexOf("\",\"inva");
+                    blocksFound = Int32.Parse(downloadedBlocks.Substring(blockStart, blocksEnd - blockStart));
+                    if (blocksFound != oldBlocksFound)
+                    {
+                        notifier.ShowSuccess("Your Pool hit a block!");
+                        oldBlocksFound = blocksFound;
+                    }
                 }
-                webClient = null;
             }
         }
 
         private void CheckCustomPool() //Checking if Custom is selected on pool and opening/closing textbox for custom pool
         {
-            if (selectedPool == "Custom")
+            if (SelectedPool == "Custom")
             { txbxPool.IsEnabled = true; }
             else { txbxPool.IsEnabled = false; }
         }
@@ -903,16 +924,14 @@ namespace MisasMinerSetup
         {
             if (fileCheck == true)
             {
-                if (Properties.Settings.Default.FirstRun == true)
+                if (Config.FirstRun == true)
                 {
-
-                    firstRun = true;
-                    Properties.Settings.Default.FirstRun = false;
-                    Properties.Settings.Default.Save();
+                    Config.FirstRun = false;
+                    Config.Save();
                 }
                 else
                 {
-                    firstRun = false;
+                    Config.FirstRun = false;
                 }
             }
         }
@@ -944,6 +963,7 @@ namespace MisasMinerSetup
             System.Windows.Application.Current.Shutdown();                                                                                         //Close application for restart from the new location
             Process.Start(appPath + "\\MisasMinerSetup\\MisasMinerSetup.exe");                                  //Restart
         }
+
         private void UnZipSolo() //Unzipping sgminer or ccminer and moving MisasMinerSetup.exe to the new folder
         {
 
@@ -997,10 +1017,12 @@ namespace MisasMinerSetup
                 }
                 string toBeSearched = "\"blocks\": ";
                 blockCount = output.Substring(output.IndexOf(toBeSearched) + toBeSearched.Length, 5);
-                WebClient client = new WebClient();
-                downloadedBlock = client.DownloadString("https://explorer.grlc-bakery.fun/api/getblockcount");
-                webClient = null;
-                System.Windows.MessageBox.Show(blockCount + "/" + downloadedBlock + "\nPress ok to check again. Will probably take some time..."); //Showing user how many blocks are downloaded from the needed amount.
+
+                using (WebClient client = new WebClient())
+                {
+                    downloadedBlock = client.DownloadString("https://explorer.grlc-bakery.fun/api/getblockcount");
+                    System.Windows.MessageBox.Show(blockCount + "/" + downloadedBlock + "\nPress ok to check again. Will probably take some time..."); //Showing user how many blocks are downloaded from the needed amount.
+                }
             }
             System.Windows.MessageBox.Show("FINISHED! Yayyyy that was too long I know...");
             System.Windows.MessageBox.Show("Let's now setup your wallet! Copy the wallet code from the screen and close the wallet cmd. Do not close the 1st cmd that should still be running in the background. You need to run it whenever you mine or use your wallet");
@@ -1008,15 +1030,15 @@ namespace MisasMinerSetup
             cmd3.StartInfo.Arguments = "/K cd " + appPath + "\\MisasMinerSetup\\ && garlicoin-cli getnewaddress"; //Get local wallet address
             cmd3.Start();
             System.Windows.MessageBox.Show("Remember to back up your wallet.dat file! You can find it in %appdata%/Garlicoin/");
-            webClient = new WebClient();
-            webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CompletedSoloMiner);
-
-            webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/CCSoloMiner.zip"), appPath + "\\solominer.zip"); //Downloading Solominer
+            using (var webClient = new WebClient())
+            {
+                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CompletedSoloMiner);
+                webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/CCSoloMiner.zip"), appPath + "\\solominer.zip"); //Downloading Solominer
+            }
         }
 
         private void CompletedSoloMiner(object sender, AsyncCompletedEventArgs e) //After download completion
         {
-            webClient = null;
             string zipPath = appPath + "\\solominer.zip";
             string extractPath = appPath + "\\MisasMinerSetup";
             ZipFile.ExtractToDirectory(zipPath, extractPath);
@@ -1045,6 +1067,7 @@ namespace MisasMinerSetup
                 }
             }
         }
+
         private void GetRecommendedConf()
         {
             try
@@ -1072,7 +1095,6 @@ namespace MisasMinerSetup
                 // Handle any exceptions here
             }
         }
-            
 
         /// <summary>
         /// Handles cataloging the hardware present on the machine
@@ -1128,66 +1150,65 @@ namespace MisasMinerSetup
             _statGrids.Add(new StatGrid(StatGrid3, StatGrid3Temp));
             _statGrids.Add(new StatGrid(StatGrid4, StatGrid4Temp));
             _statGrids.Add(new StatGrid(StatGrid5, StatGrid5Temp));
+            _hardwareNames.Add(device0Name);
+            _hardwareNames.Add(device1Name);
+            _hardwareNames.Add(device2Name);
+            _hardwareNames.Add(device3Name);
+            _hardwareNames.Add(device4Name);
+            _hardwareNames.Add(device5Name);
         }
+
+        #region Hardware Monitor
 
         /// <summary>
-        /// Class object to define each hardware item we're monitoring from within the application
-        /// This will track not only the OpenHardwareMonitor values, but also store the StatGrid to which it will output it's values
+        /// Handles cataloging the hardware present on the machine
         /// </summary>
-        public class GPUHardwareNode
+        private void CatalogGPUHardware()
         {
-            public IHardware Hardware;
-            public HardwareType Type;
-            public Identifier Ident;
-            public String Name;
-            private ISensor[] _sensors;
-            public StatGrid StatGrid;
+            computer = new Computer() { GPUEnabled = true };
+            computer.Open();
 
-            public GPUHardwareNode(IHardware hw, HardwareType hwType, Identifier hwIdent, string hwName, ISensor[] hwSensors, StatGrid statGrid)
+            var hardwareCounter = 0;
+
+            foreach (var hardware in computer.Hardware)
             {
-                Hardware = hw;
-                Type = hwType;
-                Ident = hwIdent;
-                Name = hwName;
-                _sensors = hwSensors;
-                StatGrid = statGrid;
-                StatGrid.GridObject.Visibility = Visibility.Visible;
-                StatGrid.GridObject.ToolTip = hwName;
+                hardware.Update();
+
+                try
+                {
+                    GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]));
+                    _hardwareNames[hardwareCounter].Text = hardware.Name;
+                }
+                catch (Exception)
+                {
+                    // Empty catch - simply ignoring additional hardware for now and setting a hard limit to 6
+                }
+
+                hardwareCounter++;
             }
 
-            public ISensor[] PollSensors()
+            foreach (var g in GPUHardwareNodes)
             {
-                Hardware.Update();
-                return _sensors;
+                notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
             }
 
-        }
-
-        public class StatGrid
-        {
-            public Grid GridObject;
-            public TextBlock Temperature;
-
-            public StatGrid(Grid gridObject, TextBlock temperature)
-            {
-                GridObject = gridObject;
-                Temperature = temperature;
-            }
-        }
-
-
+            GetRecommendedConf();
+        }      
+        
         private void PollHardware() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
         {
             List<HardwareNodeDisplayOutput> nodeDisplayUpdate = new List<HardwareNodeDisplayOutput>();
+
             var timer = new System.Timers.Timer() { Enabled = true, Interval = 1000 };
+
             timer.Elapsed += delegate(object sender, ElapsedEventArgs e)
             {
                 CheckBlocksFound();
                 MinerInfo();
                 MinerInfo2();
                 UpdateHover();
-
                 nodeDisplayUpdate.Clear();
+
                 foreach (var hardwareNode in GPUHardwareNodes)
                 {
                     var hardwareSensors = hardwareNode.PollSensors();
@@ -1195,6 +1216,7 @@ namespace MisasMinerSetup
                     int intTemp = 0;
                     var readableUtilization = ""; //$"{utilizationPercent}%";
                     var brushColor = System.Windows.Media.Brushes.LightBlue;
+
                     foreach (var sensor in hardwareSensors)
                     {
                         switch (sensor.SensorType)
@@ -1228,15 +1250,17 @@ namespace MisasMinerSetup
                                 break;
                         }
                     }
+
                     nodeDisplayUpdate.Add(new HardwareNodeDisplayOutput(hardwareNode.StatGrid, readableTemp, brushColor, readableUtilization, intTemp));
                 }
+
                 Dispatcher.Invoke(() =>
                 {
                     foreach (var n in nodeDisplayUpdate)
                     {
                         try
                         {
-                            if (n.IntTemp >= temp - 5)
+                            if (n.IntTemp >= Config.Temp - 5)
                             {
                                 n.BrushColor = System.Windows.Media.Brushes.Red;
                                 if (tempCheck == true)
@@ -1254,109 +1278,37 @@ namespace MisasMinerSetup
                 });
             };
         }
+        
+        #endregion
 
-        class HardwareNodeDisplayOutput
-        {
-            public StatGrid StatGrid;
-            public string ReadableTemp;
-            public SolidColorBrush BrushColor;
-            public int IntTemp;
-
-            public HardwareNodeDisplayOutput(StatGrid statGrid, string readableTemp, SolidColorBrush brushColor, string utilizationPercent, int intTemp)
-            {
-                StatGrid = statGrid;
-                ReadableTemp = readableTemp;
-                BrushColor = brushColor;
-                IntTemp = intTemp;
-            }
-        }
-
-
-        [DllImport("User32.dll")] //Creating hotkeys for notifications of current hashrate
-        private static extern bool RegisterHotKey(
-            [In] IntPtr hWnd,
-            [In] int id,
-            [In] uint fsModifiers,
-            [In] uint vk);
-
-        [DllImport("User32.dll")]
-        private static extern bool UnregisterHotKey(
-            [In] IntPtr hWnd,
-            [In] int id);
-
-        private HwndSource _source;
-        private const int HOTKEY_ID = 9000;
+        #region Hotkey
 
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
-            var helper = new WindowInteropHelper(this);
-            _source = HwndSource.FromHwnd(helper.Handle);
-            _source.AddHook(HwndHook);
-            RegisterHotKey();
-        }
+
+            HotkeyHelper.Instance.RegisterHotKey(this);
+            HotkeyHelper.Instance.OnHotkeyPressed += Instance_OnHotkeyPressed;
+        }        
 
         protected override void OnClosed(EventArgs e)
-        {
-            _source.RemoveHook(HwndHook);
-            _source = null;
-            UnregisterHotKey();
+        {            
             base.OnClosed(e);
+
+            HotkeyHelper.Instance.UnregisterHotKey(this);
         }
 
-        private void RegisterHotKey()
+        private void Instance_OnHotkeyPressed(object sender, EventArgs e)
         {
-            var helper = new WindowInteropHelper(this);
-            const uint VK_F10 = 0x79;
-            const uint MOD_CTRL = 0x0002;
-            if (!RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_CTRL, VK_F10))
-            {
-                // handle error
-            }
-        }
-
-        private void UnregisterHotKey()
-        {
-            var helper = new WindowInteropHelper(this);
-            UnregisterHotKey(helper.Handle, HOTKEY_ID);
-        }
-
-        private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            const int WM_HOTKEY = 0x0312;
-            switch (msg)
-            {
-                case WM_HOTKEY:
-                    switch (wParam.ToInt32())
-                    {
-                        case HOTKEY_ID:
-                            OnHotKeyPressed();
-                            handled = true;
-                            break;
-                    }
-                    break;
-            }
-            return IntPtr.Zero;
-        }
-
-        private void OnHotKeyPressed()
-        {
+            
             notifier.ShowInformation(strHash + "Kh/s");
             notifier.ShowInformation("GPU Fan Speed: " + strFan + "%");
-            notifier.ShowInformation("GPU Usage: " + strUsage + "%");
+            notifier.ShowInformation(GarlicoinHelper.GetProfitability(strHash) + "$ in 1h");
         }
 
-        private void btnDevices_Click(object sender, RoutedEventArgs e)
-        {
-            txtDevices.Visibility = Visibility.Visible;
-            device0.Visibility = Visibility.Visible;
-            device1.Visibility = Visibility.Visible;
-            device2.Visibility = Visibility.Visible;
-            device3.Visibility = Visibility.Visible;
-            device4.Visibility = Visibility.Visible;
-            device5.Visibility = Visibility.Visible;
-            btnDeviceSave.Visibility = Visibility.Visible;
-        }
+        #endregion
+
+        #region Checkbox Stuff     
 
         private void device0_Unchecked(object sender, RoutedEventArgs e)
         {
@@ -1418,17 +1370,6 @@ namespace MisasMinerSetup
             bldevice5 = false;
         }
 
-        private void btnDeviceSave_Click(object sender, RoutedEventArgs e)
-        {
-            txtDevices.Visibility = Visibility.Hidden;
-            device0.Visibility = Visibility.Hidden;
-            device1.Visibility = Visibility.Hidden;
-            device2.Visibility = Visibility.Hidden;
-            device3.Visibility = Visibility.Hidden;
-            device4.Visibility = Visibility.Hidden;
-            device5.Visibility = Visibility.Hidden;
-            btnDeviceSave.Visibility = Visibility.Hidden;
-        }
+        #endregion
     }
-
 }
