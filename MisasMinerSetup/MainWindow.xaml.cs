@@ -850,10 +850,11 @@ namespace MisasMinerSetup
             else
             {
                 notifier.ShowInformation("No wallet set.");
+                Balance = 0;
             }
 
             var myWorth = float.Parse(worth) * Balance;
-            txtBal2.Text = $"{Balance} GRLC (${myWorth:0.00} (US))";
+            txtBal2.Text = $"{Balance} GRLC (${myWorth:0.00} USD)";
         }
 
         private void CheckBlocksFound() //Check blocks founds 
@@ -1097,37 +1098,6 @@ namespace MisasMinerSetup
         }
 
         /// <summary>
-        /// Handles cataloging the hardware present on the machine
-        /// </summary>
-        private void CatalogGPUHardware()
-        {
-            computer = new Computer() { GPUEnabled = true };
-            computer.Open();
-
-            var hardwareCounter = 0;
-            foreach (var hardware in computer.Hardware)
-            {
-                hardware.Update();
-                try
-                {
-                    GPUHardwareNodes.Add(new GPUHardwareNode(hardware, hardware.HardwareType, hardware.Identifier, hardware.Name, hardware.Sensors, _statGrids[hardwareCounter]));
-                }
-                catch (Exception)
-                {
-                    // Empty catch - simply ignoring additional hardware for now and setting a hard limit to 6
-                }
-                hardwareCounter++;
-            }
-
-            foreach (var g in GPUHardwareNodes)
-            {
-                notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
-            }
-            
-            //GetRecommendedConf();
-        }
-
-        /// <summary>
         /// Used to configure any UI elements that need to be set at time of application start
         /// </summary>
         private void ConfigureUI()
@@ -1192,7 +1162,7 @@ namespace MisasMinerSetup
                 notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
             }
 
-            GetRecommendedConf();
+            //GetRecommendedConf();
         }      
         
         private void PollHardware() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
