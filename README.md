@@ -10,7 +10,7 @@ FOR AMD OR NVIDIA GPUs! Will be updated for Allium withing 1 minute of the fork!
 This is a simple GUI setup program to start mining garlicoin.
 Can also be used as a nice GUI while mining to get on-demand hashrates and temps.
 It currently is in development and might be buggy.
-### REMEMBER TO PRESS ENTER AFTER ENTERING YOUR WALLET
+
 
 ---
 
@@ -28,6 +28,8 @@ Currently trying to fix that, but if you don't trust me, build the file yourself
 ---
 
 ## Instructions:
+
+### REMEMBER TO PRESS ENTER AFTER ENTERING YOUR WALLET
 
 If you already have sgminer/ccminer, just drop this exe into the same folder as sgminer and start.
 
