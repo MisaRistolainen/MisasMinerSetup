@@ -145,7 +145,7 @@ namespace MisasMinerSetup.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\"happy.garlicoin.fun:3210\"")]
+        [global::System.Configuration.DefaultSettingValueAttribute("happy.garlicoin.fun:3210")]
         public string selectedPool {
             get {
                 return ((string)(this["selectedPool"]));
@@ -157,7 +157,7 @@ namespace MisasMinerSetup.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool FirstRun {
             get {
                 return ((bool)(this["FirstRun"]));
@@ -170,24 +170,24 @@ namespace MisasMinerSetup.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Wallet {
-            get {
-                return ((string)(this["Wallet"]));
-            }
-            set {
-                this["Wallet"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Custom {
             get {
                 return ((string)(this["Custom"]));
             }
             set {
                 this["Custom"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Wallet {
+            get {
+                return ((string)(this["Wallet"]));
+            }
+            set {
+                this["Wallet"] = value;
             }
         }
     }

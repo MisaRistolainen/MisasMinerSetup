@@ -22,6 +22,7 @@ namespace MisasMinerSetup.Configuration
         public string SelectedPool { get; set; }
         public bool FirstRun { get; set; }
         public string LValue { get; set; }       //-l for nvidia   
+        public string Custom { get; set; }
 
         public void Save()
         {
@@ -38,6 +39,7 @@ namespace MisasMinerSetup.Configuration
             Properties.Settings.Default.selectedgap = SelectedGap;
             Properties.Settings.Default.selectedPool = SelectedPool;
             Properties.Settings.Default.FirstRun = false;
+            Properties.Settings.Default.Custom = Custom;
             Properties.Settings.Default.Save();
         }
 
@@ -56,7 +58,8 @@ namespace MisasMinerSetup.Configuration
             Temp = Properties.Settings.Default.temp;                    
             SelectedGap = Properties.Settings.Default.selectedgap;      
             SelectedPool = Properties.Settings.Default.selectedPool;    
-            FirstRun = Properties.Settings.Default.FirstRun;            
+            FirstRun = Properties.Settings.Default.FirstRun;
+            Custom = Properties.Settings.Default.Custom;
         }
 
         public void SetDefaultValues()
@@ -70,6 +73,8 @@ namespace MisasMinerSetup.Configuration
             Setx4 = 100;
             Setx5 = 1;
             LValue = "Auto";
+            FirstRun = false;
+
         }
     }
 }

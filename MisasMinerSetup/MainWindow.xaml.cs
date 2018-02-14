@@ -33,12 +33,13 @@ using ToastNotifications.Position;
 using ToastNotifications.Messages;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using MahApps.Metro.Controls;
 using MisasMinerSetup.Helpers;
 using MisasMinerSetup.Configuration;
 
 namespace MisasMinerSetup
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         #region Properties
 
@@ -89,6 +90,7 @@ namespace MisasMinerSetup
         public string strUsage;
         public string strInt;
         public string myWallet;
+        public string operatingSystem;
         public int blocksFound;
         public int oldBlocksFound;
 
@@ -134,6 +136,7 @@ namespace MisasMinerSetup
         private string worth;
         private List<StatGrid> _statGrids = new List<StatGrid>();
         private List<TextBlock> _hardwareNames = new List<TextBlock>();
+        private List<System.Windows.Controls.CheckBox> _checkBoxes = new List<System.Windows.Controls.CheckBox>();
 
         #endregion
 
@@ -157,6 +160,7 @@ namespace MisasMinerSetup
         public MainWindow()
         {
             InitializeComponent();
+            this.AllowsTransparency = true;
             DataContext = this;
 
             SetDefaults();
@@ -164,7 +168,6 @@ namespace MisasMinerSetup
             txbxWallet.Text = Config.Wallet;
 
             ConfigureUI();
-            FirstTimeCheck();
             CatalogGPUHardware();
             PollHardware();
             CheckBalance();
@@ -192,12 +195,13 @@ namespace MisasMinerSetup
             strHash = "0";
             firstCon = true;
             fileCheck = false;
-            txtDonatos.IsReadOnly = true;                //Donation box            
+            txtDonatos.IsReadOnly = true;                //Donation box       
+
         }
         
         private void SetMenus()
         {
-            ni.Icon = MisasMinerSetup.Properties.Resources.Myicon;
+            ni.Icon = Properties.Resources.Myicon;
             ni.Visible = true;
             System.Windows.Forms.ContextMenu mn = new System.Windows.Forms.ContextMenu(); //Setting up icontray icon
             ni.ContextMenu = mn;
@@ -208,6 +212,7 @@ namespace MisasMinerSetup
         private void SetHandlers()
         {
             MouseDown += Window_MouseDown;
+            
         }
 
         private void UpdateHover() //Handling doubleclick and tooltip updates
@@ -261,10 +266,6 @@ namespace MisasMinerSetup
             gpuChoice = 0;
             btnNvidiaSolo.Visibility = Visibility.Hidden;
             txtChoose.Visibility = Visibility.Hidden;
-            checkingFiles();
-            txtn.Visibility = Visibility.Hidden;
-            txtnFactor.Visibility = Visibility.Hidden;
-            txtTouch.Visibility = Visibility.Hidden;
             btnMonitor.Visibility = Visibility.Hidden;
             checkingFiles();
         }        
@@ -274,8 +275,6 @@ namespace MisasMinerSetup
             gpuChoice = 1;
             btnNvidiaSolo.Visibility = Visibility.Hidden;
             txtChoose.Visibility = Visibility.Hidden;
-            txtl.Visibility = Visibility.Hidden;
-            txtlbox.Visibility = Visibility.Hidden;
             btnMonitor.Visibility = Visibility.Hidden;
             checkingFiles();
             
@@ -298,10 +297,7 @@ namespace MisasMinerSetup
             txtChoose.Visibility = Visibility.Hidden;
             checkingFiles();
             sldrIntensity.Visibility = Visibility.Hidden;
-            txtn.Visibility = Visibility.Hidden;
             txtIntensity.Visibility = Visibility.Hidden;
-            txtnFactor.Visibility = Visibility.Hidden;
-            txtTouch.Visibility = Visibility.Hidden;
             inCalc.Visibility = Visibility.Hidden;
             btnMonitor.Visibility = Visibility.Hidden;
             ComboBox1.IsEnabled = false;
@@ -316,22 +312,15 @@ namespace MisasMinerSetup
             sldrGPU.Visibility = Visibility.Visible;
             btnNvidiaSolo.Visibility = Visibility.Hidden;
             txtChoose.Visibility = Visibility.Hidden;
-            txtl.Visibility = Visibility.Hidden;
-            txtlbox.Visibility = Visibility.Hidden;
             sldrIntensity.Visibility = Visibility.Hidden;
-            txtn.Visibility = Visibility.Hidden;
             txtIntensity.Visibility = Visibility.Hidden;
-            txtnFactor.Visibility = Visibility.Hidden;
-            txtTouch.Visibility = Visibility.Hidden;
             inCalc.Visibility = Visibility.Hidden;
             btnMonitor.Visibility = Visibility.Hidden;
             btnInstall.Visibility = Visibility.Hidden;
             btnsetx.Visibility = Visibility.Hidden;
             txtsetx.Visibility = Visibility.Hidden;
             txbxPool.Visibility = Visibility.Hidden;
-            comboGap.Visibility = Visibility.Hidden;
             btnStart.Visibility = Visibility.Hidden;
-            txtLook.Visibility = Visibility.Hidden;
             txttemp.Visibility = Visibility.Hidden;
             TempCheck.Visibility = Visibility.Hidden;
             txtninstall.Visibility = Visibility.Hidden;
@@ -356,6 +345,7 @@ namespace MisasMinerSetup
         {
             txtTestimonials.Visibility = Visibility.Visible;
             btnCloseTest.Visibility = Visibility.Visible;
+            pngAbby.Visibility = Visibility.Visible;
         }
 
         private void BtnCloseTest_Click(object sender, RoutedEventArgs e)  //Close testimonials click
@@ -363,6 +353,7 @@ namespace MisasMinerSetup
 
             txtTestimonials.Visibility = Visibility.Hidden;
             btnCloseTest.Visibility = Visibility.Hidden;
+            pngAbby.Visibility = Visibility.Hidden;
         }
 
         private void BtnDonate_Click(object sender, RoutedEventArgs e) //Show wallet addresses for donations
@@ -417,7 +408,7 @@ namespace MisasMinerSetup
         {
             string devices = checkDevices();
             isMining = true;
-
+            
             Config.Save();
 
             string strPool;
@@ -431,14 +422,9 @@ namespace MisasMinerSetup
             }
             string strFac = Config.NFactor.ToString(); 
             string strWallet = Config.Wallet;                      //Storing wallet
+            string strCustom = Config.Custom;
 
-            if (Config.FirstRun == true)
-            {
-                strLookup = "--lookup-gap=" + strLookup;
-                
-            }
-            else
-            {
+
                 strInt = Intensity.ToString();                   //Storing intensity
                                                          //Storing nFactor
                 if (Config.SelectedGap == "1")
@@ -452,16 +438,23 @@ namespace MisasMinerSetup
                 else if (Config.SelectedGap == "3")
                 {
                     strLookup = "--lookup-gap=3";
-                }
+                
             }
             if (gpuChoice == 1) //If AMD GPU was chosen
             {
-                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + Config.Temp + " --algorithm scrypt-n --nfactor " + strFac + " -o " + strPool + " -u " + strWallet + " " + strLookup + " -p x -I " + strInt; //Constructing final string to run
+                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + Config.Temp + " -k allium -o " + strPool + " -u " + strWallet + " -p x -I " + strInt + " " + strCustom; //Constructing final string to run
             }
             else if (gpuChoice == 0) //If Nvidia GPU was chosen
             {
-                strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=scrypt:10 -l " + Config.LValue + " -o " + strPool + " -u " + strWallet + " " + strLookup + " --max-temp=" + Config.Temp + " "; //Constructing final string to run
+                if (operatingSystem == "64bit")
+                {
+                    strArg = "ccminer-x64 -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=allium -o " + strPool + " -u " + strWallet + " --max-temp=" + Config.Temp + " -i " + strInt + " " + strCustom; //Constructing final string to run
+                }
+                else if (operatingSystem == "32bit")
+                {
+                    strArg = "ccminer -b --api-remote --api-bind=4028 --api-allow=127.0.0.1 -d " + devices + " --algo=allium -o " + strPool + " -u " + strWallet + " --max-temp=" + Config.Temp + " -i " + strInt + " " + strCustom; //Constructing final string to run
 
+                }
             }
             else if (gpuChoice == 3) //If Nvidia solomining was chosen
             {
@@ -483,7 +476,7 @@ namespace MisasMinerSetup
         
         private void btnDownload_Click(object sender, EventArgs e) //Install button
         {
-            txtwait.Visibility = Visibility.Visible; //Show "Downloading..." text
+            downloadProgress.Visibility = Visibility.Visible; //Show "Downloading..." text
             btnInstall.IsEnabled = false; //Disable install button
 
             using (var webClient = new WebClient())
@@ -495,7 +488,15 @@ namespace MisasMinerSetup
                 }
                 else if (gpuChoice == 0) //NVIDIA
                 {
-                    webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/ccminer.zip"), appPath + "\\cc.zip"); //Downloading ccminer
+                    if (operatingSystem == "64bit")
+                    {
+                        webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/ccminer64.zip"), appPath + "\\cc.zip"); //Downloading ccminer64bit
+                    }
+                    else if (operatingSystem == "32bit")
+                    {
+                        webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/ccminer32.zip"), appPath + "\\cc.zip"); //Downloading ccminer32bit
+                    }
+                    
                 }
 
                 if (gpuChoice == 3) //NVIDIA SOLO
@@ -542,7 +543,7 @@ namespace MisasMinerSetup
         {
             UnZipPool();                                           //Unzipping sg/ccminer and moving MisasMinerSetup.exe to the new folder
             btnInstall.IsEnabled = true;                           //Enable button if something goes wrong
-            txtwait.Visibility = Visibility.Hidden; //Hide "Downloading..." text
+            downloadProgress.Visibility = Visibility.Hidden; //Hide "Downloading..." text
 
         }
 
@@ -551,61 +552,7 @@ namespace MisasMinerSetup
             UnZipSolo();                                           //Unzipping solo files.
         }
 
-        private void loadPresets()
-        {
-            if (Config.FirstRun == true)
-            {
-                if (fileCheck == true)
-                {
-                    try
-                    {
-                        if (gpuChoice == 1)
-                        {
-                            int gapStart = devicePar.IndexOf("gap=") + "gap=".Length;
-                            int gapEnd = devicePar.LastIndexOf(",I=");
-                            strLookup = devicePar.Substring(gapStart, gapEnd - gapStart);
-                            Config.SelectedGap = strLookup;
-                            int intStart = devicePar.IndexOf(",I=") + ",I=".Length;
-                            strInt = devicePar.Substring(intStart);
-                            Intensity = Int32.Parse(strInt);
-                            Config.FirstRun = false;
-                        }
-                        else if(gpuChoice == 0)
-                        {
-                            int gapStart = devicePar.IndexOf("gap=") + "gap=".Length;
-                            int gapEnd = devicePar.LastIndexOf(",-l");
-                            strLookup = devicePar.Substring(gapStart, gapEnd - gapStart);
-                            Config.SelectedGap = strLookup;
-                            int launchStart = devicePar.IndexOf(",-l=") + ",-l=".Length;
-                            strInt = devicePar.Substring(launchStart);
-                            Config.LValue = strInt;
-                            Config.FirstRun = false;
-                        }
-                        System.Windows.MessageBox.Show("Hello and welcome to MMS! I've went ahead and loaded up community based optimized values for your GPU!");
-                    }
-                    catch
-                    {
-                        System.Windows.MessageBox.Show("Couldn't find optimized values for your GPU. If you can you can submit your own optimized values for this project to help out our \"job\". Miisu#5852");
-                        strInt = Intensity.ToString();                   //Storing intensity
-                                                                 //Storing nFactor
-                        if (Config.SelectedGap == "1")
-                        {
-                            strLookup = "--lookup-gap=1";
-                        }
-                        else if (Config.SelectedGap == "2")
-                        {
-                            strLookup = "--lookup-gap=2";               //Checking what lookup-gap option was selected
-                        }
-                        else if (Config.SelectedGap == "3")
-                        {
-                            strLookup = "--lookup-gap=3";
-                        }
-                        Config.FirstRun = false;
-
-                    }
-                }
-            }
-        }
+       
 
         private string checkDevices()
         {
@@ -834,7 +781,7 @@ namespace MisasMinerSetup
         private void CheckBalance() //Check worth 
         {
             worth = GarlicoinHelper.GetCurrentPrice();
-            GarliWorth = String.Format("${0} (US)", worth);
+            GarliWorth = String.Format("${0} USD", worth);
 
             Config.Wallet = txbxWallet.Text;
             if (!String.IsNullOrWhiteSpace(Config.Wallet))
@@ -853,7 +800,7 @@ namespace MisasMinerSetup
             }
 
             var myWorth = float.Parse(worth) * Balance;
-            txtBal2.Text = $"{Balance} GRLC (${myWorth:0.00} (US))";
+            txtBal2.Text = $"{Balance} GRLC (${myWorth:0.00} USD)";
         }
 
         private void CheckBlocksFound() //Check blocks founds 
@@ -878,8 +825,9 @@ namespace MisasMinerSetup
         private void CheckCustomPool() //Checking if Custom is selected on pool and opening/closing textbox for custom pool
         {
             if (SelectedPool == "Custom")
-            { txbxPool.IsEnabled = true; }
-            else { txbxPool.IsEnabled = false; }
+            { txbxPool.Visibility = Visibility.Visible; }
+            else { txbxPool.Visibility = Visibility.Hidden; }
+            
         }
 
         private void checkingFiles() //Checking if I am in the right folder with miner files
@@ -894,7 +842,15 @@ namespace MisasMinerSetup
                 }
                 else if (gpuChoice == 0)
                 {
-                    fileCheck = File.Exists(appPath + "\\ccminer-x64.exe");                                                               //Checking if ccminer exists
+                    if (operatingSystem == "64bit")
+                    {
+                        fileCheck = File.Exists(appPath + "\\ccminer-x64.exe");                                                               //Checking if ccminer exists
+                    }
+                    else if (operatingSystem == "32bit")
+                    {
+                        fileCheck = File.Exists(appPath + "\\ccminer.exe");
+                    }
+                    
                 }
                 else if (gpuChoice == 3)
                 {
@@ -907,34 +863,20 @@ namespace MisasMinerSetup
                     txtninstall.Visibility = Visibility.Hidden;
                     txtninstall2.Visibility = Visibility.Hidden;
                     btnInstall.Visibility = Visibility.Hidden;
+                    btnStart.Visibility = Visibility.Visible;
                     btnStart.IsEnabled = true;
-                    loadPresets();
                 }
                 else
                 {
                     txtFileCheck.Text = "";
                     visi = "Visible";
-                    btnStart.IsEnabled = false;
+                    btnStart.Visibility = Visibility.Hidden;
                 }
             }
             
         }
 
-        private void FirstTimeCheck()
-        {
-            if (fileCheck == true)
-            {
-                if (Config.FirstRun == true)
-                {
-                    Config.FirstRun = false;
-                    Config.Save();
-                }
-                else
-                {
-                    Config.FirstRun = false;
-                }
-            }
-        }
+      
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e) //Allowing only numbers for nFactor
         {
@@ -1068,33 +1010,7 @@ namespace MisasMinerSetup
             }
         }
 
-        private void GetRecommendedConf()
-        {
-            try
-            {
-                foreach (var g in GPUHardwareNodes)
-                {
-                    string[] values = new[] { "RX", "GTX", "GT", "R9", "WX" };
-                    foreach (string item in values)
-                    {
-                        int index = g.Name.IndexOf(item);
-                        if (index != -1)
-                        {
-                            g.Name = g.Name.Substring(index);
-                        }
-                    }
-                    string completeStart = "Start" + g.Name + "g";
-                    string completeEnd = "End" + g.Name;
-                    int deviceStart = GPUList.IndexOf(completeStart) + (completeStart.Length - 1); //Find hashrate
-                    int deviceEnd = GPUList.LastIndexOf(completeEnd);
-                    devicePar = GPUList.Substring(deviceStart, deviceEnd - deviceStart);
-                }
-            }
-            catch
-            {
-                System.Windows.MessageBox.Show("Something something error fuck you too");
-            }
-        }
+       
 
         /// <summary>
         /// Used to configure any UI elements that need to be set at time of application start
@@ -1125,6 +1041,12 @@ namespace MisasMinerSetup
             _hardwareNames.Add(device3Name);
             _hardwareNames.Add(device4Name);
             _hardwareNames.Add(device5Name);
+            _checkBoxes.Add(device0);
+            _checkBoxes.Add(device1);
+            _checkBoxes.Add(device2);
+            _checkBoxes.Add(device3);
+            _checkBoxes.Add(device4);
+            _checkBoxes.Add(device5);
         }
 
         #region Hardware Monitor
@@ -1134,6 +1056,14 @@ namespace MisasMinerSetup
         /// </summary>
         private void CatalogGPUHardware()
         {
+            if (Environment.Is64BitOperatingSystem)
+            {
+                operatingSystem = "64bit";
+            }
+            else
+            {
+                operatingSystem = "32bit";
+            }
             computer = new Computer() { GPUEnabled = true };
             computer.Open();
 
@@ -1161,7 +1091,6 @@ namespace MisasMinerSetup
                 notifier.ShowInformation($"Hardware Found\r\n{g.Name}");
             }
 
-            GetRecommendedConf();
         }      
         
         private void PollHardware() //Checking temperature using OpenHardwareMonitor. Probably going to get this information from the miner API later.
@@ -1246,6 +1175,10 @@ namespace MisasMinerSetup
                     }
                 });
             };
+            for (int i = 0; i < GPUHardwareNodes.Count; i++)
+            {
+                _checkBoxes[i].IsChecked = true;
+            }
         }
         
         #endregion

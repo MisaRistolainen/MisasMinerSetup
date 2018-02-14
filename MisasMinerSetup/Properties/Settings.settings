@@ -33,17 +33,17 @@
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="selectedPool" Type="System.String" Scope="User">
-      <Value Profile="(Default)">"happy.garlicoin.fun:3210"</Value>
+      <Value Profile="(Default)">happy.garlicoin.fun:3210</Value>
     </Setting>
     <Setting Name="FirstRun" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Custom" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Wallet" Type="System.String" Scope="User">
       <Value Profile="(Default)">
                 </Value>
-    </Setting>
-    <Setting Name="Custom" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

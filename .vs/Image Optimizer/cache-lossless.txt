@@ -1,0 +1,16 @@
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\ripHover.png|3297
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\setxHover.png|1328
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\donateClick.png|3340
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\installDef.png|6107
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\ripDef.png|4164
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\testiClick.png|2179
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\installHover.png|4755
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\donateDef.png|3357
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\ripHover.png|3297
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\testiDef.png|2184
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\donateHover.png|3377
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\testiHover.png|2190
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\setxClick.png|1309
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\setxDef.png|1301
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\ripClick.png|903
+C:\Users\risto\Source\Repos\MisasMinerSetup\MisasMinerSetup\Images\Buttons\installClick.png|1126
