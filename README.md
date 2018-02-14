@@ -1,7 +1,7 @@
 [![Github All Releases](https://img.shields.io/github/downloads/MisaRistolainen/MisasMinerSetup/total.svg?style=for-the-badge)](https://github.com/MisaRistolainen/MisasMinerSetup/releases)
 [![license](https://img.shields.io/github/license/MisaRistolainen/MisasMinerSetup.svg?style=for-the-badge)](https://choosealicense.com/licenses/gpl-3.0/)
 # MisasMinerSetup # 
-FOR AMD OR NVIDIA GPUs!
+FOR AMD OR NVIDIA GPUs! Will be updated for Allium withing 1 minute of the fork!
 -
 *To anyone saying that it is ugly. I want it to be fully functional before I start making it look nice. I know it looks bad.*
 
@@ -13,9 +13,9 @@ It currently is in development and might be buggy.
 
 ---
 
-Short walkthrough of the 1st launch on AMD cards can be found [Here](https://streamable.com/6atv7)
+Short walkthrough of the 1st launch can be found [Here](https://streamable.com/4tmiy)
 
-A little bit more indepth walkthrough with explanations, also for AMD can be found [Here](https://streamable.com/89x58)
+A little bit more indepth walkthrough with explanations, also for AMD can be found [Here](https://streamable.com/89x58) OUTDATED!!!
 
 ---
 
