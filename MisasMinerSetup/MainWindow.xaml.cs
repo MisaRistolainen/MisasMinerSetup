@@ -808,16 +808,24 @@ namespace MisasMinerSetup
         {
             if (SelectedPool == "happy.garlicoin.fun:3210")
             {
-                using (WebClient client = new WebClient())
+
+                using (WebClient client = new WebClientWithTimeout())
                 {
-                    string downloadedBlocks = client.DownloadString("http://happy.garlicoin.fun/api/stats/"); //Checks for blocks
-                    int blockStart = downloadedBlocks.IndexOf("\"validBlocks\":\"") + "\"validBlocks\":\"".Length; //Find fanspeed. NOT CURRENTLY WORKING!
-                    int blocksEnd = downloadedBlocks.LastIndexOf("\",\"inva");
-                    blocksFound = Int32.Parse(downloadedBlocks.Substring(blockStart, blocksEnd - blockStart));
-                    if (blocksFound != oldBlocksFound)
+                    try
                     {
-                        notifier.ShowSuccess("Your Pool hit a block!");
-                        oldBlocksFound = blocksFound;
+                        string downloadedBlocks = client.DownloadString("http://happy.garlicoin.fun/api/stats/"); //Checks for blocks
+                        int blockStart = downloadedBlocks.IndexOf("\"validBlocks\":\"") + "\"validBlocks\":\"".Length; //Find fanspeed. NOT CURRENTLY WORKING!
+                        int blocksEnd = downloadedBlocks.LastIndexOf("\",\"inva");
+                        blocksFound = Int32.Parse(downloadedBlocks.Substring(blockStart, blocksEnd - blockStart));
+                        if (blocksFound != oldBlocksFound)
+                        {
+                            notifier.ShowSuccess("Your Pool hit a block!");
+                            oldBlocksFound = blocksFound;
+                        }
+                    }
+                    catch
+                    {
+                        notifier.ShowError("Happy Garlic Pool is Down.");
                     }
                 }
             }
