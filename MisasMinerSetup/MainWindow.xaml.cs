@@ -797,6 +797,7 @@ namespace MisasMinerSetup
             else
             {
                 notifier.ShowInformation("No wallet set.");
+                Balance = 0;
             }
 
             var myWorth = float.Parse(worth) * Balance;

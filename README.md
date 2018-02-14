@@ -31,10 +31,12 @@ Currently trying to fix that, but if you don't trust me, build the file yourself
 If you already have sgminer/ccminer, just drop this exe into the same folder as sgminer and start.
 
 1. If you don't have sgminer/ccminer yet, just run it in a folder where you want the miner folder to be created. 
-2. After starting and choosing your gpu you will see "Miner not found" and you can go ahead and press "Install miner". It will download sgminer and unzip it into a folder called MisasMinerSetup, move the exe there and restart. 
+2. After it detects your GPUs, you will see "Miner not found" and you can go ahead and press "Install miner". It will download ccminer/sgminer and unzip it into a folder called MisasMinerSetup, move the exe there and restart. 
 3. After it restarted from the folder, it should be ready to use.
 
 4. After selecting/writing in you settings, press "RIP GPU" and it will launch a cmd window and it will start to mine.
+
+Remember to press enter after typing your wallet address.
 
 Settings are saved after shutdown so there is no need to copy paste your wallet everytime you restart.
 
