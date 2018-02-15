@@ -536,6 +536,10 @@ namespace MisasMinerSetup
             if (e.Key == Key.Enter)
                 CheckBalance();
         }
+        private void txbxWallet_Leave(object sender, System.EventArgs e)
+        {
+                CheckBalance();
+        }
 
         #endregion
 

@@ -408,7 +408,7 @@
             </Button.Foreground>
         </Button>
         <TextBox x:Name="txbxPool" HorizontalAlignment="Left" Height="25" Margin="311,159,0,0" TextWrapping="Wrap" Text="{Binding Config.Pool}" VerticalAlignment="Top" Width="279" FontSize="14" Background="#FF747474" BorderBrush="Black" Visibility="Hidden"/>
-        <TextBox x:Name="txbxWallet" HorizontalAlignment="Left" Height="26" Margin="113,127,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="477" FontSize="14" ToolTip="Wallet address here. Remember to press enter." RenderTransformOrigin="0.5,0.5" Background="#FF747474" BorderBrush="Black" KeyUp="txbxWallet_KeyUp"/>
+        <TextBox x:Name="txbxWallet" HorizontalAlignment="Left" Height="26" Margin="113,127,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="477" FontSize="14" ToolTip="Wallet address here. Remember to press enter." RenderTransformOrigin="0.5,0.5" Background="#FF747474" BorderBrush="Black" KeyUp="txbxWallet_KeyUp" LostFocus="txbxWallet_Leave" Controls:TextBoxHelper.Watermark="Press enter after pasting wallet here." Controls:ControlsHelper.MouseOverBorderBrush="#FF4D4D4D"/>
         <Image HorizontalAlignment="Left" Height="159" Margin="0,-10,0,0" VerticalAlignment="Top" Width="174" Source="Images/logo.png"/>
 
         <TextBlock x:Name="txtPool" HorizontalAlignment="Left" Margin="7,149,0,0" TextWrapping="Wrap" Text="Pool" VerticalAlignment="Top" Foreground="#FF66CCCC" FontSize="30" Height="43" Width="61"/>
