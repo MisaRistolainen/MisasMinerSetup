@@ -797,16 +797,20 @@ namespace MisasMinerSetup
                 if (GarlicoinHelper.GetBalance(Config.Wallet, out balance))
                     Balance = balance;
                 else
-                    notifier.ShowWarning("Wallet not found.");
+                    notifier.ShowWarning("Wallet not found. Could also mean that your address doesn't have any GRLC.");
             }
             else
             {
                 notifier.ShowInformation("No wallet set.");
                 Balance = 0;
             }
-
-            var myWorth = float.Parse(worth) * Balance;
-            txtBal2.Text = $"{Balance} GRLC (${myWorth:0.00} USD)";
+            double balance_;
+            if (double.TryParse(worth, NumberStyles.Any, CultureInfo.InvariantCulture, out balance_))
+            {
+                var myWorth = balance_ * Balance;
+                txtBal2.Text = $"{Balance} GRLC (${myWorth:0.00} USD)";
+            }
+            
         }
 
         private void CheckBlocksFound() //Check blocks founds 

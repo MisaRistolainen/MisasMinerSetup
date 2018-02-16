@@ -544,6 +544,7 @@
         <TextBlock x:Name="txtgarliWorth" HorizontalAlignment="Left" Margin="489,760,0,-6" TextWrapping="Wrap" Text="{Binding GarliWorth}" VerticalAlignment="Top" FontSize="20" Foreground="#FF66CCCC" Height="46" Width="111"/>
         <Image x:Name="pngAbby" HorizontalAlignment="Left" Height="468" Margin="0,350,0,-18" VerticalAlignment="Top" Width="600" Source="Images/Abby.png" Visibility="Hidden"/>
         <Controls:MetroProgressBar x:Name="downloadProgress" Margin="323,659,24,128" Height="13" IsIndeterminate="True" Visibility="Hidden" />
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Try CTRL + F10 while mining" VerticalAlignment="Top"/>
 
 
 
