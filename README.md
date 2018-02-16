@@ -1,7 +1,7 @@
 [![Github All Releases](https://img.shields.io/github/downloads/MisaRistolainen/MisasMinerSetup/total.svg?style=for-the-badge)](https://github.com/MisaRistolainen/MisasMinerSetup/releases)
 [![license](https://img.shields.io/github/license/MisaRistolainen/MisasMinerSetup.svg?style=for-the-badge)](https://choosealicense.com/licenses/gpl-3.0/)
 # MisasMinerSetup # 
-FOR AMD OR NVIDIA GPUs! Will be updated for Allium within 1 minute of the fork!
+FOR AMD OR NVIDIA GPUs!
 -
 *To anyone saying that it is ugly. I want it to be fully functional before I start making it look nice. I know it looks bad.*
 
