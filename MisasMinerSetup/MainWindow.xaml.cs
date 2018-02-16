@@ -406,6 +406,7 @@ namespace MisasMinerSetup
 
         private void StartButton_Click(object sender, RoutedEventArgs e) //"RIP GPU" button which starts cmd
         {
+            notifier.ShowInformation("Press CTRL + F10 for hashrate-popups!");
             string devices = checkDevices();
             isMining = true;
             
