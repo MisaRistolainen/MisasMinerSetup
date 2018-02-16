@@ -442,7 +442,7 @@ namespace MisasMinerSetup
             }
             if (gpuChoice == 1) //If AMD GPU was chosen
             {
-                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + Config.Temp + " -k allium -o " + strPool + " -u " + strWallet + " -p x -I " + strInt + " " + strCustom; //Constructing final string to run
+                strArg = "sgminer --api-listen -d " + devices + " --temp-cutoff " + Config.Temp + " --algorithm allium -o " + strPool + " -u " + strWallet + " -p x -I " + strInt + " " + strCustom; //Constructing final string to run
             }
             else if (gpuChoice == 0) //If Nvidia GPU was chosen
             {
@@ -484,7 +484,7 @@ namespace MisasMinerSetup
                 webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CompletedPool);
                 if (gpuChoice == 1) //AMD
                 {
-                    webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/sgminer-5.5.5.zip"), appPath + "\\sg.zip"); //Downloading sgminer
+                    webClient.DownloadFileAsync(new Uri("http://139.59.147.231/some/sgminer.zip"), appPath + "\\sg.zip"); //Downloading sgminer
                 }
                 else if (gpuChoice == 0) //NVIDIA
                 {
