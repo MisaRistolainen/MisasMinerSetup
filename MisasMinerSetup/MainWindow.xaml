@@ -428,7 +428,7 @@
             </ComboBox.Resources>
             <ComboBoxItem Content="happy.garlicoin.fun:3210"/>
             <ComboBoxItem Content="us.pool.garlicsoup.xyz:3333"/>
-            <ComboBoxItem Content="stratum.garlicpool.org:3333"/>
+            <ComboBoxItem Content="butterpool.com:3032"/>
             <ComboBoxItem Content="pool.grlc-bakery.fun:3333"/>
             <ComboBoxItem Content="garlicbois.com:3333"/>
             <ComboBoxItem Content="Custom"/>
