@@ -43,7 +43,7 @@ Remember to press enter after typing your wallet address.
 
 Settings are saved after shutdown so there is no need to copy paste your wallet everytime you restart.
 
-## Miisu#5852 on Discord
+## Kainalo#0001 on Discord
 
 Armpitzz on Reddit
 
